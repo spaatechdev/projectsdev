@@ -218,6 +218,12 @@ def getCitiesByState(request):
 
 
 @login_required
+def uomList(request):
+    context = {}
+    return render(request, 'uom/list.html', context)
+
+
+@login_required
 def itemCategoryList(request):
     itemCategories = models.ItemCtegory.objects.filter(deleted=0)
     context = {'itemCategories': itemCategories}
