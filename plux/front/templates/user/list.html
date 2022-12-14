@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Users</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        First Name
+                                    </th>
+                                    <th>
+                                        Last Name
+                                    </th>
+                                    <th>
+                                        email
+                                    </th>
+                                    <th>
+                                        Date Joined
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td class="py-1">
+                                        {{user.first_name}}
+                                    </td>
+                                    <td>
+                                        {{user.last_name}}
+                                    </td>
+                                    <td>
+                                        {{user.email}}
+                                    </td>
+                                    <td>
+                                        {{user.date_joined|date:"M d, Y"}}
+                                    </td>
+                                    <td>
+                                        {{customer.address_1}}
+                                    </td>
+                                    <td>
+                                        {{customer.address_2}}
+                                    </td>
+                                    <td>
+                                        {{customer.pin}}
+                                    </td>
+                                    <td>
+                                        {{customer.contact_number}}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
