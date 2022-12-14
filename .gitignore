@@ -1,3 +1,4 @@
 env/
+plux/plux/.env
 */__pycache__/
 */migrations/
