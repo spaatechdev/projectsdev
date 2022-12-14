@@ -215,3 +215,67 @@ def getCitiesByState(request):
             'status': 'ERROR',
             'message': 'There should be post method.'
         })
+
+
+@login_required
+def itemCategoryList(request):
+    itemCategories = models.Customer.objects.filter(deleted=0)
+    context = {'itemCategories': itemCategories}
+    return render(request, 'itemCategory/list.html', context)
+
+
+@login_required
+def itemCategoryAdd(request):
+    context = {}
+    countries = models.Countries.objects.all()
+    context.update({'countries': countries})
+    if request.method == "POST":
+        customer = models.Customer()
+        customer.customer_name = request.POST['customer_name']
+        customer.address_1 = request.POST['address_1']
+        customer.address_2 = request.POST['address_2']
+        customer.pin = request.POST['pin']
+        customer.gst_no = request.POST['gst_no']
+        customer.contact_no = request.POST['contact_no']
+        customer.contact_name = request.POST['contact_name']
+        customer.contact_email = request.POST['contact_email']
+        customer.country_id = request.POST['country']
+        customer.state_id = request.POST['state']
+        customer.city_id = request.POST['city']
+        customer.save()
+        messages.success(request, 'Customer Created Successfully.')
+        return redirect('customerList')
+    return render(request, 'customer/add.html', context)
+
+
+@login_required
+def itemCategoryEdit(request, id):
+    context = {}
+    countries = models.Countries.objects.all()
+    customer = models.Customer.objects.get(pk=id)
+    context.update({'countries': countries, 'customer': customer})
+    if request.method == "POST":
+        customer = models.Customer.objects.get(pk=request.POST['id'])
+        customer.customer_name = request.POST['customer_name']
+        customer.address_1 = request.POST['address_1']
+        customer.address_2 = request.POST['address_2']
+        customer.pin = request.POST['pin']
+        customer.gst_no = request.POST['gst_no']
+        customer.contact_no = request.POST['contact_no']
+        customer.contact_name = request.POST['contact_name']
+        customer.contact_email = request.POST['contact_email']
+        customer.country_id = request.POST['country']
+        customer.state_id = request.POST['state']
+        customer.city_id = request.POST['city']
+        customer.save()
+        messages.success(request, 'Customer Updated Successfully.')
+        return redirect('customerList')
+    return render(request, 'customer/edit.html', context)
+
+
+@login_required
+def itemCategoryDelete(request, id):
+    customer = models.Customer.objects.get(pk=id)
+    customer.deleted = 1
+    customer.save()
+    return redirect('customerList')

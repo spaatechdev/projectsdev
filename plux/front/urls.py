@@ -15,6 +15,12 @@ urlpatterns = [
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
     path('vendorList', views.vendorList, name='vendorList'),
     path('storeList', views.storeList, name='storeList'),
+
+    path('itemCategoryList', views.itemCategoryList, name='itemCategoryList'),
+    path('itemCategoryAdd', views.itemCategoryAdd, name='itemCategoryAdd'),
+    path('itemCategoryEdit/<int:id>', views.itemCategoryEdit, name='itemCategoryEdit'),
+    path('itemCategoryDelete/<int:id>', views.itemCategoryDelete, name='itemCategoryDelete'),
+
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),
 ]

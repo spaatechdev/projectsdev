@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Item Categories</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'itemCategoryAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            SL No
+                                        </th>
+                                        <th>
+                                            Description
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for itemCategory in itemCategories %}
+                                    <tr>
+                                        <td class="py-1">
+                                            {{forloop.counter}}
+                                        </td>
+                                        <td>
+                                            {{itemCategory.description}}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'itemCategoryEdit' itemCategory.id %}"
+                                                class="btn btn-info btn-sm">
+                                                Edit </a>
+                                            <a onclick="return confirm('Are you sure you want to delete this?')"
+                                                href="{% url 'itemCategoryDelete' itemCategory.id %}"
+                                                class="btn btn-danger btn-sm">
+                                                Delete </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
