@@ -9,77 +9,20 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Add Customers</h4>
+                            <h4 class="card-title">Add Item Category</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'customerList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                            <a href="{% url 'itemCategoryList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
-                        <form class="forms-sample" action="{% url 'customerEdit' customer.id %}" method="post">
+                        <form class="forms-sample" action="{% url 'itemCategoryEdit' itemCategory.id %}" method="post">
                             {% csrf_token %}
-                            <input type="hidden" name="id" value="{{customer.id}}">
+                            <input type="hidden" name="id" value="{{itemCategory.id}}">
                             <div class="form-group">
-                                <label for="customer_name">Customer Name</label>
-                                <input type="text" class="form-control" name="customer_name" id="customer_name"
-                                    placeholder="Customer Name" value="{{customer.customer_name}}" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="address_1">Address 1</label>
-                                <textarea name="address_1" class="form-control" id="address_1" rows="5"
-                                    placeholder="Address 1" required>{{customer.address_1}}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="address_2">Address 2</label>
-                                <textarea name="address_2" class="form-control" id="address_2" rows="5"
-                                    placeholder="Address 2">{{customer.address_2}}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="gst_no">GST Number</label>
-                                <input type="text" class="form-control" name="gst_no" id="gst_no"
-                                    placeholder="GST Number" value="{{customer.gst_no}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="contact_no">Contact No</label>
-                                <input type="text" class="form-control" id="contact_no" name="contact_no"
-                                    placeholder="99******49" onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10" value="{{customer.contact_no}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="contact_name">Contact Name</label>
-                                <input type="text" class="form-control" id="contact_name" name="contact_name"
-                                    placeholder="John Doe" value="{{customer.contact_name}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="contact_email">Contact Email</label>
-                                <input type="email" class="form-control" id="contact_email" name="contact_email"
-                                    placeholder="john@example.com" value="{{customer.contact_email}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="country">Country</label>
-                                <select class="form-control" id="country" name="country">
-                                    <option value="">Select Country</option>
-                                    {% for country in countries %}
-                                    <option value="{{country.id}}" {% if country.id == customer.country_id %} selected {% endif %}>{{country.name}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="state">State</label>
-                                <select class="form-control" id="state" name="state">
-                                    <option value="{{customer.state_id}}">{{customer.state.name}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="city">City</label>
-                                <select class="form-control" id="city" name="city">
-                                    <option value="{{customer.city_id}}">{{customer.city.name}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="pin">PIN</label>
-                                <input type="text" class="form-control" maxlength="6" id="pin" name="pin"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                    placeholder="700001" value="{{customer.pin}}">
+                                <label for="description">Description</label>
+                                <textarea name="description" class="form-control" id="description" rows="5"
+                                    placeholder="Description" required>{{itemCategory.description}}</textarea>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
                             <button class="btn btn-light">Cancel</button>
@@ -93,46 +36,4 @@
 {% endblock %}
 
 {% block js %}
-<script>
-    var customer_state = "{{customer.state_id}}";
-    var customer_city = "{{customer.city_id}}";
-    $(document).on('change', '#country', function () {
-        let country_id = $(this).val();
-        $.ajax({
-            url: "{% url 'getStatesByCountry' %}",
-            type: 'post',
-            data: ({ country_id: country_id, csrfmiddlewaretoken: '{{csrf_token}}' }),
-            success: function (response) {
-                if (response.code == 200) {
-                    var options_text = `<option value="">Select State</option>`;
-                    for (let index = 0; index < response.data.length; index++) {
-                        options_text += `<option value="${response.data[index].id}">${response.data[index].name}</option>`;
-                    }
-                    $("#state").html(options_text);
-                } else {
-                    alert(response.message);
-                }
-            },
-        });
-    });
-    $(document).on('change', '#state', function () {
-        let state_id = $(this).val();
-        $.ajax({
-            url: "{% url 'getCitiesByState' %}",
-            type: 'post',
-            data: ({ state_id: state_id, csrfmiddlewaretoken: '{{csrf_token}}' }),
-            success: function (response) {
-                if (response.code == 200) {
-                    var options_text = `<option value="">Select City</option>`;
-                    for (let index = 0; index < response.data.length; index++) {
-                        options_text += `<option value="${response.data[index].id}">${response.data[index].name}</option>`;
-                    }
-                    $("#city").html(options_text);
-                } else {
-                    alert(response.message);
-                }
-            },
-        });
-    });
-</script>
 {% endblock %}
