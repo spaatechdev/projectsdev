@@ -113,6 +113,7 @@ class Customer(models.Model):
 
 class ItemCtegory(models.Model):
     description = models.CharField(max_length=30, blank=False, null=False)
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.description
@@ -131,6 +132,7 @@ class PlyDimensionMaster(models.Model):
     breadth_mt = models.DecimalField(max_digits=10, decimal_places=2)
     square_ft = models.DecimalField(max_digits=10, decimal_places=2)
     square_mt = models.DecimalField(max_digits=10, decimal_places=2)
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.description
@@ -143,6 +145,7 @@ class PlyDimensionMaster(models.Model):
 
 class UomMaster(models.Model):
     description = models.CharField(max_length=30, blank=False, null=False)
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.description
@@ -164,6 +167,7 @@ class ItemMaster(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     hsn_code = models.IntegerField()
     gst_percentage = models.IntegerField()
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.description
@@ -240,6 +244,7 @@ class StoreItemMaster(models.Model):
         max_digits=10, decimal_places=2, blank=True, null=True)
     closing_qty = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True)
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.store.name + "=>" + self.item.description
@@ -252,6 +257,7 @@ class StoreItemMaster(models.Model):
 
 class StandardTermMaster(models.Model):
     description = models.TextField(blank=True, null=True)
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.description
@@ -271,6 +277,7 @@ class PurchaseOrderHeader(models.Model):
     store = models.ForeignKey(
         StoreItemMaster, related_name='PurchaseStore', on_delete=models.CASCADE, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.ammend_no
@@ -289,6 +296,7 @@ class PurchaseOrderDetails(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     delivery_date = models.DateField(blank=True, null=True)
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.item.description
@@ -303,6 +311,7 @@ class PurchaseOrderTerms(models.Model):
     ammend_no = models.IntegerField(default=0)
     terms = models.ForeignKey(
         StandardTermMaster, related_name='PurchaseTerm', on_delete=models.CASCADE, blank=True, null=True)
+    deleted = models.BooleanField(default=0)
 
     def __str__(self):
         return self.item.ammend_no + self.terms.description
