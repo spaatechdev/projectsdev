@@ -21,6 +21,11 @@ urlpatterns = [
     path('itemCategoryAdd', views.itemCategoryAdd, name='itemCategoryAdd'),
     path('itemCategoryEdit/<int:id>', views.itemCategoryEdit, name='itemCategoryEdit'),
     path('itemCategoryDelete/<int:id>', views.itemCategoryDelete, name='itemCategoryDelete'),
+    
+    path('plyDimensionList', views.plyDimensionList, name='plyDimensionList'),
+    path('plyDimensionAdd', views.plyDimensionAdd, name='plyDimensionAdd'),
+    path('plyDimensionEdit/<int:id>', views.plyDimensionEdit, name='plyDimensionEdit'),
+    path('plyDimensionDelete/<int:id>', views.plyDimensionDelete, name='plyDimensionDelete'),
 
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),

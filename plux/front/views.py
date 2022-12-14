@@ -262,3 +262,59 @@ def itemCategoryDelete(request, id):
     itemCategory.deleted = 1
     itemCategory.save()
     return redirect('itemCategoryList')
+
+
+@login_required
+def plyDimensionList(request):
+    plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
+    context = {'plyDimensions': plyDimensions}
+    return render(request, 'plyDimension/list.html', context)
+
+
+@login_required
+def plyDimensionAdd(request):
+    context = {}
+    if request.method == "POST":
+        print(request.POST)
+        exit()
+        plyDimension = models.PlyDimensionMaster()
+        plyDimension.description = request.POST['description']
+        plyDimension.length_ft = request.POST['length_ft']
+        plyDimension.breadth_ft = request.POST['breadth_ft']
+        plyDimension.length_mt = request.POST['length_mt']
+        plyDimension.breadth_mt = request.POST['breadth_mt']
+        plyDimension.square_ft = request.POST['square_ft']
+        plyDimension.square_mt = request.POST['square_mt']
+        plyDimension.save()
+        messages.success(request, 'Ply Dimension Created Successfully.')
+        return redirect('plyDimensionList')
+    return render(request, 'plyDimension/add.html', context)
+
+
+@login_required
+def plyDimensionEdit(request, id):
+    context = {}
+    plyDimension = models.PlyDimensionMaster.objects.get(pk=id)
+    context.update({'plyDimension': plyDimension})
+    if request.method == "POST":
+        plyDimension = models.PlyDimensionMaster.objects.get(
+            pk=request.POST['id'])
+        plyDimension.description = request.POST['description']
+        plyDimension.length_ft = request.POST['length_ft']
+        plyDimension.breadth_ft = request.POST['breadth_ft']
+        plyDimension.length_mt = request.POST['length_mt']
+        plyDimension.breadth_mt = request.POST['breadth_mt']
+        plyDimension.square_ft = request.POST['square_ft']
+        plyDimension.square_mt = request.POST['square_mt']
+        plyDimension.save()
+        messages.success(request, 'Ply Dimension Updated Successfully.')
+        return redirect('plyDimensionList')
+    return render(request, 'plyDimension/edit.html', context)
+
+
+@login_required
+def plyDimensionDelete(request, id):
+    plyDimension = models.PlyDimensionMaster.objects.get(pk=id)
+    plyDimension.deleted = 1
+    plyDimension.save()
+    return redirect('plyDimensionList')

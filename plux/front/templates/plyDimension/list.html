@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Ply Dimensions</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'plyDimensionAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Description
+                                        </th>
+                                        <th>
+                                            Length (Ft)
+                                        </th>
+                                        <th>
+                                            Breadth (Ft)
+                                        </th>
+                                        <th>
+                                            Length (Mt)
+                                        </th>
+                                        <th>
+                                            Breadth (Mt)
+                                        </th>
+                                        <th>
+                                            Square (Ft)
+                                        </th>
+                                        <th>
+                                            Square (Mt)
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for plyDimension in plyDimensions %}
+                                    <tr>
+                                        <td>
+                                            {{plyDimension.description}}
+                                        </td>
+                                        <td>
+                                            {{plyDimension.length_ft}}
+                                        </td>
+                                        <td>
+                                            {{plyDimension.breadth_ft}}
+                                        </td>
+                                        <td>
+                                            {{plyDimension.length_mt}}
+                                        </td>
+                                        <td>
+                                            {{plyDimension.breadth_mt}}
+                                        </td>
+                                        <td>
+                                            {{plyDimension.square_ft}}
+                                        </td>
+                                        <td>
+                                            {{plyDimension.square_mt}}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'plyDimensionEdit' plyDimension.id %}"
+                                                class="btn btn-info btn-sm">
+                                                Edit </a>
+                                            <a onclick="return confirm('Are you sure you want to delete this?')"
+                                                href="{% url 'plyDimensionDelete' plyDimension.id %}"
+                                                class="btn btn-danger btn-sm">
+                                                Delete </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
