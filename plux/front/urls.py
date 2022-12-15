@@ -16,11 +16,17 @@ urlpatterns = [
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
 
     path('vendorList', views.vendorList, name='vendorList'),
+    path('vendorAdd', views.vendorAdd, name='vendorAdd'),
+    path('vendorEdit/<int:id>', views.vendorEdit, name='vendorEdit'),
+    path('vendorDelete/<int:id>', views.vendorDelete, name='vendorDelete'),
 
     path('uomList', views.uomList, name='uomList'),
 
     path('storeList', views.storeList, name='storeList'),
-
+    path('storeAdd', views.storeAdd, name='storeAdd'),
+    path('storeEdit/<int:id>', views.storeEdit, name='storeEdit'),
+    path('storeDelete/<int:id>', views.storeDelete, name='storeDelete'),
+    
     path('itemCategoryList', views.itemCategoryList, name='itemCategoryList'),
     path('itemCategoryAdd', views.itemCategoryAdd, name='itemCategoryAdd'),
     path('itemCategoryEdit/<int:id>', views.itemCategoryEdit, name='itemCategoryEdit'),
