@@ -54,6 +54,11 @@ urlpatterns = [
     path('storeItemEdit/<int:id>', views.storeItemEdit, name='storeItemEdit'),
     path('storeItemDelete/<int:id>', views.storeItemDelete, name='storeItemDelete'),
 
+    path('standardTermList', views.standardTermList, name='standardTermList'),
+    path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
+    path('standardTermEdit/<int:id>', views.standardTermEdit, name='standardTermEdit'),
+    path('standardTermDelete/<int:id>', views.standardTermDelete, name='standardTermDelete'),
+    
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),
 ]
