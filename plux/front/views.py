@@ -337,8 +337,43 @@ def getCitiesByState(request):
 
 @login_required
 def uomList(request):
-    context = {}
+    uoms = models.UomMaster.objects.filter(deleted=0)
+    context = {'uoms': uoms}
     return render(request, 'uom/list.html', context)
+
+
+@login_required
+def uomAdd(request):
+    context = {}
+    if request.method == "POST":
+        uom = models.UomMaster()
+        uom.description = request.POST['description']
+        uom.save()
+        messages.success(request, 'UOM Created Successfully.')
+        return redirect('uomList')
+    return render(request, 'uom/add.html', context)
+
+
+@login_required
+def uomEdit(request, id):
+    context = {}
+    uom = models.UomMaster.objects.get(pk=id)
+    context.update({'uom': uom})
+    if request.method == "POST":
+        uom = models.UomMaster.objects.get(pk=request.POST['id'])
+        uom.description = request.POST['description']
+        uom.save()
+        messages.success(request, 'UOM Updated Successfully.')
+        return redirect('uomList')
+    return render(request, 'uom/edit.html', context)
+
+
+@login_required
+def uomDelete(request, id):
+    uom = models.UomMaster.objects.get(pk=id)
+    uom.deleted = 1
+    uom.save()
+    return redirect('uomList')
 
 
 @login_required
