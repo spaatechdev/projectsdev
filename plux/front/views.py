@@ -316,3 +316,65 @@ def plyDimensionDelete(request, id):
     plyDimension.deleted = 1
     plyDimension.save()
     return redirect('plyDimensionList')
+
+
+@login_required
+def itemList(request):
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context = {'items': items}
+    return render(request, 'item/list.html', context)
+
+
+@login_required
+def itemAdd(request):
+    context = {}
+    itemCategories = models.ItemCtegory.objects.filter(deleted=0)
+    plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
+    uoms = models.UomMaster.objects.filter(deleted=0)
+    context.update({'itemCategories': itemCategories,
+                   'plyDimensions': plyDimensions, 'uoms': uoms})
+    if request.method == "POST":
+        item = models.ItemMaster()
+        item.description = request.POST['description']
+        item.unit_price = request.POST['unit_price']
+        item.hsn_code = request.POST['hsn_code']
+        item.gst_percentage = request.POST['gst_percentage']
+        item.item_category_id = request.POST['item_category_id']
+        item.ply_dimension_id = request.POST['ply_dimension_id']
+        item.uom_id = request.POST['uom_id']
+        item.save()
+        messages.success(request, 'Item Created Successfully.')
+        return redirect('itemList')
+    return render(request, 'item/add.html', context)
+
+
+@login_required
+def itemEdit(request, id):
+    context = {}
+    item = models.ItemMaster.objects.get(pk=id)
+    itemCategories = models.ItemCtegory.objects.filter(deleted=0)
+    plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
+    uoms = models.UomMaster.objects.filter(deleted=0)
+    context.update({'item': item, 'itemCategories': itemCategories,
+                   'plyDimensions': plyDimensions, 'uoms': uoms})
+    if request.method == "POST":
+        item = models.ItemMaster.objects.get(pk=request.POST['id'])
+        item.description = request.POST['description']
+        item.unit_price = request.POST['unit_price']
+        item.hsn_code = request.POST['hsn_code']
+        item.gst_percentage = request.POST['gst_percentage']
+        item.item_category_id = request.POST['item_category_id']
+        item.ply_dimension_id = request.POST['ply_dimension_id']
+        item.uom_id = request.POST['uom_id']
+        item.save()
+        messages.success(request, 'Item Updated Successfully.')
+        return redirect('itemList')
+    return render(request, 'item/edit.html', context)
+
+
+@login_required
+def itemDelete(request, id):
+    item = models.ItemMaster.objects.get(pk=id)
+    item.deleted = 1
+    item.save()
+    return redirect('itemList')

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Edit Item</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'itemList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <form class="forms-sample" action="{% url 'itemEdit' item.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{item.id}}">
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea name="description" class="form-control" id="description" rows="5"
+                                    placeholder="Description" required>{{item.description}}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="item_category_id">Item Category</label>
+                                <select name="item_category_id" id="item_category_id" class="form-control">
+                                    <option value="">Select Item Category</option>
+                                    {% for itemCategory in itemCategories %}
+                                    <option {% if itemCategory.id == item.item_category_id %} selected {% endif %} value="{{itemCategory.id}}">{{itemCategory.description}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ply_dimension_id">Ply Dimension</label>
+                                <select name="ply_dimension_id" id="ply_dimension_id" class="form-control">
+                                    <option value="">Select Ply Dimension</option>
+                                    {% for plyDimension in plyDimensions %}
+                                    <option {% if plyDimension.id == item.ply_dimension_id %} selected {% endif %} value="{{plyDimension.id}}">{{plyDimension.description}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="uom_id">UOM</label>
+                                <select name="uom_id" id="uom_id" class="form-control">
+                                    <option value="">Select UOM</option>
+                                    {% for uom in uoms %}
+                                    <option {% if uom.id == item.uom_id %} selected {% endif %} value="{{uom.id}}">{{uom.description}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="unit_price">Unit Price</label>
+                                <input type="text" name="unit_price" class="form-control" id="unit_price"
+                                    placeholder="Unit Price" value="{{item.unit_price}}"
+                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <div class="form-group">
+                                <label for="hsn_code">HSN Code</label>
+                                <input type="text" name="hsn_code" class="form-control" id="hsn_code"
+                                    placeholder="HSN Code" value="{{item.hsn_code}}"
+                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <div class="form-group">
+                                <label for="gst_percentage">GST Percentage</label>
+                                <input type="text" name="gst_percentage" class="form-control" id="gst_percentage"
+                                    placeholder="GST Percentage" value="{{item.gst_percentage}}"
+                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button class="btn btn-light">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).on('keyup', '#length_ft', function () {
+        setDimension();
+    });
+    $(document).on('keyup', '#breadth_ft', function () {
+        setDimension();
+    });
+
+    function setDimension() {
+        if ($("#length_ft").val() != "") {
+            length_ft = $("#length_ft").val();
+            $("#length_mt").val((length_ft * 0.3048).toFixed(2));
+        }
+        if ($("#breadth_ft").val() != "") {
+            breadth_ft = $("#breadth_ft").val();
+            $("#breadth_mt").val((breadth_ft * 0.3048).toFixed(2));
+        }
+
+        if ($("#length_ft").val() != "" && $("#breadth_ft").val() != "") {
+            length_ft = $("#length_ft").val();
+            breadth_ft = $("#breadth_ft").val();
+            length_mt = length_ft * 0.3048;
+            breadth_mt = breadth_ft * 0.3048;
+
+            square_ft = length_ft * breadth_ft;
+            square_mt = length_mt * breadth_mt;
+
+            $("#square_ft").val(square_ft.toFixed(2));
+            $("#square_mt").val(square_mt.toFixed(2));
+        }
+    }
+</script>
+{% endblock %}
