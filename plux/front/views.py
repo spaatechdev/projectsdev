@@ -171,14 +171,132 @@ def userList(request):
 
 @login_required
 def vendorList(request):
-    context = {}
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    context = {'vendors': vendors}
     return render(request, 'vendor/list.html', context)
 
 
 @login_required
-def storeList(request):
+def vendorAdd(request):
     context = {}
+    countries = models.Countries.objects.all()
+    context.update({'countries': countries})
+    if request.method == "POST":
+        vendor = models.VendorMaster()
+        vendor.name = request.POST['name']
+        vendor.address_1 = request.POST['address_1']
+        vendor.address_2 = request.POST['address_2']
+        vendor.pin = request.POST['pin']
+        vendor.gst_no = request.POST['gst_no']
+        vendor.contact_no = request.POST['contact_no']
+        vendor.contact_name = request.POST['contact_name']
+        vendor.contact_email = request.POST['contact_email']
+        vendor.city_id = request.POST['city']
+        vendor.country_id = request.POST['country']
+        vendor.state_id = request.POST['state']
+        vendor.save()
+        messages.success(request, 'vendor Created Successfully.')
+        return redirect('vendorList')
+    return render(request, 'vendor/add.html', context)
+
+
+@login_required
+def vendorEdit(request, id):
+    context = {}
+    countries = models.Countries.objects.all()
+    vendor = models.VendorMaster.objects.get(pk=id)
+    context.update({'countries': countries, 'vendor': vendor})
+    if request.method == "POST":
+        vendor = models.VendorMaster.objects.get(pk=request.POST['id'])
+        vendor.name = request.POST['name']
+        vendor.address_1 = request.POST['address_1']
+        vendor.address_2 = request.POST['address_2']
+        vendor.pin = request.POST['pin']
+        vendor.gst_no = request.POST['gst_no']
+        vendor.contact_no = request.POST['contact_no']
+        vendor.contact_name = request.POST['contact_name']
+        vendor.contact_email = request.POST['contact_email']
+        vendor.country_id = request.POST['country']
+        vendor.state_id = request.POST['state']
+        vendor.city_id = request.POST['city']
+        vendor.save()
+        messages.success(request, 'vendor Updated Successfully.')
+        return redirect('vendorList')
+    return render(request, 'vendor/edit.html', context)
+
+
+@login_required
+def vendorDelete(request, id):
+    vendor = models.VendorMaster.objects.get(pk=id)
+    vendor.deleted = 1
+    vendor.save()
+    return redirect('vendorList')
+
+
+@login_required
+def storeList(request):
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    context = {'stores': stores}
     return render(request, 'store/list.html', context)
+
+
+@login_required
+def storeAdd(request):
+    context = {}
+    countries = models.Countries.objects.all()
+    context.update({'countries': countries})
+    if request.method == "POST":
+        store = models.StoreMaster()
+        store.name = request.POST['name']
+        store.address_1 = request.POST['address_1']
+        store.address_2 = request.POST['address_2']
+        store.pin = request.POST['pin']
+        store.gst_no = request.POST['gst_no']
+        store.contact_no = request.POST['contact_no']
+        store.contact_name = request.POST['contact_name']
+        store.contact_email = request.POST['contact_email']
+        store.manager_name = request.POST['manager_name']
+        store.city_id = request.POST['city']
+        store.country_id = request.POST['country']
+        store.state_id = request.POST['state']
+        store.save()
+        messages.success(request, 'store Created Successfully.')
+        return redirect('storeList')
+    return render(request, 'store/add.html', context)
+
+
+@login_required
+def storeEdit(request, id):
+    context = {}
+    countries = models.Countries.objects.all()
+    store = models.StoreMaster.objects.get(pk=id)
+    context.update({'countries': countries, 'store': store})
+    if request.method == "POST":
+        store = models.StoreMaster.objects.get(pk=request.POST['id'])
+        store.name = request.POST['name']
+        store.address_1 = request.POST['address_1']
+        store.address_2 = request.POST['address_2']
+        store.pin = request.POST['pin']
+        store.gst_no = request.POST['gst_no']
+        store.contact_no = request.POST['contact_no']
+        store.contact_name = request.POST['contact_name']
+        store.contact_email = request.POST['contact_email']
+        store.manager_name = request.POST['manager_name']
+        store.country_id = request.POST['country']
+        store.state_id = request.POST['state']
+        store.city_id = request.POST['city']
+        store.save()
+        messages.success(request, 'store Updated Successfully.')
+        return redirect('storeList')
+    return render(request, 'store/edit.html', context)
+
+
+@login_required
+def storeDelete(request, id):
+    store = models.StoreMaster.objects.get(pk=id)
+    store.deleted = 1
+    store.save()
+    return redirect('storeList')
 
 
 def getStatesByCountry(request):
