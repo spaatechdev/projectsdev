@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Edit Store Item</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'storeItemList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <form class="forms-sample" action="{% url 'storeItemEdit' storeItem.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{storeItem.id}}">
+                            <div class="form-group">
+                                <label for="store_id">Store</label>
+                                <select name="store_id" id="store_id" class="form-control" required>
+                                    <option value="">Select Store</option>
+                                    {% for store in stores %}
+                                    <option {% if store.id == storeItem.store_id %} selected {% endif %} value="{{store.id}}">{{store.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="item_id">Item</label>
+                                <select name="item_id" id="item_id" class="form-control" required>
+                                    <option value="">Select Item</option>
+                                    {% for item in items %}
+                                    <option {% if item.id == storeItem.item_id %} selected {% endif %} value="{{item.id}}">{{item.description}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="opening_qty">Opening Quantity</label>
+                                <input type="text" name="opening_qty" class="form-control" id="opening_qty" required
+                                    placeholder="Opening Quantity" value="{{storeItem.opening_qty}}"
+                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <div class="form-group">
+                                <label for="on_hand_qty">On Hand Quantity</label>
+                                <input type="text" name="on_hand_qty" class="form-control" id="on_hand_qty" required
+                                    placeholder="On Hand Quantity" value="{{storeItem.on_hand_qty}}"
+                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <div class="form-group">
+                                <label for="closing_qty">Closing Quantity</label>
+                                <input type="text" name="closing_qty" class="form-control" id="closing_qty" required
+                                    placeholder="Closing Quantity" value="{{storeItem.closing_qty}}"
+                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button class="btn btn-light">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).on('keyup', '#opening_qty', function () {
+        setQuantityCalculation();
+    });
+    $(document).on('keyup', '#on_hand_qty', function () {
+        setQuantityCalculation();
+    });
+
+    function setQuantityCalculation() {
+        if ($("#opening_qty").val() != "" && $("#on_hand_qty").val() != "") {
+            opening_qty = $("#opening_qty").val();
+            on_hand_qty = $("#on_hand_qty").val();
+
+            closing_qty = opening_qty - on_hand_qty;
+            $("#closing_qty").val(closing_qty.toFixed(2));
+        } else {
+            $("#closing_qty").val(0);
+        }
+    }
+</script>
+{% endblock %}

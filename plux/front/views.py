@@ -378,3 +378,57 @@ def itemDelete(request, id):
     item.deleted = 1
     item.save()
     return redirect('itemList')
+
+
+@login_required
+def storeItemList(request):
+    storeItems = models.StoreItemMaster.objects.filter(deleted=0)
+    context = {'storeItems': storeItems}
+    return render(request, 'storeItem/list.html', context)
+
+
+@login_required
+def storeItemAdd(request):
+    context = {}
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'items': items, 'stores': stores})
+    if request.method == "POST":
+        storeItem = models.StoreItemMaster()
+        storeItem.opening_qty = request.POST['opening_qty']
+        storeItem.on_hand_qty = request.POST['on_hand_qty']
+        storeItem.closing_qty = request.POST['closing_qty']
+        storeItem.item_id = request.POST['item_id']
+        storeItem.store_id = request.POST['store_id']
+        storeItem.save()
+        messages.success(request, 'Store Item Created Successfully.')
+        return redirect('storeItemList')
+    return render(request, 'storeItem/add.html', context)
+
+
+@login_required
+def storeItemEdit(request, id):
+    context = {}
+    storeItem = models.StoreItemMaster.objects.get(pk=id)
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'storeItem': storeItem, 'items': items, 'stores': stores})
+    if request.method == "POST":
+        storeItem = models.StoreItemMaster.objects.get(pk=request.POST['id'])
+        storeItem.opening_qty = request.POST['opening_qty']
+        storeItem.on_hand_qty = request.POST['on_hand_qty']
+        storeItem.closing_qty = request.POST['closing_qty']
+        storeItem.item_id = request.POST['item_id']
+        storeItem.store_id = request.POST['store_id']
+        storeItem.save()
+        messages.success(request, 'Store Item Updated Successfully.')
+        return redirect('storeItemList')
+    return render(request, 'storeItem/edit.html', context)
+
+
+@login_required
+def storeItemDelete(request, id):
+    storeItem = models.StoreItemMaster.objects.get(pk=id)
+    storeItem.deleted = 1
+    storeItem.save()
+    return redirect('storeItemList')

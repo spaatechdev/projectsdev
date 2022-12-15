@@ -36,6 +36,11 @@ urlpatterns = [
     path('itemEdit/<int:id>', views.itemEdit, name='itemEdit'),
     path('itemDelete/<int:id>', views.itemDelete, name='itemDelete'),
 
+    path('storeItemList', views.storeItemList, name='storeItemList'),
+    path('storeItemAdd', views.storeItemAdd, name='storeItemAdd'),
+    path('storeItemEdit/<int:id>', views.storeItemEdit, name='storeItemEdit'),
+    path('storeItemDelete/<int:id>', views.storeItemDelete, name='storeItemDelete'),
+
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),
 ]

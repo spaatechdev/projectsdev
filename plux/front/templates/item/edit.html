@@ -26,7 +26,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="item_category_id">Item Category</label>
-                                <select name="item_category_id" id="item_category_id" class="form-control">
+                                <select name="item_category_id" id="item_category_id" class="form-control" required>
                                     <option value="">Select Item Category</option>
                                     {% for itemCategory in itemCategories %}
                                     <option {% if itemCategory.id == item.item_category_id %} selected {% endif %} value="{{itemCategory.id}}">{{itemCategory.description}}</option>
@@ -35,7 +35,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="ply_dimension_id">Ply Dimension</label>
-                                <select name="ply_dimension_id" id="ply_dimension_id" class="form-control">
+                                <select name="ply_dimension_id" id="ply_dimension_id" class="form-control" required>
                                     <option value="">Select Ply Dimension</option>
                                     {% for plyDimension in plyDimensions %}
                                     <option {% if plyDimension.id == item.ply_dimension_id %} selected {% endif %} value="{{plyDimension.id}}">{{plyDimension.description}}</option>
@@ -44,7 +44,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="uom_id">UOM</label>
-                                <select name="uom_id" id="uom_id" class="form-control">
+                                <select name="uom_id" id="uom_id" class="form-control" required>
                                     <option value="">Select UOM</option>
                                     {% for uom in uoms %}
                                     <option {% if uom.id == item.uom_id %} selected {% endif %} value="{{uom.id}}">{{uom.description}}</option>
@@ -53,19 +53,19 @@
                             </div>
                             <div class="form-group">
                                 <label for="unit_price">Unit Price</label>
-                                <input type="text" name="unit_price" class="form-control" id="unit_price"
+                                <input type="text" name="unit_price" class="form-control" id="unit_price" required
                                     placeholder="Unit Price" value="{{item.unit_price}}"
                                     onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                             </div>
                             <div class="form-group">
                                 <label for="hsn_code">HSN Code</label>
-                                <input type="text" name="hsn_code" class="form-control" id="hsn_code"
+                                <input type="text" name="hsn_code" class="form-control" id="hsn_code" required
                                     placeholder="HSN Code" value="{{item.hsn_code}}"
                                     onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                             </div>
                             <div class="form-group">
                                 <label for="gst_percentage">GST Percentage</label>
-                                <input type="text" name="gst_percentage" class="form-control" id="gst_percentage"
+                                <input type="text" name="gst_percentage" class="form-control" id="gst_percentage" required
                                     placeholder="GST Percentage" value="{{item.gst_percentage}}"
                                     onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                             </div>
