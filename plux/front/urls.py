@@ -9,14 +9,24 @@ urlpatterns = [
     path('dashboard', views.dashboard, name='dashboard'),
     path('myProfile', views.myProfile, name='myProfile'),
     path('userList', views.userList, name='userList'),
+
     path('customerList', views.customerList, name='customerList'),
     path('customerAdd', views.customerAdd, name='customerAdd'),
     path('customerEdit/<int:id>', views.customerEdit, name='customerEdit'),
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
-    path('vendorList', views.vendorList, name='vendorList'),
-    path('uomList', views.uomList, name='uomList'),
-    path('storeList', views.storeList, name='storeList'),
 
+    path('vendorList', views.vendorList, name='vendorList'),
+    path('vendorAdd', views.vendorAdd, name='vendorAdd'),
+    path('vendorEdit/<int:id>', views.vendorEdit, name='vendorEdit'),
+    path('vendorDelete/<int:id>', views.vendorDelete, name='vendorDelete'),
+
+    path('uomList', views.uomList, name='uomList'),
+
+    path('storeList', views.storeList, name='storeList'),
+    path('storeAdd', views.storeAdd, name='storeAdd'),
+    path('storeEdit/<int:id>', views.storeEdit, name='storeEdit'),
+    path('storeDelete/<int:id>', views.storeDelete, name='storeDelete'),
+    
     path('itemCategoryList', views.itemCategoryList, name='itemCategoryList'),
     path('itemCategoryAdd', views.itemCategoryAdd, name='itemCategoryAdd'),
     path('itemCategoryEdit/<int:id>', views.itemCategoryEdit, name='itemCategoryEdit'),
