@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Add UOM</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'uomAdd' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <form class="forms-sample" action="{% url 'uomAdd' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="description">description</label>
+                                <input type="text" class="form-control" name="description" id="description"
+                                    placeholder="description" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button class="btn btn-light">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
