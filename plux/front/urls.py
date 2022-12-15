@@ -14,6 +14,13 @@ urlpatterns = [
     path('customerAdd', views.customerAdd, name='customerAdd'),
     path('customerEdit/<int:id>', views.customerEdit, name='customerEdit'),
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
+    
+    path('uomList', views.uomList, name='uomList'),
+    path('uomAdd', views.uomAdd, name='uomAdd'),
+    path('uomEdit/<int:id>', views.uomEdit, name='uomEdit'),
+    path('uomDelete/<int:id>', views.uomDelete, name='uomDelete'),
+    
+    path('storeList', views.storeList, name='storeList'),
 
     path('vendorList', views.vendorList, name='vendorList'),
     path('vendorAdd', views.vendorAdd, name='vendorAdd'),
