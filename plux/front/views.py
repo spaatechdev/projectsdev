@@ -275,8 +275,6 @@ def plyDimensionList(request):
 def plyDimensionAdd(request):
     context = {}
     if request.method == "POST":
-        print(request.POST)
-        exit()
         plyDimension = models.PlyDimensionMaster()
         plyDimension.description = request.POST['description']
         plyDimension.length_ft = request.POST['length_ft']

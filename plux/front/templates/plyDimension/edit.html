@@ -22,35 +22,39 @@
                             <div class="form-group">
                                 <label for="description">Description</label>
                                 <textarea name="description" class="form-control" id="description" rows="5"
-                                    placeholder="Description" required></textarea>
+                                    placeholder="Description" required>{{plyDimension.description}}</textarea>
                             </div>
                             <div class="form-group">
                                 <label for="length_ft">Lenght(Ft)</label>
                                 <input type="text" name="length_ft" class="form-control" id="length_ft"
-                                    placeholder="Length(Ft)"
+                                    placeholder="Length(Ft)" value="{{plyDimension.length_ft}}"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
                             <div class="form-group">
                                 <label for="breadth_ft">Breadth(Ft)</label>
                                 <input type="text" name="breadth_ft" class="form-control" id="breadth_ft"
-                                    placeholder="Breadth(Ft)"
+                                    placeholder="Breadth(Ft)" value="{{plyDimension.breadth_ft}}"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
                             <div class="form-group">
                                 <label for="length_mt">Lenght(Mt)</label>
-                                <input type="text" name="length_mt" class="form-control" id="length_mt" readonly>
+                                <input type="text" name="length_mt" class="form-control" id="length_mt"
+                                    value="{{plyDimension.length_mt}}" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="breadth_mt">Lenght(Mt)</label>
-                                <input type="text" name="breadth_mt" class="form-control" id="breadth_mt" readonly>
+                                <input type="text" name="breadth_mt" class="form-control" id="breadth_mt"
+                                    value="{{plyDimension.breadth_mt}}" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="square_ft">Square(Ft)</label>
-                                <input type="text" name="square_ft" class="form-control" id="square_ft" readonly>
+                                <input type="text" name="square_ft" class="form-control" id="square_ft"
+                                    value="{{plyDimension.square_ft}}" readonly>
                             </div>
                             <div class="form-group">
                                 <label for="square_mt">Square(Mt)</label>
-                                <input type="text" name="square_mt" class="form-control" id="square_mt" readonly>
+                                <input type="text" name="square_mt" class="form-control" id="square_mt"
+                                    value="{{plyDimension.square_mt}}" readonly>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
                             <button class="btn btn-light">Cancel</button>
@@ -64,4 +68,36 @@
 {% endblock %}
 
 {% block js %}
+<script>
+    $(document).on('keyup', '#length_ft', function () {
+        setDimension();
+    });
+    $(document).on('keyup', '#breadth_ft', function () {
+        setDimension();
+    });
+
+    function setDimension() {
+        if ($("#length_ft").val() != "") {
+            length_ft = $("#length_ft").val();
+            $("#length_mt").val((length_ft * 0.3048).toFixed(2));
+        }
+        if ($("#breadth_ft").val() != "") {
+            breadth_ft = $("#breadth_ft").val();
+            $("#breadth_mt").val((breadth_ft * 0.3048).toFixed(2));
+        }
+
+        if ($("#length_ft").val() != "" && $("#breadth_ft").val() != "") {
+            length_ft = $("#length_ft").val();
+            breadth_ft = $("#breadth_ft").val();
+            length_mt = length_ft * 0.3048;
+            breadth_mt = breadth_ft * 0.3048;
+
+            square_ft = length_ft * breadth_ft;
+            square_mt = length_mt * breadth_mt;
+
+            $("#square_ft").val(square_ft.toFixed(2));
+            $("#square_mt").val(square_mt.toFixed(2));
+        }
+    }
+</script>
 {% endblock %}
