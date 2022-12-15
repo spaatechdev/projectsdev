@@ -337,8 +337,8 @@ def getCitiesByState(request):
 
 @login_required
 def uomList(request):
-    uomMasters = models.UomMaster.objects.filter(deleted=0)
-    context = {'uomMasters': uomMasters}
+    uoms = models.UomMaster.objects.filter(deleted=0)
+    context = {'uoms': uoms}
     return render(request, 'uom/list.html', context)
 
 

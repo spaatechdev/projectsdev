@@ -29,19 +29,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for uomMaster in uomMasters %}
+                                    {% for uom in uoms %}
                                     <tr>
                                         <td class="py-1">
                                             {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{uomMaster.description}}
+                                            {{uom.description}}
                                         </td>
                                         <td>
-                                            <a href="{% url 'uomEdit' uomMaster.id %}" class="btn btn-info btn-sm">
+                                            <a href="{% url 'uomEdit' uom.id %}" class="btn btn-info btn-sm">
                                                 Edit </a>
                                             <a onclick="return confirm('Are you sure you want to delete this?')"
-                                                href="{% url 'uomDelete' uomMaster.id %}"
+                                                href="{% url 'uomDelete' uom.id %}"
                                                 class="btn btn-danger btn-sm">
                                                 Delete </a>
                                         </td>
