@@ -643,3 +643,42 @@ def purchaseOrderDelete(request, id):
     purchaseOrder.deleted = 1
     purchaseOrder.save()
     return redirect('purchaseOrderList')
+@login_required
+def standardTermList(request):
+    standardTerms = models.StandardTermMaster.objects.filter(deleted=0)
+    context = {'standardTerms': standardTerms}
+    return render(request, 'standardTerm/list.html', context)
+
+
+@login_required
+def standardTermAdd(request):
+    context = {}
+    if request.method == "POST":
+        standardTerm = models.StandardTermMaster()
+        standardTerm.description = request.POST['description']
+        standardTerm.save()
+        messages.success(request, 'Standard Term Created Successfully.')
+        return redirect('standardTermList')
+    return render(request, 'standardTerm/add.html', context)
+
+
+@login_required
+def standardTermEdit(request, id):
+    context = {}
+    standardTerm = models.StandardTermMaster.objects.get(pk=id)
+    context.update({'standardTerm': standardTerm})
+    if request.method == "POST":
+        standardTerm= models.StandardTermMaster.objects.get(pk=request.POST['id'])
+        standardTerm.description = request.POST['description']
+        standardTerm.save()
+        messages.success(request, 'Standard Term Updated Successfully.')
+        return redirect('standardTermList')
+    return render(request, 'standardTerm/edit.html', context)
+
+
+@login_required
+def standardTermDelete(request, id):
+    standardTerm = models.StandardTermMaster.objects.get(pk=id)
+    standardTerm.deleted = 1
+    standardTerm.save()
+    return redirect('standardTermList')
