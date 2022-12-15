@@ -9,12 +9,19 @@ urlpatterns = [
     path('dashboard', views.dashboard, name='dashboard'),
     path('myProfile', views.myProfile, name='myProfile'),
     path('userList', views.userList, name='userList'),
+
     path('customerList', views.customerList, name='customerList'),
     path('customerAdd', views.customerAdd, name='customerAdd'),
     path('customerEdit/<int:id>', views.customerEdit, name='customerEdit'),
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
+    
     path('vendorList', views.vendorList, name='vendorList'),
+    
     path('uomList', views.uomList, name='uomList'),
+    path('uomAdd', views.uomAdd, name='uomAdd'),
+    path('uomEdit/<int:id>', views.uomEdit, name='uomEdit'),
+    path('uomDelete/<int:id>', views.uomDelete, name='uomDelete'),
+    
     path('storeList', views.storeList, name='storeList'),
 
     path('itemCategoryList', views.itemCategoryList, name='itemCategoryList'),
