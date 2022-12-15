@@ -585,3 +585,61 @@ def storeItemDelete(request, id):
     storeItem.deleted = 1
     storeItem.save()
     return redirect('storeItemList')
+
+
+@login_required
+def purchaseOrderList(request):
+    purchaseOrders = models.PurchaseOrderHeader.objects.filter(deleted=0)
+    context = {'purchaseOrders': purchaseOrders}
+    return render(request, 'purchaseOrder/list.html', context)
+
+
+@login_required
+def purchaseOrderAdd(request):
+    context = {}
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    context.update({'vendors': vendors, 'stores': stores})
+    if request.method == "POST":
+        purchaseOrder = models.PurchaseOrderHeader()
+        purchaseOrder.ammend_no = request.POST['ammend_no']
+        purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
+        purchaseOrder.notes = request.POST['notes']
+        purchaseOrder.total_amount = request.POST['total_amount']
+        purchaseOrder.store_id = request.POST['store_id']
+        purchaseOrder.vendor_id = request.POST['vendor_id']
+        purchaseOrder.save()
+        messages.success(request, 'Purchase Order Created Successfully.')
+        return redirect('purchaseOrderList')
+    return render(request, 'purchaseOrder/add.html', context)
+
+
+@login_required
+def purchaseOrderEdit(request, id):
+    context = {}
+    purchaseOrder = models.PurchaseOrderHeader.objects.get(pk=id)
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    context.update({'purchaseOrder': purchaseOrder,
+                   'vendors': vendors, 'stores': stores})
+    if request.method == "POST":
+        purchaseOrder = models.PurchaseOrderHeader.objects.get(
+            pk=request.POST['id'])
+        purchaseOrder.ammend_no = request.POST['ammend_no']
+        purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
+        purchaseOrder.notes = request.POST['notes']
+        purchaseOrder.total_amount = request.POST['total_amount']
+        purchaseOrder.store_id = request.POST['store_id']
+        purchaseOrder.vendor_id = request.POST['vendor_id']
+        purchaseOrder.save()
+        messages.success(request, 'Purchase Order Updated Successfully.')
+        return redirect('purchaseOrderList')
+    return render(request, 'purchaseOrder/edit.html', context)
+
+
+@login_required
+def purchaseOrderDelete(request, id):
+    purchaseOrder = models.PurchaseOrderHeader.objects.get(pk=id)
+    purchaseOrder.deleted = 1
+    purchaseOrder.save()
+    return redirect('purchaseOrderList')

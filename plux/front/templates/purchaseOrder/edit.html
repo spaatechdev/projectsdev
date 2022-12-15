@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Edit Purchase Order</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'purchaseOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <form class="forms-sample" action="{% url 'purchaseOrderEdit' purchaseOrder.id %}"
+                            method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{purchaseOrder.id}}">
+                            <div class="form-group">
+                                <label for="store_id">Store</label>
+                                <select name="store_id" id="store_id" class="form-control" required>
+                                    <option value="">Select Store</option>
+                                    {% for store in stores %}
+                                    <option {% if store.id == purchaseOrder.store_id %} selected {% endif %}
+                                        value="{{store.id}}">{{store.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="vendor_id">Vendor</label>
+                                <select name="vendor_id" id="vendor_id" class="form-control" required>
+                                    <option value="">Select Vendor</option>
+                                    {% for vendor in vendors %}
+                                    <option {% if vendor.id == purchaseOrder.vendor_id %} selected {% endif %}
+                                        value="{{vendor.id}}">{{vendor.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ammend_no">Ammend Number</label>
+                                <input type="text" name="ammend_no" class="form-control" id="ammend_no" required
+                                    placeholder="Ammend Number" value="{{purchaseOrder.ammend_no}}"
+                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <div class="form-group">
+                                <label for="purchase_order_date">Purchase Order Date</label>
+                                <input type="date" name="purchase_order_date" class="form-control"
+                                    value="{{purchaseOrder.purchase_order_date|date:'Y-m-d'}}" id="purchase_order_date" required
+                                    placeholder="Purchase Order Date">
+                            </div>
+                            <div class="form-group">
+                                <label for="total_amount">Total Amount</label>
+                                <input type="text" name="total_amount" class="form-control" id="total_amount" required
+                                    placeholder="Total Amount" value="{{purchaseOrder.total_amount}}"
+                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <div class="form-group">
+                                <label for="notes">Notes</label>
+                                <textarea name="notes" id="notes" rows="5" class="form-control" required
+                                    placeholder="Notes">{{purchaseOrder.notes}}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button class="btn btn-light">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).on('keyup', '#opening_qty', function () {
+        setQuantityCalculation();
+    });
+    $(document).on('keyup', '#on_hand_qty', function () {
+        setQuantityCalculation();
+    });
+
+    function setQuantityCalculation() {
+        if ($("#opening_qty").val() != "" && $("#on_hand_qty").val() != "") {
+            opening_qty = $("#opening_qty").val();
+            on_hand_qty = $("#on_hand_qty").val();
+
+            closing_qty = opening_qty - on_hand_qty;
+            $("#closing_qty").val(closing_qty.toFixed(2));
+        } else {
+            $("#closing_qty").val(0);
+        }
+    }
+</script>
+{% endblock %}
