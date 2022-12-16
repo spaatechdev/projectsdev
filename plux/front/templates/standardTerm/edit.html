@@ -9,19 +9,20 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Add Item Category</h4>
+                            <h4 class="card-title">Edit Standard Term Master</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'itemCategoryList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                            <a href="{% url 'standardTermList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
-                        <form class="forms-sample" action="{% url 'itemCategoryAdd' %}" method="post">
+                        <form class="forms-sample" action="{% url 'standardTermEdit' standardTerm.id %}" method="post">
                             {% csrf_token %}
+                            <input type="hidden" name="id" value="{{standardTerm.id}}">
                             <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea name="description" class="form-control" id="description" rows="5"
-                                    placeholder="Item Category" required></textarea>
+                                <label for="description">description</label>
+                                <input type="text" class="form-control" name="description" id="description"
+                                    placeholder="description" value="{{standardTerm.description}}" required>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
                             <button type="reset" class="btn btn-light">Cancel</button>

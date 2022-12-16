@@ -9,10 +9,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">UOM</h4>
+                            <h4 class="card-title">Standard Term Master</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'uomAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                            <a href="{% url 'standardTermAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
                         </div>
                     </div>
                     <div class="row">
@@ -29,19 +29,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for uom in uoms %}
+                                    {% for standardTerm in standardTerms %}
                                     <tr>
                                         <td class="py-1">
                                             {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{uom.description}}
+                                            {{standardTerm.description}}
                                         </td>
                                         <td>
-                                            <a href="{% url 'uomEdit' uom.id %}" class="btn btn-info btn-sm">
+                                            <a href="{% url 'standardTermEdit' standardTerm.id %}" class="btn btn-info btn-sm">
                                                 Edit </a>
                                             <a onclick="return confirm('Are you sure you want to delete this?')"
-                                                href="{% url 'uomDelete' uom.id %}"
+                                                href="{% url 'standardTermDelete' standardTerm.id %}"
                                                 class="btn btn-danger btn-sm">
                                                 Delete </a>
                                         </td>

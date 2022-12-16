@@ -9,14 +9,14 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Add Store Item</h4>
+                            <h4 class="card-title">Add Purchase Order</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'storeItemList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                            <a href="{% url 'purchaseOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
-                        <form class="forms-sample" action="{% url 'storeItemAdd' %}" method="post">
+                        <form class="forms-sample" action="{% url 'purchaseOrderAdd' %}" method="post">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-6">
@@ -32,44 +32,52 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="item_id">Item</label>
-                                        <select name="item_id" id="item_id" class="form-control" required>
-                                            <option value="">Select Item</option>
-                                            {% for item in items %}
-                                            <option value="{{item.id}}">{{item.description}}</option>
+                                        <label for="vendor_id">Vendor</label>
+                                        <select name="vendor_id" id="vendor_id" class="form-control" required>
+                                            <option value="">Select Vendor</option>
+                                            {% for vendor in vendors %}
+                                            <option value="{{vendor.id}}">{{vendor.name}}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="opening_qty">Opening Quantity</label>
-                                        <input type="text" name="opening_qty" class="form-control" id="opening_qty"
-                                            required placeholder="Opening Quantity"
+                                        <label for="ammend_no">Ammend Number</label>
+                                        <input type="text" name="ammend_no" class="form-control" id="ammend_no" required
+                                            placeholder="Ammend Number"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="on_hand_qty">On Hand Quantity</label>
-                                        <input type="text" name="on_hand_qty" class="form-control" id="on_hand_qty"
-                                            required placeholder="On Hand Quantity"
+                                        <label for="purchase_order_date">Purchase Order Date</label>
+                                        <input type="date" name="purchase_order_date" class="form-control"
+                                            id="purchase_order_date" required placeholder="Purchase Order Date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="total_amount">Total Amount</label>
+                                        <input type="text" name="total_amount" class="form-control" id="total_amount"
+                                            required placeholder="Total Amount"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="closing_qty">Closing Quantity</label>
-                                        <input type="text" name="closing_qty" class="form-control" id="closing_qty"
-                                            required placeholder="Closing Quantity"
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        <label for="notes">Notes</label>
+                                        <textarea name="notes" id="notes" rows="5" class="form-control" required
+                                            placeholder="Notes"></textarea>
                                     </div>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
-                            <button class="btn btn-light">Cancel</button>
+                            <button type="reset" class="btn btn-light">Cancel</button>
                         </form>
                     </div>
                 </div>

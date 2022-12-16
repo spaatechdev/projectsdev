@@ -65,7 +65,7 @@ def signup(request):
             return redirect('signin')
         else:
             messages.error(request, 'This Email is already exists.')
-            return redirect('signin')
+            return redirect('signup')
     return render(request, 'signup.html', context)
 
 
@@ -108,7 +108,7 @@ def customerList(request):
 @login_required
 def customerAdd(request):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     context.update({'countries': countries})
     if request.method == "POST":
         customer = models.Customer()
@@ -132,7 +132,7 @@ def customerAdd(request):
 @login_required
 def customerEdit(request, id):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     customer = models.Customer.objects.get(pk=id)
     context.update({'countries': countries, 'customer': customer})
     if request.method == "POST":
@@ -179,7 +179,7 @@ def vendorList(request):
 @login_required
 def vendorAdd(request):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     context.update({'countries': countries})
     if request.method == "POST":
         vendor = models.VendorMaster()
@@ -203,7 +203,7 @@ def vendorAdd(request):
 @login_required
 def vendorEdit(request, id):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     vendor = models.VendorMaster.objects.get(pk=id)
     context.update({'countries': countries, 'vendor': vendor})
     if request.method == "POST":
@@ -243,7 +243,7 @@ def storeList(request):
 @login_required
 def storeAdd(request):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     context.update({'countries': countries})
     if request.method == "POST":
         store = models.StoreMaster()
@@ -268,7 +268,7 @@ def storeAdd(request):
 @login_required
 def storeEdit(request, id):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     store = models.StoreMaster.objects.get(pk=id)
     context.update({'countries': countries, 'store': store})
     if request.method == "POST":
@@ -585,3 +585,100 @@ def storeItemDelete(request, id):
     storeItem.deleted = 1
     storeItem.save()
     return redirect('storeItemList')
+
+
+@login_required
+def purchaseOrderList(request):
+    purchaseOrders = models.PurchaseOrderHeader.objects.filter(deleted=0)
+    context = {'purchaseOrders': purchaseOrders}
+    return render(request, 'purchaseOrder/list.html', context)
+
+
+@login_required
+def purchaseOrderAdd(request):
+    context = {}
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    context.update({'vendors': vendors, 'stores': stores})
+    if request.method == "POST":
+        purchaseOrder = models.PurchaseOrderHeader()
+        purchaseOrder.ammend_no = request.POST['ammend_no']
+        purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
+        purchaseOrder.notes = request.POST['notes']
+        purchaseOrder.total_amount = request.POST['total_amount']
+        purchaseOrder.store_id = request.POST['store_id']
+        purchaseOrder.vendor_id = request.POST['vendor_id']
+        purchaseOrder.save()
+        messages.success(request, 'Purchase Order Created Successfully.')
+        return redirect('purchaseOrderList')
+    return render(request, 'purchaseOrder/add.html', context)
+
+
+@login_required
+def purchaseOrderEdit(request, id):
+    context = {}
+    purchaseOrder = models.PurchaseOrderHeader.objects.get(pk=id)
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    context.update({'purchaseOrder': purchaseOrder,
+                   'vendors': vendors, 'stores': stores})
+    if request.method == "POST":
+        purchaseOrder = models.PurchaseOrderHeader.objects.get(
+            pk=request.POST['id'])
+        purchaseOrder.ammend_no = request.POST['ammend_no']
+        purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
+        purchaseOrder.notes = request.POST['notes']
+        purchaseOrder.total_amount = request.POST['total_amount']
+        purchaseOrder.store_id = request.POST['store_id']
+        purchaseOrder.vendor_id = request.POST['vendor_id']
+        purchaseOrder.save()
+        messages.success(request, 'Purchase Order Updated Successfully.')
+        return redirect('purchaseOrderList')
+    return render(request, 'purchaseOrder/edit.html', context)
+
+
+@login_required
+def purchaseOrderDelete(request, id):
+    purchaseOrder = models.PurchaseOrderHeader.objects.get(pk=id)
+    purchaseOrder.deleted = 1
+    purchaseOrder.save()
+    return redirect('purchaseOrderList')
+@login_required
+def standardTermList(request):
+    standardTerms = models.StandardTermMaster.objects.filter(deleted=0)
+    context = {'standardTerms': standardTerms}
+    return render(request, 'standardTerm/list.html', context)
+
+
+@login_required
+def standardTermAdd(request):
+    context = {}
+    if request.method == "POST":
+        standardTerm = models.StandardTermMaster()
+        standardTerm.description = request.POST['description']
+        standardTerm.save()
+        messages.success(request, 'Standard Term Created Successfully.')
+        return redirect('standardTermList')
+    return render(request, 'standardTerm/add.html', context)
+
+
+@login_required
+def standardTermEdit(request, id):
+    context = {}
+    standardTerm = models.StandardTermMaster.objects.get(pk=id)
+    context.update({'standardTerm': standardTerm})
+    if request.method == "POST":
+        standardTerm= models.StandardTermMaster.objects.get(pk=request.POST['id'])
+        standardTerm.description = request.POST['description']
+        standardTerm.save()
+        messages.success(request, 'Standard Term Updated Successfully.')
+        return redirect('standardTermList')
+    return render(request, 'standardTerm/edit.html', context)
+
+
+@login_required
+def standardTermDelete(request, id):
+    standardTerm = models.StandardTermMaster.objects.get(pk=id)
+    standardTerm.deleted = 1
+    standardTerm.save()
+    return redirect('standardTermList')

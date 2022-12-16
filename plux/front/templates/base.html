@@ -16,19 +16,23 @@
     <link rel="stylesheet" href="{% static 'vendors/css/vendor.bundle.base.css' %}">
     <!-- endinject -->
     <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="{% static 'vendors/datatables.net-bs4/dataTables.bootstrap4.css '%}">
-    <link rel="stylesheet" href="{% static 'js/select.dataTables.min.css '%}">
+    <link rel="stylesheet" href="{% static 'vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+    <link rel="stylesheet" href="{% static 'js/select.dataTables.min.css' %}">
     <!-- End plugin css for this page -->
     <!-- inject:css -->
-    <link rel="stylesheet" href="{% static 'css/vertical-layout-light/style.css '%}">
+    <link rel="stylesheet" href="{% static 'css/vertical-layout-light/style.css' %}">
     <!-- endinject -->
+    <!-- DataTable -->
+    <link rel="stylesheet" href="{% static 'css/jquery.dataTables.min.css' %}">
+    <!-- DataTable -->
+
     <link rel="shortcut icon" href="{% static 'images/logo/favicon.png '%}" />
     <script src="{% static 'js/jquery.min.js' %}"></script>
     {% block css %}
     {% endblock %}
 </head>
 
-<body>
+<body class="sidebar-dark">
     <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
         {% include "partials/_navbar.html" %}
@@ -83,6 +87,9 @@
     <script src="{% static 'js/dashboard.js' %}"></script>
     <script src="{% static 'js/Chart.roundedBarCharts.js' %}"></script>
     <!-- End custom js for this page-->
+    <!-- DataTable -->
+    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+    <!-- DataTable -->
     {% block js %}
     {% endblock %}
 </body>

@@ -9,10 +9,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">stores</h4>
+                            <h4 class="card-title">Purchase Orders</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'storeAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                            <a href="{% url 'purchaseOrderAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
                         </div>
                     </div>
                     <div class="row">
@@ -21,75 +21,61 @@
                                 <thead>
                                     <tr>
                                         <th>
-                                            store Name
-                                        </th>
-                                         
-                                        <th>
-                                            Country
+                                            SL. No
                                         </th>
                                         <th>
-                                            State
+                                            Store
                                         </th>
                                         <th>
-                                            City
+                                            Vendor
                                         </th>
                                         <th>
-                                            Address 1
+                                            Ammend No
                                         </th>
                                         <th>
-                                            Address 2
+                                            Purchase Order Date
                                         </th>
                                         <th>
-                                            Pin
+                                            Total Amount
                                         </th>
                                         <th>
-                                            Contact Number
+                                            Notes
                                         </th>
-                                        <th>
-                                            Manager Name
-                                        </th>
-
                                         <th>
                                             Action
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for store in stores %}
+                                    {% for purchaseOrder in purchaseOrders %}
                                     <tr>
-                                        <td class="py-1">
-                                            {{store.name}}
+                                        <td>
+                                            {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{store.country.name}}
+                                            {{purchaseOrder.store.name}}
                                         </td>
                                         <td>
-                                            {{store.state.name}}
+                                            {{purchaseOrder.vendor.name}}
                                         </td>
                                         <td>
-                                            {{store.city.name}}
-                                        </td>
-
-                                        <td>
-                                            {{store.address_1}}
+                                            {{purchaseOrder.ammend_no}}
                                         </td>
                                         <td>
-                                            {{store.address_2}}
+                                            {{purchaseOrder.purchase_order_date|date:"M d, Y"}}
                                         </td>
                                         <td>
-                                            {{store.pin}}
+                                            {{purchaseOrder.total_amount}}
                                         </td>
                                         <td>
-                                            {{store.contact_no}}
+                                            {{purchaseOrder.notes}}
                                         </td>
                                         <td>
-                                            {{store.manager_name}}
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'storeEdit' store.id %}" class="btn btn-info btn-sm">
+                                            <a href="{% url 'purchaseOrderEdit' purchaseOrder.id %}"
+                                                class="btn btn-info btn-sm">
                                                 Edit </a>
                                             <a onclick="return confirm('Are you sure you want to delete this?')"
-                                                href="{% url 'storeDelete' store.id %}"
+                                                href="{% url 'purchaseOrderDelete' purchaseOrder.id %}"
                                                 class="btn btn-danger btn-sm">
                                                 Delete </a>
                                         </td>
