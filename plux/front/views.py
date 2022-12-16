@@ -65,7 +65,7 @@ def signup(request):
             return redirect('signin')
         else:
             messages.error(request, 'This Email is already exists.')
-            return redirect('signin')
+            return redirect('signup')
     return render(request, 'signup.html', context)
 
 
@@ -108,7 +108,7 @@ def customerList(request):
 @login_required
 def customerAdd(request):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     context.update({'countries': countries})
     if request.method == "POST":
         customer = models.Customer()
@@ -132,7 +132,7 @@ def customerAdd(request):
 @login_required
 def customerEdit(request, id):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     customer = models.Customer.objects.get(pk=id)
     context.update({'countries': countries, 'customer': customer})
     if request.method == "POST":
@@ -179,7 +179,7 @@ def vendorList(request):
 @login_required
 def vendorAdd(request):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     context.update({'countries': countries})
     if request.method == "POST":
         vendor = models.VendorMaster()
@@ -203,7 +203,7 @@ def vendorAdd(request):
 @login_required
 def vendorEdit(request, id):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     vendor = models.VendorMaster.objects.get(pk=id)
     context.update({'countries': countries, 'vendor': vendor})
     if request.method == "POST":
@@ -243,7 +243,7 @@ def storeList(request):
 @login_required
 def storeAdd(request):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     context.update({'countries': countries})
     if request.method == "POST":
         store = models.StoreMaster()
@@ -268,7 +268,7 @@ def storeAdd(request):
 @login_required
 def storeEdit(request, id):
     context = {}
-    countries = models.Countries.objects.all()
+    countries = models.Countries.objects.filter(id=101)
     store = models.StoreMaster.objects.get(pk=id)
     context.update({'countries': countries, 'store': store})
     if request.method == "POST":
