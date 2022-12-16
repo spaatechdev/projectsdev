@@ -85,6 +85,29 @@
                             </table>
                         </div>
                     </div>
+                    {% if purchaseOrders.has_other_pages %}
+                    <div class="float-end">
+                        <ul class="pagination">
+                            {% if purchaseOrders.has_previous %}
+                            <li class="mx-2"><a href="?page={{ purchaseOrders.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in purchaseOrders.paginator.page_range %}
+                            {% if purchaseOrders.number == i %}
+                            <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
+                            {% else %}
+                            <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if purchaseOrders.has_next %}
+                            <li class="mx-2"><a href="?page={{ purchaseOrders.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
