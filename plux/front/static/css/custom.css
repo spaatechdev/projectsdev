@@ -1,3 +1,7 @@
 /* .pagination .active {
     background-color: ;
 } */
+
+textarea {
+    min-height: 50px !important;
+}

@@ -59,6 +59,8 @@ urlpatterns = [
     path('purchaseOrderEdit/<int:id>', views.purchaseOrderEdit, name='purchaseOrderEdit'),
     path('purchaseOrderDelete/<int:id>', views.purchaseOrderDelete, name='purchaseOrderDelete'),
 
+    path('purchaseOrderDetailsList/<int:header_id>', views.purchaseOrderDetailsList, name='purchaseOrderDetailsList'),
+
     path('standardTermList', views.standardTermList, name='standardTermList'),
     path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
     path('standardTermEdit/<int:id>', views.standardTermEdit, name='standardTermEdit'),

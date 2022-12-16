@@ -43,14 +43,14 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <!-- <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="ammend_no">Ammend Number</label>
                                         <input type="text" name="ammend_no" class="form-control" id="ammend_no" required
                                             placeholder="Ammend Number"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="purchase_order_date">Purchase Order Date</label>
@@ -58,6 +58,57 @@
                                             id="purchase_order_date" required placeholder="Purchase Order Date">
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="notes">Notes</label>
+                                        <textarea name="notes" id="notes" rows="5" class="form-control" required
+                                            placeholder="Notes"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row content_parent">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="item_id">Item</label>
+                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                            <option value="">Select Item</option>
+                                            {% for item in items %}
+                                            <option value="{{item.id}}">{{item.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100"
+                                            required
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Unit Price</label>
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" placeholder="10" required
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Amount</label>
+                                        <input type="text" class="form-control item_total_amount" name="amount[]"
+                                            placeholder="100,000" required
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
+                                            Item</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="add_more_content">
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
@@ -66,13 +117,6 @@
                                         <input type="text" name="total_amount" class="form-control" id="total_amount"
                                             required placeholder="Total Amount"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="notes">Notes</label>
-                                        <textarea name="notes" id="notes" rows="5" class="form-control" required
-                                            placeholder="Notes"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -89,23 +133,82 @@
 
 {% block js %}
 <script>
-    $(document).on('keyup', '#opening_qty', function () {
-        setQuantityCalculation();
-    });
-    $(document).on('keyup', '#on_hand_qty', function () {
-        setQuantityCalculation();
+    $(document).on('click', '.add_item', function () {
+        $('.add_more_content').append(`<div class="row content_parent">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="item_id">Item</label>
+                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                            <option value="">Select Item</option>
+                                            {% for item in items %}
+                                            <option value="{{item.id}}">{{item.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required
+                                        onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Unit Price</label>
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" placeholder="10" required
+                                        onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Amount</label>
+                                        <input type="text" class="form-control item_total_amount" name="amount[]" placeholder="100,000" required
+                                        onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
+                                    </div>
+                                </div>
+                            </div>`);
     });
 
-    function setQuantityCalculation() {
-        if ($("#opening_qty").val() != "" && $("#on_hand_qty").val() != "") {
-            opening_qty = $("#opening_qty").val();
-            on_hand_qty = $("#on_hand_qty").val();
+    $(document).on('click', '.remove_item', function () {
+        $(this).parents().closest('.content_parent').remove();
+        calculateTotalAmount();
+    });
 
-            closing_qty = opening_qty - on_hand_qty;
-            $("#closing_qty").val(closing_qty.toFixed(2));
-        } else {
-            $("#closing_qty").val(0);
+    $(document).on('keyup', '.item_quantity', function () {
+        item_total_amount = 0;
+        item_quantity = $(this).val();
+        item_unit_price = $(this).parents(".content_parent").find('.item_unit_price').val();
+        if (item_quantity != "" && item_unit_price != "") {
+            item_total_amount = item_quantity * item_unit_price;
+            $(this).parents(".content_parent").find('.item_total_amount').val(item_total_amount.toFixed(2));
         }
+        calculateTotalAmount();
+    });
+    $(document).on('keyup', '.item_unit_price', function () {
+        item_total_amount = 0;
+        item_unit_price = $(this).val();
+        item_quantity = $(this).parents(".content_parent").find('.item_quantity').val();
+        if (item_quantity != "" && item_unit_price != "") {
+            item_total_amount = item_quantity * item_unit_price;
+            $(this).parents(".content_parent").find('.item_total_amount').val(item_total_amount.toFixed(2));
+        }
+        calculateTotalAmount();
+    });
+
+    function calculateTotalAmount() {
+        total_amount = 0;
+        $('.item_total_amount').each(function () {
+            if ($(this).val() != "") {
+                total_amount += parseInt($(this).val());
+            }
+        });
+        $("#total_amount").val(total_amount);
     }
 </script>
 {% endblock %}
