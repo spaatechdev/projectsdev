@@ -633,16 +633,26 @@ def purchaseOrderAdd(request):
     context = {}
     vendors = models.VendorMaster.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    context.update({'vendors': vendors, 'stores': stores})
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'vendors': vendors, 'stores': stores, 'items': items})
     if request.method == "POST":
+        purchase_order_count = models.PurchaseOrderHeader.objects.filter(
+            deleted=0).count()
+        purchase_order_no = "PO-" + str(purchase_order_count + 1).zfill(8)
         purchaseOrder = models.PurchaseOrderHeader()
-        purchaseOrder.ammend_no = request.POST['ammend_no']
+        # purchaseOrder.ammend_no = request.POST['ammend_no']
+        purchaseOrder.purchase_order_no = purchase_order_no
         purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
         purchaseOrder.notes = request.POST['notes']
         purchaseOrder.total_amount = request.POST['total_amount']
         purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.PurchaseOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], purchase_order_header_id=purchaseOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.PurchaseOrderDetails.objects.bulk_create(order_details)
         messages.success(request, 'Purchase Order Created Successfully.')
         return redirect('purchaseOrderList')
     return render(request, 'purchaseOrder/add.html', context)
@@ -659,7 +669,7 @@ def purchaseOrderEdit(request, id):
     if request.method == "POST":
         purchaseOrder = models.PurchaseOrderHeader.objects.get(
             pk=request.POST['id'])
-        purchaseOrder.ammend_no = request.POST['ammend_no']
+        # purchaseOrder.ammend_no = request.POST['ammend_no']
         purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
         purchaseOrder.notes = request.POST['notes']
         purchaseOrder.total_amount = request.POST['total_amount']
@@ -677,6 +687,14 @@ def purchaseOrderDelete(request, id):
     purchaseOrder.deleted = 1
     purchaseOrder.save()
     return redirect('purchaseOrderList')
+
+
+@login_required
+def purchaseOrderDetailsList(request, header_id):
+    page = request.GET.get('page', 1)
+    purchaseHeader = models.PurchaseOrderHeader.objects.prefetch_related('purchaseorderdetails_set').get(pk=header_id)
+    context = {'purchaseHeader': purchaseHeader}
+    return render(request, 'purchaseOrder/orderDetailsList.html', context)
 
 
 @login_required

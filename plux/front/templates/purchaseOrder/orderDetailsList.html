@@ -9,10 +9,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Purchase Orders</h4>
+                            <h4 class="card-title">Purchase Order Details Of {{purchaseHeader.purchase_order_no }}</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'purchaseOrderAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                            <a href="{% url 'purchaseOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
@@ -24,67 +24,46 @@
                                             SL. No
                                         </th>
                                         <th>
-                                            Store
+                                            Item
                                         </th>
                                         <th>
-                                            Vendor
-                                        </th>
-                                        <!-- <th>
-                                            Ammend No
-                                        </th> -->
-                                        <th>
-                                            Purchase Order Date
+                                            Quantity
                                         </th>
                                         <th>
-                                            Total Amount
+                                            Unit Price
                                         </th>
                                         <th>
-                                            Notes
-                                        </th>
-                                        <th>
-                                            Action
+                                            Amount
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for purchaseOrder in purchaseOrders %}
+                                    {% for purchaseOrderDetail in purchaseHeader.purchaseorderdetails_set.all %}
                                     <tr>
                                         <td>
                                             {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{purchaseOrder.store.name}}
+                                            {{purchaseOrderDetail.item.description}}
                                         </td>
                                         <td>
-                                            {{purchaseOrder.vendor.name}}
-                                        </td>
-                                        <!-- <td>
-                                            {{purchaseOrder.ammend_no}}
-                                        </td> -->
-                                        <td>
-                                            {{purchaseOrder.purchase_order_date|date:"M d, Y"}}
+                                            {{purchaseOrderDetail.quantity}}
                                         </td>
                                         <td>
-                                            {{purchaseOrder.total_amount}}
+                                            {{purchaseOrderDetail.unit_price}}
                                         </td>
                                         <td>
-                                            {{purchaseOrder.notes}}
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'purchaseOrderDetailsList' purchaseOrder.id %}"
-                                                class="btn btn-primary btn-sm">
-                                                Order Details </a>
-                                            <!-- <a href="{% url 'purchaseOrderEdit' purchaseOrder.id %}"
-                                                class="btn btn-info btn-sm">
-                                                Edit </a> -->
-                                            <a onclick="return confirm('Are you sure you want to delete this?')"
-                                                href="{% url 'purchaseOrderDelete' purchaseOrder.id %}"
-                                                class="btn btn-danger btn-sm">
-                                                Delete </a>
+                                            {{purchaseOrderDetail.amount}}
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4"></td>
+                                        <td>{{purchaseHeader.total_amount}}</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
