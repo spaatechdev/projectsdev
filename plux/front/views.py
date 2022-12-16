@@ -661,11 +661,11 @@ def purchaseOrderAdd(request):
 @login_required
 def purchaseOrderEdit(request, id):
     context = {}
-    purchaseOrder = models.PurchaseOrderHeader.objects.get(pk=id)
+    purchaseOrder = models.PurchaseOrderHeader.objects.prefetch_related('purchaseorderdetails_set').get(pk=id)
+    items = models.ItemMaster.objects.filter(deleted=0)
     vendors = models.VendorMaster.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    context.update({'purchaseOrder': purchaseOrder,
-                   'vendors': vendors, 'stores': stores})
+    context.update({'purchaseOrder': purchaseOrder, 'items':items,'vendors': vendors, 'stores': stores})
     if request.method == "POST":
         purchaseOrder = models.PurchaseOrderHeader.objects.get(
             pk=request.POST['id'])
