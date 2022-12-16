@@ -10,6 +10,10 @@ from datetime import datetime
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.core import serializers
+from django.core.paginator import Paginator
+import environ
+env = environ.Env()
+environ.Env.read_env()
 
 # Create your views here.
 
@@ -100,7 +104,10 @@ def myProfile(request):
 
 @login_required
 def customerList(request):
+    page = request.GET.get('page', 1)
     customers = models.Customer.objects.filter(deleted=0)
+    paginator = Paginator(customers, env("PER_PAGE_DATA"))
+    customers = paginator.page(page)
     context = {'customers': customers}
     return render(request, 'customer/list.html', context)
 
@@ -164,14 +171,20 @@ def customerDelete(request, id):
 
 @login_required
 def userList(request):
+    page = request.GET.get('page', 1)
     users = models.User.objects.all()
+    paginator = Paginator(users, env("PER_PAGE_DATA"))
+    users = paginator.page(page)
     context = {'users': users}
     return render(request, 'user/list.html', context)
 
 
 @login_required
 def vendorList(request):
+    page = request.GET.get('page', 1)
     vendors = models.VendorMaster.objects.filter(deleted=0)
+    paginator = Paginator(vendors, env("PER_PAGE_DATA"))
+    vendors = paginator.page(page)
     context = {'vendors': vendors}
     return render(request, 'vendor/list.html', context)
 
@@ -235,7 +248,10 @@ def vendorDelete(request, id):
 
 @login_required
 def storeList(request):
+    page = request.GET.get('page', 1)
     stores = models.StoreMaster.objects.filter(deleted=0)
+    paginator = Paginator(stores, env("PER_PAGE_DATA"))
+    stores = paginator.page(page)
     context = {'stores': stores}
     return render(request, 'store/list.html', context)
 
@@ -337,7 +353,10 @@ def getCitiesByState(request):
 
 @login_required
 def uomList(request):
+    page = request.GET.get('page', 1)
     uoms = models.UomMaster.objects.filter(deleted=0)
+    paginator = Paginator(uoms, env("PER_PAGE_DATA"))
+    uoms = paginator.page(page)
     context = {'uoms': uoms}
     return render(request, 'uom/list.html', context)
 
@@ -378,7 +397,10 @@ def uomDelete(request, id):
 
 @login_required
 def itemCategoryList(request):
+    page = request.GET.get('page', 1)
     itemCategories = models.ItemCtegory.objects.filter(deleted=0)
+    paginator = Paginator(itemCategories, env("PER_PAGE_DATA"))
+    itemCategories = paginator.page(page)
     context = {'itemCategories': itemCategories}
     return render(request, 'itemCategory/list.html', context)
 
@@ -419,7 +441,10 @@ def itemCategoryDelete(request, id):
 
 @login_required
 def plyDimensionList(request):
+    page = request.GET.get('page', 1)
     plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
+    paginator = Paginator(plyDimensions, env("PER_PAGE_DATA"))
+    plyDimensions = paginator.page(page)
     context = {'plyDimensions': plyDimensions}
     return render(request, 'plyDimension/list.html', context)
 
@@ -473,7 +498,10 @@ def plyDimensionDelete(request, id):
 
 @login_required
 def itemList(request):
+    page = request.GET.get('page', 1)
     items = models.ItemMaster.objects.filter(deleted=0)
+    paginator = Paginator(items, env("PER_PAGE_DATA"))
+    items = paginator.page(page)
     context = {'items': items}
     return render(request, 'item/list.html', context)
 
@@ -535,7 +563,10 @@ def itemDelete(request, id):
 
 @login_required
 def storeItemList(request):
+    page = request.GET.get('page', 1)
     storeItems = models.StoreItemMaster.objects.filter(deleted=0)
+    paginator = Paginator(storeItems, env("PER_PAGE_DATA"))
+    storeItems = paginator.page(page)
     context = {'storeItems': storeItems}
     return render(request, 'storeItem/list.html', context)
 
@@ -589,7 +620,10 @@ def storeItemDelete(request, id):
 
 @login_required
 def purchaseOrderList(request):
+    page = request.GET.get('page', 1)
     purchaseOrders = models.PurchaseOrderHeader.objects.filter(deleted=0)
+    paginator = Paginator(purchaseOrders, env("PER_PAGE_DATA"))
+    purchaseOrders = paginator.page(page)
     context = {'purchaseOrders': purchaseOrders}
     return render(request, 'purchaseOrder/list.html', context)
 
@@ -643,9 +677,14 @@ def purchaseOrderDelete(request, id):
     purchaseOrder.deleted = 1
     purchaseOrder.save()
     return redirect('purchaseOrderList')
+
+
 @login_required
 def standardTermList(request):
+    page = request.GET.get('page', 1)
     standardTerms = models.StandardTermMaster.objects.filter(deleted=0)
+    paginator = Paginator(standardTerms, env("PER_PAGE_DATA"))
+    standardTerms = paginator.page(page)
     context = {'standardTerms': standardTerms}
     return render(request, 'standardTerm/list.html', context)
 
@@ -668,7 +707,8 @@ def standardTermEdit(request, id):
     standardTerm = models.StandardTermMaster.objects.get(pk=id)
     context.update({'standardTerm': standardTerm})
     if request.method == "POST":
-        standardTerm= models.StandardTermMaster.objects.get(pk=request.POST['id'])
+        standardTerm = models.StandardTermMaster.objects.get(
+            pk=request.POST['id'])
         standardTerm.description = request.POST['description']
         standardTerm.save()
         messages.success(request, 'Standard Term Updated Successfully.')
