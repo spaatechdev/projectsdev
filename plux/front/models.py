@@ -271,7 +271,7 @@ class StandardTermMaster(models.Model):
 class PurchaseOrderHeader(models.Model):
     ammend_no = models.CharField(max_length=50, blank=True, null=True)
     purchase_order_no = models.CharField(
-        default="PO-00000001", max_length=50, blank=False, null=False, unique=True)
+        default="PO-00000001", max_length=50, blank=False, null=False)
     purchase_order_date = models.DateField(blank=True, null=True)
     vendor = models.ForeignKey(
         VendorMaster, on_delete=models.CASCADE, blank=True, null=True)
