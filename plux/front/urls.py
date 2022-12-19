@@ -14,6 +14,8 @@ urlpatterns = [
     path('customerAdd', views.customerAdd, name='customerAdd'),
     path('customerEdit/<int:id>', views.customerEdit, name='customerEdit'),
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
+    path('customerImport', views.customerImport, name='customerImport'),
+    path('downloadCustomerExcel', views.downloadCustomerExcel, name='downloadCustomerExcel'),
     
     path('uomList', views.uomList, name='uomList'),
     path('uomAdd', views.uomAdd, name='uomAdd'),
@@ -26,6 +28,8 @@ urlpatterns = [
     path('vendorAdd', views.vendorAdd, name='vendorAdd'),
     path('vendorEdit/<int:id>', views.vendorEdit, name='vendorEdit'),
     path('vendorDelete/<int:id>', views.vendorDelete, name='vendorDelete'),
+    path('vendorImport', views.vendorImport, name='vendorImport'),
+    path('downloadVendorExcel', views.downloadVendorExcel, name='downloadVendorExcel'),
 
     path('uomList', views.uomList, name='uomList'),
 
