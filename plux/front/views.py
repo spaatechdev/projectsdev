@@ -691,7 +691,8 @@ def storeItemAdd(request):
     if request.method == "POST":
         storeItem = models.StoreItemMaster()
         storeItem.opening_qty = request.POST['opening_qty']
-        storeItem.on_hand_qty = request.POST['on_hand_qty']
+        # storeItem.on_hand_qty = request.POST['on_hand_qty']
+        storeItem.on_hand_qty = 0
         storeItem.closing_qty = request.POST['closing_qty']
         storeItem.item_id = request.POST['item_id']
         storeItem.store_id = request.POST['store_id']
@@ -711,7 +712,8 @@ def storeItemEdit(request, id):
     if request.method == "POST":
         storeItem = models.StoreItemMaster.objects.get(pk=request.POST['id'])
         storeItem.opening_qty = request.POST['opening_qty']
-        storeItem.on_hand_qty = request.POST['on_hand_qty']
+        # storeItem.on_hand_qty = request.POST['on_hand_qty']
+        storeItem.on_hand_qty = 0
         storeItem.closing_qty = request.POST['closing_qty']
         storeItem.item_id = request.POST['item_id']
         storeItem.store_id = request.POST['store_id']

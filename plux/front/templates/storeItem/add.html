@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="opening_qty">Opening Quantity</label>
                                         <input type="text" name="opening_qty" class="form-control" id="opening_qty"
@@ -51,19 +51,19 @@
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <!-- <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="on_hand_qty">On Hand Quantity</label>
                                         <input type="text" name="on_hand_qty" class="form-control" id="on_hand_qty"
                                             required placeholder="On Hand Quantity"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
-                                </div>
-                                <div class="col-md-4">
+                                </div> -->
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="closing_qty">Closing Quantity</label>
                                         <input type="text" name="closing_qty" class="form-control" id="closing_qty"
-                                            required placeholder="Closing Quantity"
+                                            required placeholder="Closing Quantity" readonly
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -84,17 +84,20 @@
     $(document).on('keyup', '#opening_qty', function () {
         setQuantityCalculation();
     });
-    $(document).on('keyup', '#on_hand_qty', function () {
-        setQuantityCalculation();
-    });
+    // $(document).on('keyup', '#on_hand_qty', function () {
+    //     setQuantityCalculation();
+    // });
 
     function setQuantityCalculation() {
-        if ($("#opening_qty").val() != "" && $("#on_hand_qty").val() != "") {
-            opening_qty = $("#opening_qty").val();
-            on_hand_qty = $("#on_hand_qty").val();
+        // if ($("#opening_qty").val() != "" && $("#on_hand_qty").val() != "") {
+        //     opening_qty = $("#opening_qty").val();
+        //     on_hand_qty = $("#on_hand_qty").val();
 
-            closing_qty = opening_qty - on_hand_qty;
-            $("#closing_qty").val(closing_qty.toFixed(2));
+        //     closing_qty = opening_qty - on_hand_qty;
+        //     $("#closing_qty").val(closing_qty.toFixed(2));
+        if ($("#opening_qty").val() != "") {
+            opening_qty = $("#opening_qty").val();
+            $("#closing_qty").val(opening_qty);
         } else {
             $("#closing_qty").val(0);
         }
