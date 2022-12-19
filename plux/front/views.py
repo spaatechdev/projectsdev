@@ -661,11 +661,13 @@ def purchaseOrderAdd(request):
 @login_required
 def purchaseOrderEdit(request, id):
     context = {}
-    purchaseOrder = models.PurchaseOrderHeader.objects.prefetch_related('purchaseorderdetails_set').get(pk=id)
+    purchaseOrder = models.PurchaseOrderHeader.objects.prefetch_related(
+        'purchaseorderdetails_set').get(pk=id)
     items = models.ItemMaster.objects.filter(deleted=0)
     vendors = models.VendorMaster.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    context.update({'purchaseOrder': purchaseOrder, 'items':items,'vendors': vendors, 'stores': stores})
+    context.update({'purchaseOrder': purchaseOrder,
+                   'items': items, 'vendors': vendors, 'stores': stores})
     if request.method == "POST":
         purchaseOrder = models.PurchaseOrderHeader.objects.get(
             pk=request.POST['id'])
@@ -676,6 +678,12 @@ def purchaseOrderEdit(request, id):
         purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
+        models.PurchaseOrderDetails.objects.filter(purchase_order_header_id=purchaseOrder.id).delete()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.PurchaseOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], purchase_order_header_id=purchaseOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.PurchaseOrderDetails.objects.bulk_create(order_details)
         messages.success(request, 'Purchase Order Updated Successfully.')
         return redirect('purchaseOrderList')
     return render(request, 'purchaseOrder/edit.html', context)
@@ -692,7 +700,8 @@ def purchaseOrderDelete(request, id):
 @login_required
 def purchaseOrderDetailsList(request, header_id):
     page = request.GET.get('page', 1)
-    purchaseHeader = models.PurchaseOrderHeader.objects.prefetch_related('purchaseorderdetails_set').get(pk=header_id)
+    purchaseHeader = models.PurchaseOrderHeader.objects.prefetch_related(
+        'purchaseorderdetails_set').get(pk=header_id)
     context = {'purchaseHeader': purchaseHeader}
     return render(request, 'purchaseOrder/orderDetailsList.html', context)
 
