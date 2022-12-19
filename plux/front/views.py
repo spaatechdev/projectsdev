@@ -193,11 +193,11 @@ def customerImport(request):
                     if not row['Customer Name']:
                         break
                     country_obj = models.Countries.objects.filter(
-                        name=row['Country']).first()
+                        name__contains=row['Country']).first()
                     state_obj = models.States.objects.filter(
-                        name=row['State']).first()
+                        name__contains=row['State']).first()
                     city_obj = models.Cities.objects.filter(
-                        name=row['City']).first()
+                        name__contains=row['City']).first()
                     country_id = country_obj.id if country_obj is not None else None
                     state_id = state_obj.id if state_obj is not None else None
                     city_id = city_obj.id if city_obj is not None else None
@@ -324,11 +324,11 @@ def vendorImport(request):
                     if not row['Name']:
                         break
                     country_obj = models.Countries.objects.filter(
-                        name=row['Country']).first()
+                        name__contains=row['Country']).first()
                     state_obj = models.States.objects.filter(
-                        name=row['State']).first()
+                        name__contains=row['State']).first()
                     city_obj = models.Cities.objects.filter(
-                        name=row['City']).first()
+                        name__contains=row['City']).first()
                     country_id = country_obj.id if country_obj is not None else None
                     state_id = state_obj.id if state_obj is not None else None
                     city_id = city_obj.id if city_obj is not None else None
