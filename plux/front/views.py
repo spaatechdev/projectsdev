@@ -12,6 +12,10 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.core.paginator import Paginator
 import environ
+import os
+from plux.settings import MEDIA_ROOT
+from django.core.files.storage import FileSystemStorage
+import csv
 env = environ.Env()
 environ.Env.read_env()
 
@@ -170,6 +174,60 @@ def customerDelete(request, id):
 
 
 @login_required
+def customerImport(request):
+    context = {}
+    if request.method == "POST":
+        customer_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/customers/", MEDIA_ROOT + "/excels/customers/")
+            fs.save(tmpname, file)
+            file_name = "excels/customers/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if not row['Customer Name']:
+                        break
+                    country_obj = models.Countries.objects.filter(
+                        name=row['Country']).first()
+                    state_obj = models.States.objects.filter(
+                        name=row['State']).first()
+                    city_obj = models.Cities.objects.filter(
+                        name=row['City']).first()
+                    country_id = country_obj.id if country_obj is not None else None
+                    state_id = state_obj.id if state_obj is not None else None
+                    city_id = city_obj.id if city_obj is not None else None
+                    customer_email_qs = models.Customer.objects.filter(
+                        contact_email=row['Contact Email'])
+                    if (not customer_email_qs.exists()):
+                        customer_list.append(models.Customer(customer_name=row['Customer Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
+                                             'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                models.Customer.objects.bulk_create(customer_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Customers Created Successfully.')
+            return redirect('customerList')
+    return render(request, 'customer/import.html', context)
+
+
+@login_required
+def downloadCustomerExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "customers.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                # fh.read(), content_type="application/vnd.ms-excel")
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
+
+
+@login_required
 def userList(request):
     page = request.GET.get('page', 1)
     users = models.User.objects.all()
@@ -245,6 +303,59 @@ def vendorDelete(request, id):
     vendor.save()
     return redirect('vendorList')
 
+
+@login_required
+def vendorImport(request):
+    context = {}
+    if request.method == "POST":
+        vendor_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/vendors/", MEDIA_ROOT + "/excels/vendors/")
+            fs.save(tmpname, file)
+            file_name = "excels/vendors/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if not row['Name']:
+                        break
+                    country_obj = models.Countries.objects.filter(
+                        name=row['Country']).first()
+                    state_obj = models.States.objects.filter(
+                        name=row['State']).first()
+                    city_obj = models.Cities.objects.filter(
+                        name=row['City']).first()
+                    country_id = country_obj.id if country_obj is not None else None
+                    state_id = state_obj.id if state_obj is not None else None
+                    city_id = city_obj.id if city_obj is not None else None
+                    vendor_email_qs = models.VendorMaster.objects.filter(
+                        contact_email=row['Contact Email'])
+                    if (not vendor_email_qs.exists()):
+                        vendor_list.append(models.VendorMaster(name=row['Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
+                                             'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                models.VendorMaster.objects.bulk_create(vendor_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Vendors Created Successfully.')
+            return redirect('vendorList')
+    return render(request, 'vendor/import.html', context)
+
+
+@login_required
+def downloadVendorExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "vendors.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                # fh.read(), content_type="application/vnd.ms-excel")
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
 
 @login_required
 def storeList(request):
@@ -678,7 +789,8 @@ def purchaseOrderEdit(request, id):
         purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
-        models.PurchaseOrderDetails.objects.filter(purchase_order_header_id=purchaseOrder.id).delete()
+        models.PurchaseOrderDetails.objects.filter(
+            purchase_order_header_id=purchaseOrder.id).delete()
         order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
             order_details.append(models.PurchaseOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
