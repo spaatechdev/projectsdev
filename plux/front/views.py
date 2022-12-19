@@ -336,7 +336,7 @@ def vendorImport(request):
                         contact_email=row['Contact Email'])
                     if (not vendor_email_qs.exists()):
                         vendor_list.append(models.VendorMaster(name=row['Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
-                                             'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                            'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
                 models.VendorMaster.objects.bulk_create(vendor_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
@@ -356,6 +356,7 @@ def downloadVendorExcel(request):
             response['Content-Disposition'] = 'attachment; filename=' + \
                 os.path.basename(file_path)
             return response
+
 
 @login_required
 def storeList(request):
@@ -745,6 +746,92 @@ def purchaseOrderList(request):
 def purchaseOrderAdd(request):
     context = {}
     vendors = models.VendorMaster.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'vendors': vendors, 'items': items})
+    if request.method == "POST":
+        purchase_order_count = models.PurchaseOrderHeader.objects.filter(
+            deleted=0).count()
+        purchase_order_no = "PO-" + str(purchase_order_count + 1).zfill(8)
+        purchaseOrder = models.PurchaseOrderHeader()
+        # purchaseOrder.ammend_no = request.POST['ammend_no']
+        purchaseOrder.purchase_order_no = purchase_order_no
+        purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
+        purchaseOrder.notes = request.POST['notes']
+        purchaseOrder.total_amount = request.POST['total_amount']
+        purchaseOrder.vendor_id = request.POST['vendor_id']
+        purchaseOrder.save()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.PurchaseOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], purchase_order_header_id=purchaseOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.PurchaseOrderDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Purchase Order Created Successfully.')
+        return redirect('purchaseOrderList')
+    return render(request, 'purchaseOrder/add.html', context)
+
+
+@login_required
+def purchaseOrderEdit(request, id):
+    context = {}
+    purchaseOrder = models.PurchaseOrderHeader.objects.prefetch_related(
+        'purchaseorderdetails_set').get(pk=id)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    context.update({'purchaseOrder': purchaseOrder, 'items': items, 'vendors': vendors})
+    if request.method == "POST":
+        purchaseOrder = models.PurchaseOrderHeader.objects.get(
+            pk=request.POST['id'])
+        # purchaseOrder.ammend_no = request.POST['ammend_no']
+        purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
+        purchaseOrder.notes = request.POST['notes']
+        purchaseOrder.total_amount = request.POST['total_amount']
+        purchaseOrder.vendor_id = request.POST['vendor_id']
+        purchaseOrder.save()
+        models.PurchaseOrderDetails.objects.filter(
+            purchase_order_header_id=purchaseOrder.id).delete()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.PurchaseOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], purchase_order_header_id=purchaseOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.PurchaseOrderDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Purchase Order Updated Successfully.')
+        return redirect('purchaseOrderList')
+    return render(request, 'purchaseOrder/edit.html', context)
+
+
+@login_required
+def purchaseOrderDelete(request, id):
+    purchaseOrder = models.PurchaseOrderHeader.objects.get(pk=id)
+    purchaseOrder.deleted = 1
+    purchaseOrder.save()
+    models.PurchaseOrderDetails.objects.filter(
+        purchase_order_header_id=purchaseOrder.id).update(deleted=1)
+    return redirect('purchaseOrderList')
+
+
+@login_required
+def purchaseOrderDetailsList(request, header_id):
+    page = request.GET.get('page', 1)
+    purchaseHeader = models.PurchaseOrderHeader.objects.prefetch_related(
+        'purchaseorderdetails_set').get(pk=header_id)
+    context = {'purchaseHeader': purchaseHeader}
+    return render(request, 'purchaseOrder/orderDetailsList.html', context)
+
+
+@login_required
+def storeTransactionList(request):
+    page = request.GET.get('page', 1)
+    storeTransactions = models.StoreTransactionHeader.objects.filter(deleted=0)
+    paginator = Paginator(storeTransactions, env("PER_PAGE_DATA"))
+    storeTransactions = paginator.page(page)
+    context = {'storeTransactions': storeTransactions}
+    return render(request, 'storeTransaction/list.html', context)
+
+
+@login_required
+def storeTransactionAdd(request):
+    context = {}
+    vendors = models.VendorMaster.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
     items = models.ItemMaster.objects.filter(deleted=0)
     context.update({'vendors': vendors, 'stores': stores, 'items': items})
@@ -771,7 +858,7 @@ def purchaseOrderAdd(request):
 
 
 @login_required
-def purchaseOrderEdit(request, id):
+def storeTransactionEdit(request, id):
     context = {}
     purchaseOrder = models.PurchaseOrderHeader.objects.prefetch_related(
         'purchaseorderdetails_set').get(pk=id)
@@ -802,10 +889,12 @@ def purchaseOrderEdit(request, id):
 
 
 @login_required
-def purchaseOrderDelete(request, id):
+def storeTransactionDelete(request, id):
     purchaseOrder = models.PurchaseOrderHeader.objects.get(pk=id)
     purchaseOrder.deleted = 1
     purchaseOrder.save()
+    models.PurchaseOrderDetails.objects.filter(
+        purchase_order_header_id=purchaseOrder.id).update(deleted=1)
     return redirect('purchaseOrderList')
 
 

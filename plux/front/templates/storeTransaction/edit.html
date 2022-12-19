@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Edit Purchase Order</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'purchaseOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <form class="forms-sample" action="{% url 'purchaseOrderEdit' purchaseOrder.id %}"
+                            method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{purchaseOrder.id}}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="vendor_id">Vendor</label>
+                                        <select name="vendor_id" id="vendor_id" class="form-control" required>
+                                            <option value="">Select Vendor</option>
+                                            {% for vendor in vendors %}
+                                            <option {% if vendor.id == purchaseOrder.vendor_id %} selected {% endif %}
+                                                value="{{vendor.id}}">{{vendor.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="purchase_order_date">Purchase Order Date</label>
+                                        <input type="date" name="purchase_order_date" class="form-control"
+                                            value="{{purchaseOrder.purchase_order_date|date:'Y-m-d'}}"
+                                            id="purchase_order_date" required placeholder="Purchase Order Date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <!-- <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="ammend_no">Ammend Number</label>
+                                        <input type="text" name="ammend_no" class="form-control" id="ammend_no" required
+                                            placeholder="Ammend Number" value="{{purchaseOrder.ammend_no}}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div> -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="notes">Notes</label>
+                                        <textarea name="notes" id="notes" rows="5" class="form-control" required
+                                            placeholder="Notes">{{purchaseOrder.notes}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            {% for purchaseOrderDetail in purchaseOrder.purchaseorderdetails_set.all %}
+                            <div class="row content_parent">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="item_id">Item</label>
+                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                            <option value="">Select Item</option>
+                                            {% for item in items %}
+                                            <option {% if item.id == purchaseOrderDetail.item_id %} selected {% endif %}
+                                                value="{{item.id}}">{{item.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="text" class="form-control item_quantity" name="quantity[]"
+                                            placeholder="100" required value="{{purchaseOrderDetail.quantity}}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Unit Price</label>
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                            placeholder="10" required value="{{purchaseOrderDetail.unit_price}}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Amount</label>
+                                        <input type="text" class="form-control item_total_amount" name="amount[]"
+                                            placeholder="100,000" required value="{{purchaseOrderDetail.amount}}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                {% if forloop.counter == 1 %}
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
+                                            Item</button>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            <div class="add_more_content">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="total_amount">Total Amount</label>
+                                        <input type="text" name="total_amount" class="form-control" id="total_amount"
+                                            required placeholder="Total Amount" readonly
+                                            value="{{purchaseOrder.total_amount}}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button type="reset" class="btn btn-light">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).on('click', '.add_item', function () {
+        $('.add_more_content').append(`<div class="row content_parent">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="item_id">Item</label>
+                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                            <option value="">Select Item</option>
+                                            {% for item in items %}
+                                            <option value="{{item.id}}">{{item.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required
+                                        onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Unit Price</label>
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" placeholder="10" required
+                                        onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Amount</label>
+                                        <input type="text" class="form-control item_total_amount" name="amount[]" placeholder="100,000" required
+                                        onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
+                                    </div>
+                                </div>
+                            </div>`);
+    });
+
+    $(document).on('click', '.remove_item', function () {
+        $(this).parents().closest('.content_parent').remove();
+        calculateTotalAmount();
+    });
+
+    $(document).on('keyup', '.item_quantity', function () {
+        item_total_amount = 0;
+        item_quantity = $(this).val();
+        item_unit_price = $(this).parents(".content_parent").find('.item_unit_price').val();
+        if (item_quantity != "" && item_unit_price != "") {
+            item_total_amount = item_quantity * item_unit_price;
+            $(this).parents(".content_parent").find('.item_total_amount').val(item_total_amount.toFixed(2));
+        }
+        calculateTotalAmount();
+    });
+    $(document).on('keyup', '.item_unit_price', function () {
+        item_total_amount = 0;
+        item_unit_price = $(this).val();
+        item_quantity = $(this).parents(".content_parent").find('.item_quantity').val();
+        if (item_quantity != "" && item_unit_price != "") {
+            item_total_amount = item_quantity * item_unit_price;
+            $(this).parents(".content_parent").find('.item_total_amount').val(item_total_amount.toFixed(2));
+        }
+        calculateTotalAmount();
+    });
+
+    function calculateTotalAmount() {
+        total_amount = 0;
+        $('.item_total_amount').each(function () {
+            if ($(this).val() != "") {
+                total_amount += parseInt($(this).val());
+            }
+        });
+        $("#total_amount").val(total_amount);
+    }
+</script>
+{% endblock %}
