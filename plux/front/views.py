@@ -758,7 +758,6 @@ def purchaseOrderAdd(request):
         purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
         purchaseOrder.notes = request.POST['notes']
         purchaseOrder.total_amount = request.POST['total_amount']
-        purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
         order_details = []
@@ -788,7 +787,6 @@ def purchaseOrderEdit(request, id):
         purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
         purchaseOrder.notes = request.POST['notes']
         purchaseOrder.total_amount = request.POST['total_amount']
-        purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
         models.PurchaseOrderDetails.objects.filter(
