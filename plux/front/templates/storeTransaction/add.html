@@ -9,7 +9,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Add Purchase Order</h4>
+                            <h4 class="card-title">Add Store Transaction</h4>
                         </div>
                         <div class="col-md-6">
                             <a href="{% url 'purchaseOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
@@ -21,6 +21,38 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="transaction_type_id">Transaction Type</label>
+                                        <select name="transaction_type_id" id="transaction_type_id" class="form-control"
+                                            required>
+                                            <option value="">Select Transaction Type</option>
+                                            {% for transactionType in transactionTypes %}
+                                            <option value="{{transactionType.id}}">{{transactionType.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="transaction_date">Transaction Date</label>
+                                        <input type="date" name="transaction_date" class="form-control"
+                                            id="transaction_date" required placeholder="Transaction Date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="store_id">Store</label>
+                                        <select name="store_id" id="store_id" class="form-control" required>
+                                            <option value="">Select Store</option>
+                                            {% for store in stores %}
+                                            <option value="{{store.id}}">{{store.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="vendor_id">Vendor</label>
                                         <select name="vendor_id" id="vendor_id" class="form-control" required>
                                             <option value="">Select Vendor</option>
@@ -30,71 +62,83 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="purchase_order_date">Purchase Order Date</label>
-                                        <input type="date" name="purchase_order_date" class="form-control"
-                                            id="purchase_order_date" required placeholder="Purchase Order Date">
-                                    </div>
-                                </div>
                             </div>
                             <div class="row">
-                                <!-- <div class="col-md-6">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="ammend_no">Ammend Number</label>
-                                        <input type="text" name="ammend_no" class="form-control" id="ammend_no" required
-                                            placeholder="Ammend Number"
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
-                                    </div>
-                                </div> -->
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="notes">Notes</label>
-                                        <textarea name="notes" id="notes" rows="5" class="form-control" required
-                                            placeholder="Notes"></textarea>
+                                        <label>With/Without Purchase Order</label>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="purchase_order_type"
+                                                    id="with_purchase_order" value="1" checked>
+                                                With Purchase Order
+                                                <i class="input-helper"></i></label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" name="purchase_order_type"
+                                                    id="without_purchase_order" value="0">
+                                                Without Purchase Order
+                                                <i class="input-helper"></i></label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row content_parent">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control" required>
-                                            <option value="">Select Item</option>
-                                            {% for item in items %}
-                                            <option value="{{item.id}}">{{item.description}}</option>
+                                <div class="col-md-6">
+                                    <div class="form-group purchase_order_type_content">
+                                        <label for="purchase_order_header_id">Purchase Order Reference</label>
+                                        <select name="purchase_order_header_id" id="purchase_order_header_id" required
+                                            class="form-control">
+                                            <option value="">Select Purchase Order</option>
+                                            {% for purchaseOrder in purchaseOrders %}
+                                            <option value="{{purchaseOrder.id}}">{{purchaseOrder.purchase_order_no}}
+                                            </option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>Quantity</label>
-                                        <input type="text" class="form-control item_quantity" name="quantity[]"
-                                            placeholder="100" required
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <div class="purchase_order_details">
+                                <div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="item_id">Item</label>
+                                            <select name="item_id[]" id="item_id" class="form-control" required>
+                                                <option value="">Select Item</option>
+                                                {% for item in items %}
+                                                <option value="{{item.id}}">{{item.description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>Unit Price</label>
-                                        <input type="text" class="form-control item_unit_price" name="unit_price[]"
-                                            placeholder="10" required
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                placeholder="100" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>Amount</label>
-                                        <input type="text" class="form-control item_total_amount" name="amount[]"
-                                            placeholder="100,000" required
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                                placeholder="10" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
-                                            Item</button>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Amount</label>
+                                            <input type="text" class="form-control item_total_amount" name="amount[]"
+                                                placeholder="100,000" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
+                                                Item</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -200,5 +244,82 @@
         });
         $("#total_amount").val(total_amount);
     }
+
+    $(document).on('change', $('input[name="purchase_order_type"]'), function () {
+        purchase_order_type = $('input[name="purchase_order_type"]:checked').val();
+        if (parseInt(purchase_order_type) == 0) {
+            $('.purchase_order_type_content').hide();
+            $('#purchase_order_header_id').removeAttr('required');
+        } else {
+            $('.purchase_order_type_content').show();
+            $('#purchase_order_header_id').attr('required', 'required');
+        }
+    });
+
+    $(document).on('change', '#purchase_order_header_id', function () {
+        let purchase_order_header_id = $(this).val();
+        $.ajax({
+            url: "{% url 'getPurchaseOrderDetails' %}",
+            type: 'post',
+            data: ({ purchase_order_header_id: purchase_order_header_id, csrfmiddlewaretoken: '{{csrf_token}}' }),
+            success: function (response) {
+                if (response.code == 200) {
+                    var purchase_details = ``;
+                    for (let index = 0; index < response.data.length; index++) {
+                        purchase_details += `<div class="row content_parent">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="item_id">Item</label>
+                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                            <option value="">Select Item</option>
+                                            ${response.items.map((item) => `<option ${item.id == response.data[index].item_id ? "selected": ""} value="${item.id}">${item.description}</option>`)}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="text" class="form-control item_quantity" name="quantity[]"
+                                            placeholder="100" required value="${response.data[index].quantity}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>Unit Price</label>
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                            placeholder="10" required value="${response.data[index].unit_price}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Amount</label>
+                                        <input type="text" class="form-control item_total_amount" name="amount[]"
+                                            placeholder="100,000" required value="${response.data[index].amount}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                ${index == 0 ? `<div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
+                                            Item</button>
+                                    </div>
+                                </div>`: `<div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
+                                    </div>
+                                </div>`}
+
+                            </div>`;
+                    }
+                    $(".purchase_order_details").html(purchase_details);
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    });
 </script>
 {% endblock %}

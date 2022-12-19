@@ -74,6 +74,7 @@ urlpatterns = [
     path('storeTransactionAdd', views.storeTransactionAdd, name='storeTransactionAdd'),
     path('storeTransactionEdit/<int:id>', views.storeTransactionEdit, name='storeTransactionEdit'),
     path('storeTransactionDelete/<int:id>', views.storeTransactionDelete, name='storeTransactionDelete'),
+    path('getPurchaseOrderDetails', views.getPurchaseOrderDetails, name='getPurchaseOrderDetails'),
     
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),
