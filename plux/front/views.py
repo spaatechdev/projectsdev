@@ -691,7 +691,8 @@ def storeItemAdd(request):
     if request.method == "POST":
         storeItem = models.StoreItemMaster()
         storeItem.opening_qty = request.POST['opening_qty']
-        storeItem.on_hand_qty = request.POST['on_hand_qty']
+        # storeItem.on_hand_qty = request.POST['on_hand_qty']
+        storeItem.on_hand_qty = 0
         storeItem.closing_qty = request.POST['closing_qty']
         storeItem.item_id = request.POST['item_id']
         storeItem.store_id = request.POST['store_id']
@@ -711,7 +712,8 @@ def storeItemEdit(request, id):
     if request.method == "POST":
         storeItem = models.StoreItemMaster.objects.get(pk=request.POST['id'])
         storeItem.opening_qty = request.POST['opening_qty']
-        storeItem.on_hand_qty = request.POST['on_hand_qty']
+        # storeItem.on_hand_qty = request.POST['on_hand_qty']
+        storeItem.on_hand_qty = 0
         storeItem.closing_qty = request.POST['closing_qty']
         storeItem.item_id = request.POST['item_id']
         storeItem.store_id = request.POST['store_id']
@@ -756,7 +758,6 @@ def purchaseOrderAdd(request):
         purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
         purchaseOrder.notes = request.POST['notes']
         purchaseOrder.total_amount = request.POST['total_amount']
-        purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
         order_details = []
@@ -786,7 +787,6 @@ def purchaseOrderEdit(request, id):
         purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
         purchaseOrder.notes = request.POST['notes']
         purchaseOrder.total_amount = request.POST['total_amount']
-        purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
         models.PurchaseOrderDetails.objects.filter(

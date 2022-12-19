@@ -276,8 +276,7 @@ class PurchaseOrderHeader(models.Model):
     vendor = models.ForeignKey(
         VendorMaster, on_delete=models.CASCADE, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    store = models.ForeignKey(
-        StoreMaster, related_name='PurchaseStore', on_delete=models.CASCADE, blank=True, null=True)
+    # store = models.ForeignKey(StoreMaster, related_name='PurchaseStore', on_delete=models.CASCADE, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     deleted = models.BooleanField(default=0)
 
