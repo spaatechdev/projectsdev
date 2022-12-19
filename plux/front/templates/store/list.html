@@ -99,6 +99,29 @@
                             </table>
                         </div>
                     </div>
+                    {% if stores.has_other_pages %}
+                    <div class="float-end">
+                        <ul class="pagination">
+                            {% if stores.has_previous %}
+                            <li class="mx-2"><a href="?page={{ stores.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in stores.paginator.page_range %}
+                            {% if stores.number == i %}
+                            <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
+                            {% else %}
+                            <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if stores.has_next %}
+                            <li class="mx-2"><a href="?page={{ stores.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
