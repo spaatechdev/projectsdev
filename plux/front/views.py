@@ -16,6 +16,7 @@ import os
 from plux.settings import MEDIA_ROOT
 from django.core.files.storage import FileSystemStorage
 import csv
+from decimal import Decimal
 env = environ.Env()
 environ.Env.read_env()
 
@@ -792,7 +793,7 @@ def storeItemAdd(request):
         storeItem = models.StoreItemMaster()
         storeItem.opening_qty = request.POST['opening_qty']
         # storeItem.on_hand_qty = request.POST['on_hand_qty']
-        storeItem.on_hand_qty = 0
+        storeItem.on_hand_qty = request.POST['opening_qty']
         storeItem.closing_qty = request.POST['closing_qty']
         storeItem.item_id = request.POST['item_id']
         storeItem.store_id = request.POST['store_id']
@@ -813,7 +814,6 @@ def storeItemEdit(request, id):
         storeItem = models.StoreItemMaster.objects.get(pk=request.POST['id'])
         storeItem.opening_qty = request.POST['opening_qty']
         # storeItem.on_hand_qty = request.POST['on_hand_qty']
-        storeItem.on_hand_qty = 0
         storeItem.closing_qty = request.POST['closing_qty']
         storeItem.item_id = request.POST['item_id']
         storeItem.store_id = request.POST['store_id']
@@ -953,6 +953,19 @@ def storeTransactionAdd(request):
         for index, item in enumerate(request.POST.getlist('item_id[]')):
             order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist(
                 'unit_price[]')[index], amount=request.POST.getlist('amount[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
+            storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist('item_id[]')[index], store_id=request.POST['store_id']).first()
+            if storeItem is None:
+                storeItem = models.StoreItemMaster()
+                storeItem.opening_qty = float(request.POST.getlist('quantity[]')[index])
+                storeItem.on_hand_qty = float(request.POST.getlist('quantity[]')[index])
+                storeItem.closing_qty = float(request.POST.getlist('quantity[]')[index])
+                storeItem.item_id = request.POST.getlist('item_id[]')[index]
+                storeItem.store_id = request.POST['store_id']
+                storeItem.save()
+            else:
+                if int(storeTransaction.transaction_type_id) == 7:
+                    storeItem.on_hand_qty += Decimal(request.POST.getlist('quantity[]')[index])
+                    storeItem.save()
         models.StoreTransactionDetails.objects.bulk_create(order_details)
         messages.success(request, 'Store Transaction Created Successfully.')
         return redirect('storeTransactionList')
@@ -983,6 +996,19 @@ def storeTransactionEdit(request, id):
         for index, item in enumerate(request.POST.getlist('item_id[]')):
             order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist(
                 'unit_price[]')[index], amount=request.POST.getlist('amount[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
+            storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist('item_id[]')[index], store_id=request.POST['store_id']).first()
+            if storeItem is None:
+                storeItem = models.StoreItemMaster()
+                storeItem.opening_qty = float(request.POST.getlist('quantity[]')[index])
+                storeItem.on_hand_qty = float(request.POST.getlist('quantity[]')[index])
+                storeItem.closing_qty = float(request.POST.getlist('quantity[]')[index])
+                storeItem.item_id = request.POST.getlist('item_id[]')[index]
+                storeItem.store_id = request.POST['store_id']
+                storeItem.save()
+            else:
+                if int(storeTransaction.transaction_type_id) == 7:
+                    storeItem.on_hand_qty += storeItem.closing_qty + Decimal(request.POST.getlist('quantity[]')[index])
+                    storeItem.save()
         models.StoreTransactionDetails.objects.bulk_create(order_details)
         messages.success(request, 'Store Transaction Updated Successfully.')
         return redirect('storeTransactionList')

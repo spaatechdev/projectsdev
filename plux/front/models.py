@@ -278,6 +278,7 @@ class PurchaseOrderHeader(models.Model):
     notes = models.TextField(blank=True, null=True)
     # store = models.ForeignKey(StoreMaster, related_name='PurchaseStore', on_delete=models.CASCADE, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.SmallIntegerField(default=0)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
@@ -299,6 +300,7 @@ class PurchaseOrderDetails(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     delivery_date = models.DateField(blank=True, null=True)
+    delivered_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
