@@ -970,7 +970,7 @@ def storeTransactionEdit(request, id):
     items = models.ItemMaster.objects.filter(deleted=0)
     context.update({'storeTransaction': storeTransaction,'vendors': vendors, 'stores': stores, 'items': items, 'transactionTypes': transactionTypes, 'vendorPurchaseOrders': vendorPurchaseOrders})
     if request.method == "POST":
-        storeTransaction = models.PurchaseOrderHeader.objects.get(pk=request.POST['id'])
+        storeTransaction = models.StoreTransactionHeader.objects.get(pk=request.POST['id'])
         storeTransaction.transaction_date = request.POST['transaction_date']
         storeTransaction.purchase_order_header_id = request.POST['purchase_order_header_id']
         storeTransaction.store_id = request.POST['store_id']
