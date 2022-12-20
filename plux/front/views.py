@@ -193,11 +193,11 @@ def customerImport(request):
                     if not row['Customer Name']:
                         break
                     country_obj = models.Countries.objects.filter(
-                        name=row['Country']).first()
+                        name__contains=row['Country']).first()
                     state_obj = models.States.objects.filter(
-                        name=row['State']).first()
+                        name__contains=row['State']).first()
                     city_obj = models.Cities.objects.filter(
-                        name=row['City']).first()
+                        name__contains=row['City']).first()
                     country_id = country_obj.id if country_obj is not None else None
                     state_id = state_obj.id if state_obj is not None else None
                     city_id = city_obj.id if city_obj is not None else None
@@ -324,11 +324,11 @@ def vendorImport(request):
                     if not row['Name']:
                         break
                     country_obj = models.Countries.objects.filter(
-                        name=row['Country']).first()
+                        name__contains=row['Country']).first()
                     state_obj = models.States.objects.filter(
-                        name=row['State']).first()
+                        name__contains=row['State']).first()
                     city_obj = models.Cities.objects.filter(
-                        name=row['City']).first()
+                        name__contains=row['City']).first()
                     country_id = country_obj.id if country_obj is not None else None
                     state_id = state_obj.id if state_obj is not None else None
                     city_id = city_obj.id if city_obj is not None else None
@@ -336,7 +336,7 @@ def vendorImport(request):
                         contact_email=row['Contact Email'])
                     if (not vendor_email_qs.exists()):
                         vendor_list.append(models.VendorMaster(name=row['Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
-                                             'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                            'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
                 models.VendorMaster.objects.bulk_create(vendor_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
@@ -356,6 +356,7 @@ def downloadVendorExcel(request):
             response['Content-Disposition'] = 'attachment; filename=' + \
                 os.path.basename(file_path)
             return response
+
 
 @login_required
 def storeList(request):
@@ -456,7 +457,7 @@ def getCitiesByState(request):
         })
     else:
         return JsonResponse({
-            'code': 501,
+            'code': 502,
             'status': 'ERROR',
             'message': 'There should be post method.'
         })
@@ -686,12 +687,19 @@ def storeItemList(request):
 def storeItemAdd(request):
     context = {}
     stores = models.StoreMaster.objects.filter(deleted=0)
-    items = models.ItemMaster.objects.filter(deleted=0)
+    existing_items = models.StoreItemMaster.objects.filter(
+        deleted=0).values('item_id')
+    item_ids = []
+    for ei in existing_items:
+        item_ids.append(ei['item_id'])
+    items = models.ItemMaster.objects.filter(
+        deleted=0).exclude(id__in=item_ids)
     context.update({'items': items, 'stores': stores})
     if request.method == "POST":
         storeItem = models.StoreItemMaster()
         storeItem.opening_qty = request.POST['opening_qty']
-        storeItem.on_hand_qty = request.POST['on_hand_qty']
+        # storeItem.on_hand_qty = request.POST['on_hand_qty']
+        storeItem.on_hand_qty = 0
         storeItem.closing_qty = request.POST['closing_qty']
         storeItem.item_id = request.POST['item_id']
         storeItem.store_id = request.POST['store_id']
@@ -706,12 +714,13 @@ def storeItemEdit(request, id):
     context = {}
     storeItem = models.StoreItemMaster.objects.get(pk=id)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    items = models.ItemMaster.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(id=storeItem.item_id)
     context.update({'storeItem': storeItem, 'items': items, 'stores': stores})
     if request.method == "POST":
         storeItem = models.StoreItemMaster.objects.get(pk=request.POST['id'])
         storeItem.opening_qty = request.POST['opening_qty']
-        storeItem.on_hand_qty = request.POST['on_hand_qty']
+        # storeItem.on_hand_qty = request.POST['on_hand_qty']
+        storeItem.on_hand_qty = 0
         storeItem.closing_qty = request.POST['closing_qty']
         storeItem.item_id = request.POST['item_id']
         storeItem.store_id = request.POST['store_id']
@@ -743,9 +752,8 @@ def purchaseOrderList(request):
 def purchaseOrderAdd(request):
     context = {}
     vendors = models.VendorMaster.objects.filter(deleted=0)
-    stores = models.StoreMaster.objects.filter(deleted=0)
     items = models.ItemMaster.objects.filter(deleted=0)
-    context.update({'vendors': vendors, 'stores': stores, 'items': items})
+    context.update({'vendors': vendors, 'items': items})
     if request.method == "POST":
         purchase_order_count = models.PurchaseOrderHeader.objects.filter(
             deleted=0).count()
@@ -756,7 +764,6 @@ def purchaseOrderAdd(request):
         purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
         purchaseOrder.notes = request.POST['notes']
         purchaseOrder.total_amount = request.POST['total_amount']
-        purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
         order_details = []
@@ -776,9 +783,8 @@ def purchaseOrderEdit(request, id):
         'purchaseorderdetails_set').get(pk=id)
     items = models.ItemMaster.objects.filter(deleted=0)
     vendors = models.VendorMaster.objects.filter(deleted=0)
-    stores = models.StoreMaster.objects.filter(deleted=0)
     context.update({'purchaseOrder': purchaseOrder,
-                   'items': items, 'vendors': vendors, 'stores': stores})
+                   'items': items, 'vendors': vendors})
     if request.method == "POST":
         purchaseOrder = models.PurchaseOrderHeader.objects.get(
             pk=request.POST['id'])
@@ -786,7 +792,6 @@ def purchaseOrderEdit(request, id):
         purchaseOrder.purchase_order_date = request.POST['purchase_order_date']
         purchaseOrder.notes = request.POST['notes']
         purchaseOrder.total_amount = request.POST['total_amount']
-        purchaseOrder.store_id = request.POST['store_id']
         purchaseOrder.vendor_id = request.POST['vendor_id']
         purchaseOrder.save()
         models.PurchaseOrderDetails.objects.filter(
@@ -806,6 +811,8 @@ def purchaseOrderDelete(request, id):
     purchaseOrder = models.PurchaseOrderHeader.objects.get(pk=id)
     purchaseOrder.deleted = 1
     purchaseOrder.save()
+    models.PurchaseOrderDetails.objects.filter(
+        purchase_order_header_id=purchaseOrder.id).update(deleted=1)
     return redirect('purchaseOrderList')
 
 
@@ -816,6 +823,138 @@ def purchaseOrderDetailsList(request, header_id):
         'purchaseorderdetails_set').get(pk=header_id)
     context = {'purchaseHeader': purchaseHeader}
     return render(request, 'purchaseOrder/orderDetailsList.html', context)
+
+
+@login_required
+def storeTransactionList(request):
+    page = request.GET.get('page', 1)
+    storeTransactions = models.StoreTransactionHeader.objects.filter(deleted=0)
+    paginator = Paginator(storeTransactions, env("PER_PAGE_DATA"))
+    storeTransactions = paginator.page(page)
+    context = {'storeTransactions': storeTransactions}
+    return render(request, 'storeTransaction/list.html', context)
+
+
+@login_required
+def storeTransactionAdd(request):
+    context = {}
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    transactionTypes = models.TransactionType.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'vendors': vendors, 'stores': stores, 'items': items, 'transactionTypes': transactionTypes})
+    if request.method == "POST":
+        transaction_count = models.StoreTransactionHeader.objects.filter(
+            deleted=0).count()
+        transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
+        storeTransaction = models.StoreTransactionHeader()
+        storeTransaction.transaction_number = transaction_number
+        storeTransaction.transaction_date = request.POST['transaction_date']
+        storeTransaction.purchase_order_header_id = request.POST['purchase_order_header_id']
+        storeTransaction.store_id = request.POST['store_id']
+        storeTransaction.transaction_type_id = request.POST['transaction_type_id']
+        storeTransaction.vendor_id = request.POST['vendor_id']
+        storeTransaction.total_amount = request.POST['total_amount']
+        storeTransaction.save()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist(
+                'unit_price[]')[index], amount=request.POST.getlist('amount[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
+        models.StoreTransactionDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Store Transaction Created Successfully.')
+        return redirect('storeTransactionList')
+    return render(request, 'storeTransaction/add.html', context)
+
+
+@login_required
+def storeTransactionEdit(request, id):
+    context = {}
+    storeTransaction = models.StoreTransactionHeader.objects.prefetch_related('storetransactiondetails_set').get(pk=id)
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    vendorPurchaseOrders = models.PurchaseOrderHeader.objects.filter(vendor_id=storeTransaction.vendor_id, deleted=0)
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    transactionTypes = models.TransactionType.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'storeTransaction': storeTransaction,'vendors': vendors, 'stores': stores, 'items': items, 'transactionTypes': transactionTypes, 'vendorPurchaseOrders': vendorPurchaseOrders})
+    if request.method == "POST":
+        storeTransaction = models.PurchaseOrderHeader.objects.get(pk=request.POST['id'])
+        storeTransaction.transaction_date = request.POST['transaction_date']
+        storeTransaction.purchase_order_header_id = request.POST['purchase_order_header_id']
+        storeTransaction.store_id = request.POST['store_id']
+        storeTransaction.transaction_type_id = request.POST['transaction_type_id']
+        storeTransaction.vendor_id = request.POST['vendor_id']
+        storeTransaction.total_amount = request.POST['total_amount']
+        storeTransaction.save()
+        models.StoreTransactionDetails.objects.filter(store_transaction_header_id=storeTransaction.id).delete()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist(
+                'unit_price[]')[index], amount=request.POST.getlist('amount[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
+        models.StoreTransactionDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Store Transaction Updated Successfully.')
+        return redirect('storeTransactionList')
+    return render(request, 'storeTransaction/edit.html', context)
+
+
+@login_required
+def storeTransactionDelete(request, id):
+    storeTransaction = models.StoreTransactionHeader.objects.get(pk=id)
+    storeTransaction.deleted = 1
+    storeTransaction.save()
+    models.StoreTransactionDetails.objects.filter(
+        store_transaction_header_id=storeTransaction.id).update(deleted=1)
+    return redirect('storeTransactionList')
+
+
+@login_required
+def storeTransactionDetailsList(request, header_id):
+    page = request.GET.get('page', 1)
+    storeTransactionHeader = models.StoreTransactionHeader.objects.prefetch_related('storetransactiondetails_set').get(pk=header_id)
+    context = {'storeTransactionHeader': storeTransactionHeader}
+    return render(request, 'storeTransaction/orderDetailsList.html', context)
+
+
+@login_required
+def getVendorPurchaseOrders(request):
+    if request.method == "POST":
+        vendor_id = request.POST['vendor_id']
+        purchase_orders = list(models.PurchaseOrderHeader.objects.filter(
+            vendor_id=vendor_id, deleted=0).values('id', 'purchase_order_no'))
+        return JsonResponse({
+            'code': 200,
+            'status': 'SUCCESS',
+            'data': purchase_orders,
+        })
+    else:
+        return JsonResponse({
+            'code': 503,
+            'status': 'ERROR',
+            'message': 'There should be post method.'
+        })
+
+
+@login_required
+def getPurchaseOrderDetails(request):
+    if request.method == "POST":
+        purchase_order_header_id = request.POST['purchase_order_header_id']
+        purchase_order_details = list(models.PurchaseOrderDetails.objects.filter(
+            purchase_order_header_id=purchase_order_header_id).values('id', 'ammend_no', 'quantity', 'unit_price', 'amount', 'item_id'))
+        items = list(models.ItemMaster.objects.filter(
+            deleted=0).values('id', 'description'))
+        purchase_order_details = list(models.PurchaseOrderDetails.objects.filter(
+            purchase_order_header_id=purchase_order_header_id).values('id', 'ammend_no', 'quantity', 'unit_price', 'amount', 'item_id'))
+        return JsonResponse({
+            'code': 200,
+            'status': 'SUCCESS',
+            'data': purchase_order_details,
+            'items': items,
+        })
+    else:
+        return JsonResponse({
+            'code': 504,
+            'status': 'ERROR',
+            'message': 'There should be post method.'
+        })
 
 
 @login_required

@@ -9,7 +9,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Edit Purchase Order</h4>
+                            <h4 class="card-title">Edit Purchase Order of {{purchaseOrder.purchase_order_no}}</h4>
                         </div>
                         <div class="col-md-6">
                             <a href="{% url 'purchaseOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
@@ -23,18 +23,6 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="store_id">Store</label>
-                                        <select name="store_id" id="store_id" class="form-control" required>
-                                            <option value="">Select Store</option>
-                                            {% for store in stores %}
-                                            <option {% if store.id == purchaseOrder.store_id %} selected {% endif %}
-                                                value="{{store.id}}">{{store.name}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
                                         <label for="vendor_id">Vendor</label>
                                         <select name="vendor_id" id="vendor_id" class="form-control" required>
                                             <option value="">Select Vendor</option>
@@ -43,6 +31,14 @@
                                                 value="{{vendor.id}}">{{vendor.name}}</option>
                                             {% endfor %}
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="purchase_order_date">Purchase Order Date</label>
+                                        <input type="date" name="purchase_order_date" class="form-control"
+                                            value="{{purchaseOrder.purchase_order_date|date:'Y-m-d'}}"
+                                            id="purchase_order_date" required placeholder="Purchase Order Date">
                                     </div>
                                 </div>
                             </div>
@@ -55,15 +51,7 @@
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div> -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="purchase_order_date">Purchase Order Date</label>
-                                        <input type="date" name="purchase_order_date" class="form-control"
-                                            value="{{purchaseOrder.purchase_order_date|date:'Y-m-d'}}"
-                                            id="purchase_order_date" required placeholder="Purchase Order Date">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="notes">Notes</label>
                                         <textarea name="notes" id="notes" rows="5" class="form-control" required
@@ -79,7 +67,8 @@
                                         <select name="item_id[]" id="item_id" class="form-control" required>
                                             <option value="">Select Item</option>
                                             {% for item in items %}
-                                            <option {% if item.id == purchaseOrderDetail.item_id %} selected {% endif %} value="{{item.id}}">{{item.description}}</option>
+                                            <option {% if item.id == purchaseOrderDetail.item_id %} selected {% endif %}
+                                                value="{{item.id}}">{{item.description}}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -87,15 +76,16 @@
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Quantity</label>
-                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100"
-                                            required value="{{purchaseOrderDetail.quantity}}"
+                                        <input type="text" class="form-control item_quantity" name="quantity[]"
+                                            placeholder="100" required value="{{purchaseOrderDetail.quantity}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Unit Price</label>
-                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" placeholder="10" required value="{{purchaseOrderDetail.unit_price}}"
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                            placeholder="10" required value="{{purchaseOrderDetail.unit_price}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -117,7 +107,8 @@
                                 {% else %}
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        <button type="button" class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
                                     </div>
                                 </div>
                                 {% endif %}
@@ -130,7 +121,8 @@
                                     <div class="form-group">
                                         <label for="total_amount">Total Amount</label>
                                         <input type="text" name="total_amount" class="form-control" id="total_amount"
-                                            required placeholder="Total Amount" readonly value="{{purchaseOrder.total_amount}}"
+                                            required placeholder="Total Amount" readonly
+                                            value="{{purchaseOrder.total_amount}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
