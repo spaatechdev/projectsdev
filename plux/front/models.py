@@ -349,6 +349,7 @@ class StoreTransactionHeader(models.Model):
         TransactionType, on_delete=models.CASCADE, blank=True, null=True)
     store = models.ForeignKey(
         StoreMaster, on_delete=models.CASCADE, blank=True, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
@@ -365,7 +366,7 @@ class StoreTransactionDetails(models.Model):
         StoreTransactionHeader, on_delete=models.CASCADE, default=1)
     item = models.ForeignKey(ItemMaster, related_name='StoreItem',
                              on_delete=models.CASCADE, blank=True, null=True)
-    type = models.SmallIntegerField(default=1, blank=True, null=True)
+    type = models.ForeignKey(TransactionType, on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

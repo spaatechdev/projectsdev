@@ -16,7 +16,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <form class="forms-sample" action="{% url 'purchaseOrderAdd' %}" method="post">
+                        <form class="forms-sample" action="{% url 'storeTransactionAdd' %}" method="post">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-6">
@@ -66,21 +66,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>With/Without Purchase Order</label>
-                                        <div class="form-check">
-                                            <label class="form-check-label">
-                                                <input type="radio" class="form-check-input" name="purchase_order_type"
-                                                    id="with_purchase_order" value="1" checked>
-                                                With Purchase Order
-                                                <i class="input-helper"></i></label>
-                                        </div>
-                                        <div class="form-check">
-                                            <label class="form-check-label">
-                                                <input type="radio" class="form-check-input" name="purchase_order_type"
-                                                    id="without_purchase_order" value="0">
-                                                Without Purchase Order
-                                                <i class="input-helper"></i></label>
-                                        </div>
+                                        <label for="with_purchase_order">With/Without Purchase Order</label>
+                                        <select name="with_purchase_order" id="with_purchase_order" required
+                                            class="form-control">
+                                            <option value="1" selected>With Purchase Order</option>
+                                            <option value="0">Without Purchase Order</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -89,10 +80,6 @@
                                         <select name="purchase_order_header_id" id="purchase_order_header_id" required
                                             class="form-control">
                                             <option value="">Select Purchase Order</option>
-                                            {% for purchaseOrder in purchaseOrders %}
-                                            <option value="{{purchaseOrder.id}}">{{purchaseOrder.purchase_order_no}}
-                                            </option>
-                                            {% endfor %}
                                         </select>
                                     </div>
                                 </div>
@@ -101,8 +88,8 @@
                                 <div class="row content_parent">
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="item_id">Item</label>
-                                            <select name="item_id[]" id="item_id" class="form-control" required>
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control" required>
                                                 <option value="">Select Item</option>
                                                 {% for item in items %}
                                                 <option value="{{item.id}}">{{item.description}}</option>
@@ -149,7 +136,7 @@
                                     <div class="form-group">
                                         <label for="total_amount">Total Amount</label>
                                         <input type="text" name="total_amount" class="form-control" id="total_amount"
-                                            required placeholder="Total Amount" readonly
+                                            required placeholder="Total Amount" readonly value="0"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -171,8 +158,8 @@
         $('.add_more_content').append(`<div class="row content_parent">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                        <label>Item</label>
+                                        <select name="item_id[]" class="form-control" required>
                                             <option value="">Select Item</option>
                                             {% for item in items %}
                                             <option value="{{item.id}}">{{item.description}}</option>
@@ -210,8 +197,12 @@
     });
 
     $(document).on('click', '.remove_item', function () {
-        $(this).parents().closest('.content_parent').remove();
-        calculateTotalAmount();
+        if ($(this).parents().find('.content_parent').length > 1) {
+            $(this).parents().closest('.content_parent').remove();
+            calculateTotalAmount();
+        } else {
+            alert("You must submit one of the items of purchase order.")
+        }
     });
 
     $(document).on('keyup', '.item_quantity', function () {
@@ -245,19 +236,140 @@
         $("#total_amount").val(total_amount);
     }
 
-    $(document).on('change', $('input[name="purchase_order_type"]'), function () {
-        purchase_order_type = $('input[name="purchase_order_type"]:checked').val();
-        if (parseInt(purchase_order_type) == 0) {
-            $('.purchase_order_type_content').hide();
-            $('#purchase_order_header_id').removeAttr('required');
-        } else {
+    $(document).on('change', '#with_purchase_order', function () {
+        purchase_order_type = $(this).val();
+        if (parseInt(purchase_order_type) == 1) {
             $('.purchase_order_type_content').show();
             $('#purchase_order_header_id').attr('required', 'required');
+        } else {
+            $('.purchase_order_type_content').hide();
+            $('#purchase_order_header_id').removeAttr('required');
+            purchase_details = `<div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control" required>
+                                                <option value="">Select Item</option>
+                                                {% for item in items %}
+                                                <option value="{{item.id}}">{{item.description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                placeholder="100" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                                placeholder="10" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Amount</label>
+                                            <input type="text" class="form-control item_total_amount" name="amount[]"
+                                                placeholder="100,000" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
+                                                Item</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+            $(".purchase_order_details").html(purchase_details);
+            $("#total_amount").val(0);
         }
+    });
+
+    $(document).on('change', '#vendor_id', function () {
+        let vendor_id = $(this).val();
+        $.ajax({
+            url: "{% url 'getVendorPurchaseOrders' %}",
+            type: 'post',
+            data: ({ vendor_id: vendor_id, csrfmiddlewaretoken: '{{csrf_token}}' }),
+            success: function (response) {
+                if (response.code == 200) {
+                    if (response.data.length > 0) {
+                        var options_text = `<option value="">Select Purchase Order</option>`;
+                        for (let index = 0; index < response.data.length; index++) {
+                            options_text += `<option value="${response.data[index].id}">${response.data[index].purchase_order_no}</option>`;
+                        }
+                        $("#purchase_order_header_id").html(options_text);
+                    } else {
+                        var options_text = `<option value="">Select Purchase Order</option>`;
+                        $("#purchase_order_header_id").html(options_text);
+                        $('.purchase_order_type_content').hide();
+                        $('#purchase_order_header_id').removeAttr('required');
+                        purchase_details = `<div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control" required>
+                                                <option value="">Select Item</option>
+                                                {% for item in items %}
+                                                <option value="{{item.id}}">{{item.description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                placeholder="100" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                                placeholder="10" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Amount</label>
+                                            <input type="text" class="form-control item_total_amount" name="amount[]"
+                                                placeholder="100,000" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
+                                                Item</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        $(".purchase_order_details").html(purchase_details);
+                        $("#total_amount").val(0);
+                        $("#with_purchase_order").val(0);
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
     });
 
     $(document).on('change', '#purchase_order_header_id', function () {
         let purchase_order_header_id = $(this).val();
+        if (purchase_order_header_id != "") {
+            $("#with_purchase_order").val(1);
+        }
         $.ajax({
             url: "{% url 'getPurchaseOrderDetails' %}",
             type: 'post',
@@ -265,15 +377,18 @@
             success: function (response) {
                 if (response.code == 200) {
                     var purchase_details = ``;
+                    var total_amount = 0;
                     for (let index = 0; index < response.data.length; index++) {
+                        total_amount += parseInt(response.data[index].amount);
                         purchase_details += `<div class="row content_parent">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                        <label>Item</label>
+                                        <select name="item_id[]" class="form-control" required disabled>
                                             <option value="">Select Item</option>
-                                            ${response.items.map((item) => `<option ${item.id == response.data[index].item_id ? "selected": ""} value="${item.id}">${item.description}</option>`)}
+                                            ${response.items.map((item) => `<option ${item.id == response.data[index].item_id ? "selected" : ""} value="${item.id}">${item.description}</option>`)}
                                         </select>
+                                        <input type="hidden" name="item_id[]" value="${response.data[index].item_id}">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -302,8 +417,8 @@
                                 </div>
                                 ${index == 0 ? `<div class="col-md-2">
                                     <div class="form-group">
-                                        <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
-                                            Item</button>
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
                                     </div>
                                 </div>`: `<div class="col-md-2">
                                     <div class="form-group">
@@ -315,6 +430,7 @@
                             </div>`;
                     }
                     $(".purchase_order_details").html(purchase_details);
+                    $("#total_amount").val(total_amount.toFixed(2));
                 } else {
                     alert(response.message);
                 }

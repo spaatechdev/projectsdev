@@ -39,6 +39,9 @@
                                             Reference Id
                                         </th>
                                         <th>
+                                            Total Amount
+                                        </th>
+                                        <th>
                                             Transaction Type
                                         </th>
                                         <th>
@@ -68,12 +71,15 @@
                                             {{storeTransaction.purchase_order_header.purchase_order_no}}
                                         </td>
                                         <td>
+                                            {{storeTransaction.total_amount}}
+                                        </td>
+                                        <td>
                                             {{storeTransaction.transaction_type.name}}
                                         </td>
                                         <td>
                                             <a href="{% url 'storeTransactionDetailsList' storeTransaction.id %}"
                                                 class="btn btn-primary btn-sm">
-                                                Order Details </a>
+                                                Details </a>
                                             <a href="{% url 'storeTransactionEdit' storeTransaction.id %}"
                                                 class="btn btn-info btn-sm">
                                                 Edit </a>
