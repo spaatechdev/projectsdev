@@ -21,8 +21,12 @@ urlpatterns = [
     path('uomAdd', views.uomAdd, name='uomAdd'),
     path('uomEdit/<int:id>', views.uomEdit, name='uomEdit'),
     path('uomDelete/<int:id>', views.uomDelete, name='uomDelete'),
+    path('uomImport', views.uomImport, name='uomImport'),
+    path('downloadUomExcel', views.downloadUomExcel, name='downloadUomExcel'),
     
     path('storeList', views.storeList, name='storeList'),
+    path('storeImport', views.storeImport, name='storeImport'),
+    path('downloadStoreExcel', views.downloadStoreExcel, name='downloadStoreExcel'),
 
     path('vendorList', views.vendorList, name='vendorList'),
     path('vendorAdd', views.vendorAdd, name='vendorAdd'),

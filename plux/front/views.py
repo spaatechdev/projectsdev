@@ -193,11 +193,11 @@ def customerImport(request):
                     if not row['Customer Name']:
                         break
                     country_obj = models.Countries.objects.filter(
-                        name__contains=row['Country']).first()
+                        name=row['Country']).first()
                     state_obj = models.States.objects.filter(
-                        name__contains=row['State']).first()
+                        name=row['State']).first()
                     city_obj = models.Cities.objects.filter(
-                        name__contains=row['City']).first()
+                        name=row['City']).first()
                     country_id = country_obj.id if country_obj is not None else None
                     state_id = state_obj.id if state_obj is not None else None
                     city_id = city_obj.id if city_obj is not None else None
@@ -324,11 +324,11 @@ def vendorImport(request):
                     if not row['Name']:
                         break
                     country_obj = models.Countries.objects.filter(
-                        name__contains=row['Country']).first()
+                        name=row['Country']).first()
                     state_obj = models.States.objects.filter(
-                        name__contains=row['State']).first()
+                        name=row['State']).first()
                     city_obj = models.Cities.objects.filter(
-                        name__contains=row['City']).first()
+                        name=row['City']).first()
                     country_id = country_obj.id if country_obj is not None else None
                     state_id = state_obj.id if state_obj is not None else None
                     city_id = city_obj.id if city_obj is not None else None
@@ -336,7 +336,7 @@ def vendorImport(request):
                         contact_email=row['Contact Email'])
                     if (not vendor_email_qs.exists()):
                         vendor_list.append(models.VendorMaster(name=row['Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
-                                             'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                            'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
                 models.VendorMaster.objects.bulk_create(vendor_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
@@ -356,6 +356,7 @@ def downloadVendorExcel(request):
             response['Content-Disposition'] = 'attachment; filename=' + \
                 os.path.basename(file_path)
             return response
+
 
 @login_required
 def storeList(request):
@@ -424,6 +425,60 @@ def storeDelete(request, id):
     store.deleted = 1
     store.save()
     return redirect('storeList')
+
+
+@login_required
+def storeImport(request):
+    context = {}
+    if request.method == "POST":
+        store_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/stores/", MEDIA_ROOT + "/excels/stores/")
+            fs.save(tmpname, file)
+            file_name = "excels/stores/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if not row['Store Name']:
+                        break
+                    country_obj = models.Countries.objects.filter(
+                        name=row['Country']).first()
+                    state_obj = models.States.objects.filter(
+                        name=row['State']).first()
+                    city_obj = models.Cities.objects.filter(
+                        name=row['City']).first()
+                    country_id = country_obj.id if country_obj is not None else None
+                    state_id = state_obj.id if state_obj is not None else None
+                    city_id = city_obj.id if city_obj is not None else None
+                    store_email_qs = models.StoreMaster.objects.filter(
+                        contact_email=row['Contact Email'])
+                    if (not store_email_qs.exists()):
+                        store_list.append(models.StoreMaster(name=row['Store Name'], address_1=row['Address 1'], address_2=row['Address 2'], pin=row['Pin'], gst_no=row['GST Number'], contact_no=row[
+                                          'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], manager_name=row['Manager Name'], city_id=city_id, country_id=country_id, state_id=state_id))
+                models.StoreMaster.objects.bulk_create(store_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Stores Created Successfully.')
+            return redirect('storeList')
+    return render(request, 'store/import.html', context)
+
+
+@login_required
+def downloadStoreExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "stores.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                # fh.read(), content_type="application/vnd.ms-excel")
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
 
 
 def getStatesByCountry(request):
@@ -504,6 +559,45 @@ def uomDelete(request, id):
     uom.deleted = 1
     uom.save()
     return redirect('uomList')
+
+
+@login_required
+def uomImport(request):
+    context = {}
+    if request.method == "POST":
+        uom_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/uoms/", MEDIA_ROOT + "/excels/uoms/")
+            fs.save(tmpname, file)
+            file_name = "excels/uoms/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    uom_list.append(models.UomMaster(
+                        description=row['Description']))
+                models.UomMaster.objects.bulk_create(uom_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Uoms Created Successfully.')
+            return redirect('uomList')
+    return render(request, 'uom/import.html', context)
+
+
+@login_required
+def downloadUomExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "uoms.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
 
 
 @login_required
