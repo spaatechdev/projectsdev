@@ -281,7 +281,7 @@ class PurchaseOrderHeader(models.Model):
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
-        return self.ammend_no
+        return self.purchase_order_no
 
     class Meta:
         managed = True
@@ -302,7 +302,7 @@ class PurchaseOrderDetails(models.Model):
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
-        return self.item.description
+        return self.purchase_order_header.purchase_order_no
 
     class Meta:
         managed = True
@@ -374,7 +374,7 @@ class StoreTransactionDetails(models.Model):
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
-        return self.transaction_number
+        return self.store_transaction_header.transaction_number
 
     class Meta:
         managed = True
