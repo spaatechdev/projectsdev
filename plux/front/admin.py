@@ -96,14 +96,10 @@ class StoreMasterAdmin(admin.ModelAdmin):
 
 
 class StoreItemMasterAdmin(admin.ModelAdmin):
-    list_display = ('id', 'store', 'item', 'opening_qty',
-                    'on_hand_qty', 'closing_qty')
-    list_display_links = ['id', 'store', 'item',
-                          'opening_qty', 'on_hand_qty', 'closing_qty']
-    list_filter = ('store', 'item', 'opening_qty',
-                   'on_hand_qty', 'closing_qty')
-    search_fields = ('store', 'item', 'opening_qty',
-                     'on_hand_qty', 'closing_qty')
+    list_display = ('id', 'store', 'item', 'opening_qty', 'closing_qty')
+    list_display_links = ['id', 'store', 'item', 'opening_qty', 'closing_qty']
+    list_filter = ('store', 'item', 'opening_qty', 'closing_qty')
+    search_fields = ('store', 'item', 'opening_qty', 'closing_qty')
     list_per_page = 25
 
 
@@ -117,13 +113,13 @@ class StandardTermMasterAdmin(admin.ModelAdmin):
 
 class PurchaseOrderHeaderAdmin(admin.ModelAdmin):
     list_display = ('id', 'ammend_no', 'purchase_order_date',
-                    'vendor', 'notes', 'store', 'total_amount')
+                    'vendor', 'notes', 'total_amount')
     list_display_links = ['id', 'ammend_no', 'purchase_order_date',
-                          'vendor', 'notes', 'store', 'total_amount']
+                          'vendor', 'notes', 'total_amount']
     list_filter = ('ammend_no', 'purchase_order_date',
-                   'vendor', 'notes', 'store', 'total_amount')
+                   'vendor', 'notes', 'total_amount')
     search_fields = ('ammend_no', 'purchase_order_date',
-                     'vendor', 'notes', 'store', 'total_amount')
+                     'vendor', 'notes', 'total_amount')
     list_per_page = 25
 
 
@@ -147,6 +143,14 @@ class PurchaseOrderTermsAdmin(admin.ModelAdmin):
     list_per_page = 25
 
 
+class TransactionTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    list_display_links = ['id', 'name']
+    list_filter = ('id', 'name')
+    search_fields = ('id', 'name')
+    list_per_page = 25
+
+
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(ItemCtegory, ItemCtegoryAdmin)
 admin.site.register(PlyDimensionMaster, PlyDimensionMasterAdmin)
@@ -159,3 +163,4 @@ admin.site.register(StandardTermMaster, StandardTermMasterAdmin)
 admin.site.register(PurchaseOrderHeader, PurchaseOrderHeaderAdmin)
 admin.site.register(PurchaseOrderDetails, PurchaseOrderDetailsAdmin)
 admin.site.register(PurchaseOrderTerms, PurchaseOrderTermsAdmin)
+admin.site.register(TransactionType, TransactionTypeAdmin)

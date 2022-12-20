@@ -276,8 +276,7 @@ class PurchaseOrderHeader(models.Model):
     vendor = models.ForeignKey(
         VendorMaster, on_delete=models.CASCADE, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    store = models.ForeignKey(
-        StoreMaster, related_name='PurchaseStore', on_delete=models.CASCADE, blank=True, null=True)
+    # store = models.ForeignKey(StoreMaster, related_name='PurchaseStore', on_delete=models.CASCADE, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     deleted = models.BooleanField(default=0)
 
@@ -292,7 +291,8 @@ class PurchaseOrderHeader(models.Model):
 
 class PurchaseOrderDetails(models.Model):
     ammend_no = models.CharField(max_length=50, blank=True, null=True)
-    purchase_order_header = models.ForeignKey(PurchaseOrderHeader, on_delete=models.CASCADE, default=1)
+    purchase_order_header = models.ForeignKey(
+        PurchaseOrderHeader, on_delete=models.CASCADE, default=1)
     item = models.ForeignKey(
         ItemMaster, related_name='PurchaseItem', on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
@@ -323,3 +323,60 @@ class PurchaseOrderTerms(models.Model):
         managed = True
         db_table = 'purchase_order_terms'
         verbose_name_plural = 'purchase_order_terms'
+
+
+class TransactionType(models.Model):
+    name = models.CharField(max_length=100, blank=True, null=True)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        managed = True
+        db_table = 'transaction_types'
+        verbose_name_plural = 'transaction_types'
+
+
+class StoreTransactionHeader(models.Model):
+    vendor = models.ForeignKey(
+        VendorMaster, on_delete=models.CASCADE, blank=True, null=True)
+    transaction_number = models.CharField(max_length=15, blank=True, null=True)
+    purchase_order_header = models.ForeignKey(
+        PurchaseOrderHeader, on_delete=models.CASCADE, blank=True, null=True)
+    transaction_date = models.DateField(blank=True, null=True)
+    transaction_type = models.ForeignKey(
+        TransactionType, on_delete=models.CASCADE, blank=True, null=True)
+    store = models.ForeignKey(
+        StoreMaster, on_delete=models.CASCADE, blank=True, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.transaction_number
+
+    class Meta:
+        managed = True
+        db_table = 'store_transaction_header'
+        verbose_name_plural = 'store_transaction_header'
+
+
+class StoreTransactionDetails(models.Model):
+    store_transaction_header = models.ForeignKey(
+        StoreTransactionHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(ItemMaster, related_name='StoreItem',
+                             on_delete=models.CASCADE, blank=True, null=True)
+    type = models.ForeignKey(TransactionType, on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    delivery_date = models.DateField(blank=True, null=True)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.transaction_number
+
+    class Meta:
+        managed = True
+        db_table = 'store_transaction_details'
+        verbose_name_plural = 'store_transaction_details'

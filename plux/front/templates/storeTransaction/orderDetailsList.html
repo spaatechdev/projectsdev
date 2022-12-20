@@ -9,10 +9,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Purchase Order Details Of {{purchaseHeader.purchase_order_no }}</h4>
+                            <h4 class="card-title">Store Transaction Details Of {{storeTransactionHeader.transaction_number }}</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'purchaseOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                            <a href="{% url 'storeTransactionList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
@@ -38,22 +38,22 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for purchaseOrderDetail in purchaseHeader.purchaseorderdetails_set.all %}
+                                    {% for storeTransactionHeaderDetail in storeTransactionHeader.storetransactiondetails_set.all %}
                                     <tr>
                                         <td>
                                             {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{purchaseOrderDetail.item.description}}
+                                            {{storeTransactionHeaderDetail.item.description}}
                                         </td>
                                         <td>
-                                            {{purchaseOrderDetail.quantity}}
+                                            {{storeTransactionHeaderDetail.quantity}}
                                         </td>
                                         <td>
-                                            {{purchaseOrderDetail.unit_price}}
+                                            {{storeTransactionHeaderDetail.unit_price}}
                                         </td>
                                         <td>
-                                            {{purchaseOrderDetail.amount}}
+                                            {{storeTransactionHeaderDetail.amount}}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -61,7 +61,7 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="4">Total Amount</td>
-                                        <td>{{purchaseHeader.total_amount}}</td>
+                                        <td>{{storeTransactionHeader.total_amount}}</td>
                                     </tr>
                                 </tfoot>
                             </table>

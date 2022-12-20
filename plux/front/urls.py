@@ -66,13 +66,20 @@ urlpatterns = [
     path('purchaseOrderAdd', views.purchaseOrderAdd, name='purchaseOrderAdd'),
     path('purchaseOrderEdit/<int:id>', views.purchaseOrderEdit, name='purchaseOrderEdit'),
     path('purchaseOrderDelete/<int:id>', views.purchaseOrderDelete, name='purchaseOrderDelete'),
-
     path('purchaseOrderDetailsList/<int:header_id>', views.purchaseOrderDetailsList, name='purchaseOrderDetailsList'),
 
     path('standardTermList', views.standardTermList, name='standardTermList'),
     path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
     path('standardTermEdit/<int:id>', views.standardTermEdit, name='standardTermEdit'),
     path('standardTermDelete/<int:id>', views.standardTermDelete, name='standardTermDelete'),
+
+    path('storeTransactionList', views.storeTransactionList, name='storeTransactionList'),
+    path('storeTransactionAdd', views.storeTransactionAdd, name='storeTransactionAdd'),
+    path('storeTransactionEdit/<int:id>', views.storeTransactionEdit, name='storeTransactionEdit'),
+    path('storeTransactionDelete/<int:id>', views.storeTransactionDelete, name='storeTransactionDelete'),
+    path('storeTransactionDetailsList/<int:header_id>', views.storeTransactionDetailsList, name='storeTransactionDetailsList'),
+    path('getVendorPurchaseOrders', views.getVendorPurchaseOrders, name='getVendorPurchaseOrders'),
+    path('getPurchaseOrderDetails', views.getPurchaseOrderDetails, name='getPurchaseOrderDetails'),
     
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),
