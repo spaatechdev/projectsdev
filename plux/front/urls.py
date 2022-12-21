@@ -79,9 +79,16 @@ urlpatterns = [
     path('storeTransactionDelete/<int:id>', views.storeTransactionDelete, name='storeTransactionDelete'),
     path('storeTransactionDetailsList/<int:header_id>', views.storeTransactionDetailsList, name='storeTransactionDetailsList'),
 
+    path('onTransitOrderList', views.onTransitOrderList, name='onTransitOrderList'),
+    path('onTransitOrderDetailsList/<int:header_id>', views.onTransitOrderDetailsList, name='onTransitOrderDetailsList'),
+
     path('getVendorPurchaseOrders', csrf_exempt(views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
     path('getPurchaseOrderDetails', csrf_exempt(views.getPurchaseOrderDetails), name='getPurchaseOrderDetails'),
     path('getTransactionType', csrf_exempt(views.getTransactionType), name='getTransactionType'),
+    path('getExceptStores', csrf_exempt(views.getExceptStores), name='getExceptStores'),
+    path('getItemsDetailsByStore', csrf_exempt(views.getItemsDetailsByStore), name='getItemsDetailsByStore'),
+    path('getExceptedStoreItems', csrf_exempt(views.getExceptedStoreItems), name='getExceptedStoreItems'),
+    path('getTransferDetails', csrf_exempt(views.getTransferDetails), name='getTransferDetails'),
     
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),

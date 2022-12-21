@@ -382,3 +382,35 @@ class StoreTransactionDetails(models.Model):
         managed = True
         db_table = 'store_transaction_details'
         verbose_name_plural = 'store_transaction_details'
+
+class OnTransitHeader(models.Model):
+    store_from = models.ForeignKey(StoreMaster, related_name='TransitFromStore', on_delete=models.CASCADE, blank=True, null=True)
+    store_to = models.ForeignKey(StoreMaster, related_name='TransitToStore', on_delete=models.CASCADE, blank=True, null=True)
+    transfer_number = models.CharField(max_length=15, blank=True, null=True)
+    transfer_date = models.DateField(blank=True, null=True)
+    status = models.SmallIntegerField(default=1)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.transfer_number
+
+    class Meta:
+        managed = True
+        db_table = 'on_transit_header'
+        verbose_name_plural = 'on_transit_header'
+
+
+class OnTransitDetails(models.Model):
+    on_transit_header = models.ForeignKey(OnTransitHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(ItemMaster, related_name='TransitItem', on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    delivered_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.on_transit_header.transfer_number
+
+    class Meta:
+        managed = True
+        db_table = 'on_transit_details'
+        verbose_name_plural = 'on_transit_details'

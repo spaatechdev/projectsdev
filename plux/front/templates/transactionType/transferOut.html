@@ -1,0 +1,155 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="store_from">Store From</label>
+            <select name="store_from" id="store_from" class="form-control" required>
+                <option value="">Select Store From</option>
+                {% for store in stores %}
+                <option value="{{store.id}}">{{store.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="store_to">Store To</label>
+            <select name="store_to" id="store_to" class="form-control" required>
+                <option value="">Select Store To</option>
+                {% for store in stores %}
+                <option value="{{store.id}}">{{store.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+<div class="purchase_order_details">
+    <div class="row content_parent">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label>Item</label>
+                <select name="item_id[]" class="form-control store_item" required>
+                    <option value="">Select Item</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required
+                    min="1" onkeyup="checkMaxMin(this)"
+                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <button type="button" class="btn btn-sm btn-info mt-4 add_transfer_item">Add More
+                    Item</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="add_more_content">
+</div>
+<script>
+    var item_count = 1;
+    $(document).on('click', '.add_transfer_item', function () {
+        if ($('.content_parent').length < item_count) {
+            $('.add_more_content').append(`<div class="row content_parent">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>Item</label>
+                                        <select name="item_id[]" class="form-control store_item" required>
+                                            <option value="">Select Item</option>
+                                            {% for item in items %}
+                                            <option value="{{item.id}}">{{item.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required min="1" onkeyup="checkMaxMin(this)"
+                                        onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-sm btn-danger mt-4 remove_transfer_item">Remove</button>
+                                    </div>
+                                </div>
+                            </div>`);
+            showItemsByStore();
+        }
+    });
+
+    $(document).on('click', '.remove_transfer_item', function () {
+        if ($(this).parents().find('.content_parent').length > 1) {
+            $(this).parents().closest('.content_parent').remove();
+            calculateTotalAmount();
+        } else {
+            alert("You must submit one of the items of purchase order.")
+        }
+    });
+
+    $(document).on('change', '#store_from', function () {
+        showItemsByStore();
+    })
+
+    function showItemsByStore() {
+        store_from_id = $('#store_from').val();
+        $.ajax({
+            url: "{% url 'getExceptStores' %}",
+            type: 'post',
+            data: ({ store_from_id: store_from_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    item_count = response.storeItems.length;
+                    var except_store_text = `<option value="">Select Store To</option>`;
+                    for (let index = 0; index < response.exceptStore.length; index++) {
+                        except_store_text += `<option value="${response.exceptStore[index].id}">${response.exceptStore[index].name}</option>`;
+                    }
+                    $("#store_to").html(except_store_text);
+
+                    var store_item_text = `<option value="">Select Item</option>`;
+                    for (let index = 0; index < response.storeItems.length; index++) {
+                        store_item_text += `<option value="${response.storeItems[index].item_id}">${response.storeItems[index].item__description}</option>`;
+                    }
+                    $(".store_item").html(store_item_text);
+                    if (item_count == 0) {
+                        $('.add_more_content').html(``);
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    }
+
+    $(document).on('change', '.store_item', function () {
+        elem = $(this);
+        store_from_id = $("#store_from").val();
+        store_item = $(this).val();
+        $.ajax({
+            url: "{% url 'getItemsDetailsByStore' %}",
+            type: 'post',
+            data: ({ store_from_id: store_from_id, store_item: store_item }),
+            success: function (response) {
+                if (response.code == 200) {
+                    elem.parents('.content_parent').find('.item_quantity').attr('max', parseInt(response.storeItems.on_hand_qty))
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    })
+
+    function checkMaxMin(element) {
+        if (parseInt($(element).attr('max')) < parseInt($(element).val())) {
+            $(element).val($(element).attr('max'));
+        }
+        if (parseInt($(element).attr('min')) > parseInt($(element).val())) {
+            $(element).val($(element).attr('min'));
+        }
+    }
+</script>
