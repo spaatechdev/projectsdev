@@ -423,14 +423,16 @@
                                             ${response.items.map((item) => `<option ${item.id == response.data[index].item_id ? "selected" : ""} value="${item.id}">${item.description}</option>`)}
                                         </select>
                                         <input type="hidden" name="item_id[]" value="${response.data[index].item_id}">
+                                        <input type="hidden" name="purchase_details_id[]" value="${response.data[index].id}">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Quantity</label>
-                                        <input type="text" class="form-control item_quantity" name="quantity[]"
-                                            placeholder="100" required value="${response.data[index].quantity}"
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" min="1" max="${response.data[index].quantity - response.data[index].delivered_quantity}"
+                                            placeholder="100" required value="${response.data[index].quantity - response.data[index].delivered_quantity}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            onkeyup="checkMaxMin(this)">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -471,5 +473,14 @@
             },
         });
     });
+
+    function checkMaxMin(element) {
+        if (parseInt($(element).attr('max')) < parseInt($(element).val())) {
+            $(element).val($(element).attr('max'));
+        }
+        if (parseInt($(element).attr('min')) > parseInt($(element).val())) {
+            $(element).val($(element).attr('min'));
+        }
+    }
 </script>
 {% endblock %}
