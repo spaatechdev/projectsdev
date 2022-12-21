@@ -950,7 +950,7 @@ def storeTransactionAdd(request):
         storeTransaction.total_amount = request.POST['total_amount']
         storeTransaction.save()
         order_details = []
-        for index, item in enumerate(request.POST.getlist('item_id[]')):
+        for index, item in enumerate(request.POST.getlist('purchase_details_id[]')):
             order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist(
                 'unit_price[]')[index], amount=request.POST.getlist('amount[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
             storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist('item_id[]')[index], store_id=request.POST['store_id']).first()
@@ -967,6 +967,14 @@ def storeTransactionAdd(request):
                     storeItem.on_hand_qty += Decimal(request.POST.getlist('quantity[]')[index])
                     storeItem.save()
         models.StoreTransactionDetails.objects.bulk_create(order_details)
+        if request.POST['purchase_order_header_id'] != "":
+            for index, item in enumerate(request.POST.getlist('purchase_details_id[]')):
+                purchaseOrderItem = models.PurchaseOrderDetails.objects.get(pk=request.POST.getlist('purchase_details_id[]')[index])
+                purchaseOrderItem.delivered_quantity += request.POST.getlist('quantity[]')[index]
+                purchaseOrderItem.save()
+            purchaseOrderHeader = models.PurchaseOrderHeader.objects.get(pk=request.POST['purchase_order_header_id'])
+            purchaseOrderHeader.status = 2
+            purchaseOrderHeader.save()
         messages.success(request, 'Store Transaction Created Successfully.')
         return redirect('storeTransactionList')
     return render(request, 'storeTransaction/add.html', context)
@@ -1057,11 +1065,11 @@ def getPurchaseOrderDetails(request):
     if request.method == "POST":
         purchase_order_header_id = request.POST['purchase_order_header_id']
         purchase_order_details = list(models.PurchaseOrderDetails.objects.filter(
-            purchase_order_header_id=purchase_order_header_id).values('id', 'ammend_no', 'quantity', 'unit_price', 'amount', 'item_id'))
+            purchase_order_header_id=purchase_order_header_id).values('id', 'ammend_no', 'quantity', 'delivered_quantity', 'unit_price', 'amount', 'item_id'))
         items = list(models.ItemMaster.objects.filter(
             deleted=0).values('id', 'description'))
         purchase_order_details = list(models.PurchaseOrderDetails.objects.filter(
-            purchase_order_header_id=purchase_order_header_id).values('id', 'ammend_no', 'quantity', 'unit_price', 'amount', 'item_id'))
+            purchase_order_header_id=purchase_order_header_id).values('id', 'ammend_no', 'quantity', 'delivered_quantity', 'unit_price', 'amount', 'item_id'))
         return JsonResponse({
             'code': 200,
             'status': 'SUCCESS',
