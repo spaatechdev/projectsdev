@@ -142,7 +142,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
-                            <button type="reset" class="btn btn-light">Cancel</button>
+                            <button type="reset" class="btn btn-light">Reset</button>
                         </form>
                     </div>
                 </div>
@@ -379,8 +379,9 @@
                     var purchase_details = ``;
                     var total_amount = 0;
                     for (let index = 0; index < response.data.length; index++) {
-                        total_amount += parseInt(response.data[index].amount);
-                        purchase_details += `<div class="row content_parent">
+                        if ((response.data[index].quantity - response.data[index].delivered_quantity) > 0) {
+                            total_amount += parseInt((response.data[index].unit_price * (response.data[index].quantity - response.data[index].delivered_quantity)));
+                            purchase_details += `<div class="row content_parent">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Item</label>
@@ -413,7 +414,7 @@
                                     <div class="form-group">
                                         <label>Amount</label>
                                         <input type="text" class="form-control item_total_amount" name="amount[]" readonly
-                                            placeholder="100,000" required value="${response.data[index].amount}"
+                                            placeholder="100,000" required value="${(response.data[index].unit_price * (response.data[index].quantity - response.data[index].delivered_quantity)).toFixed(2)}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -428,8 +429,8 @@
                                             class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
                                     </div>
                                 </div>`}
-
                             </div>`;
+                        }
                     }
                     $(".purchase_order_details").html(purchase_details);
                     $("#total_amount").val(total_amount.toFixed(2));

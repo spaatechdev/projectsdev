@@ -973,9 +973,17 @@ def storeTransactionAdd(request):
                 purchaseOrderItem = models.PurchaseOrderDetails.objects.get(pk=request.POST.getlist('purchase_details_id[]')[index])
                 purchaseOrderItem.delivered_quantity += Decimal(request.POST.getlist('quantity[]')[index])
                 purchaseOrderItem.save()
-            purchaseOrderHeader = models.PurchaseOrderHeader.objects.get(pk=request.POST['purchase_order_header_id'])
-            purchaseOrderHeader.status = 2
-            purchaseOrderHeader.save()
+            purchaseHeader = models.PurchaseOrderHeader.objects.prefetch_related('purchaseorderdetails_set').get(pk=request.POST['purchase_order_header_id'])
+            flag = False
+            for purchaseOrderDetail in purchaseHeader.purchaseorderdetails_set.all():
+                if Decimal(purchaseOrderDetail.quantity) <= Decimal(purchaseOrderDetail.delivered_quantity):
+                    flag = True
+                    break
+            if flag == True:
+                purchaseHeader.status = 3
+            else:
+                purchaseHeader.status = 2
+            purchaseHeader.save()
         messages.success(request, 'Store Transaction Created Successfully.')
         return redirect('storeTransactionList')
     return render(request, 'storeTransaction/add.html', context)
@@ -1019,6 +1027,14 @@ def storeTransactionEdit(request, id):
                     storeItem.on_hand_qty += storeItem.closing_qty + Decimal(request.POST.getlist('quantity[]')[index])
                     storeItem.save()
         models.StoreTransactionDetails.objects.bulk_create(order_details)
+        if request.POST['purchase_order_header_id'] != "":
+            for index, item in enumerate(request.POST.getlist('purchase_details_id[]')):
+                purchaseOrderItem = models.PurchaseOrderDetails.objects.get(pk=request.POST.getlist('purchase_details_id[]')[index])
+                purchaseOrderItem.delivered_quantity += Decimal(request.POST.getlist('quantity[]')[index])
+                purchaseOrderItem.save()
+            purchaseOrderHeader = models.PurchaseOrderHeader.objects.get(pk=request.POST['purchase_order_header_id'])
+            purchaseOrderHeader.status = 2
+            purchaseOrderHeader.save()
         messages.success(request, 'Store Transaction Updated Successfully.')
         return redirect('storeTransactionList')
     return render(request, 'storeTransaction/edit.html', context)
@@ -1046,8 +1062,7 @@ def storeTransactionDetailsList(request, header_id):
 def getVendorPurchaseOrders(request):
     if request.method == "POST":
         vendor_id = request.POST['vendor_id']
-        purchase_orders = list(models.PurchaseOrderHeader.objects.filter(
-            vendor_id=vendor_id, deleted=0).values('id', 'purchase_order_no'))
+        purchase_orders = list(models.PurchaseOrderHeader.objects.filter(vendor_id=vendor_id, deleted=0).exclude(status__in=[3]).values('id', 'purchase_order_no'))
         return JsonResponse({
             'code': 200,
             'status': 'SUCCESS',
