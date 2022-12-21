@@ -963,14 +963,15 @@ def storeTransactionAdd(request):
                 storeItem.store_id = request.POST['store_id']
                 storeItem.save()
             else:
-                if int(storeTransaction.transaction_type_id) == 7:
+                if int(storeTransaction.transaction_type_id) == 1:
                     storeItem.on_hand_qty += Decimal(request.POST.getlist('quantity[]')[index])
+                    storeItem.closing_qty += Decimal(request.POST.getlist('quantity[]')[index])
                     storeItem.save()
         models.StoreTransactionDetails.objects.bulk_create(order_details)
         if request.POST['purchase_order_header_id'] != "":
             for index, item in enumerate(request.POST.getlist('purchase_details_id[]')):
                 purchaseOrderItem = models.PurchaseOrderDetails.objects.get(pk=request.POST.getlist('purchase_details_id[]')[index])
-                purchaseOrderItem.delivered_quantity += request.POST.getlist('quantity[]')[index]
+                purchaseOrderItem.delivered_quantity += Decimal(request.POST.getlist('quantity[]')[index])
                 purchaseOrderItem.save()
             purchaseOrderHeader = models.PurchaseOrderHeader.objects.get(pk=request.POST['purchase_order_header_id'])
             purchaseOrderHeader.status = 2
@@ -1014,7 +1015,7 @@ def storeTransactionEdit(request, id):
                 storeItem.store_id = request.POST['store_id']
                 storeItem.save()
             else:
-                if int(storeTransaction.transaction_type_id) == 7:
+                if int(storeTransaction.transaction_type_id) == 1:
                     storeItem.on_hand_qty += storeItem.closing_qty + Decimal(request.POST.getlist('quantity[]')[index])
                     storeItem.save()
         models.StoreTransactionDetails.objects.bulk_create(order_details)
