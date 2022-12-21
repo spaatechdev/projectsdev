@@ -9,7 +9,7 @@ from . import models
 from datetime import datetime
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
-from django.core import serializers
+from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 import environ
 import os
@@ -25,6 +25,75 @@ environ.Env.read_env()
 
 def index(request):
     return HttpResponse("Hello, world. You're at the Front index.")
+
+def getTransactionType(request):
+    if request.method == "POST":
+        context = {}
+        vendors = models.VendorMaster.objects.filter(deleted=0)
+        stores = models.StoreMaster.objects.filter(deleted=0)
+        items = models.ItemMaster.objects.filter(deleted=0)
+        context.update({'vendors': vendors, 'stores': stores, 'items': items})
+        transaction_type = request.POST['transaction_type_id']
+        if int(transaction_type) == 1:
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'transactionType': render_to_string('transactionType/receipt.html', context)
+            })
+        elif int(transaction_type) == 2:
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'transactionType': render_to_string('transactionType/issue.html', {})
+            })
+        elif int(transaction_type) == 3:
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'transactionType': render_to_string('transactionType/return.html', {})
+            })
+        elif int(transaction_type) == 4:
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'transactionType': render_to_string('transactionType/transferOut.html', {})
+            })
+        elif int(transaction_type) == 5:
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'transactionType': render_to_string('transactionType/transferIn.html', {})
+            })
+        elif int(transaction_type) == 6:
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'transactionType': render_to_string('transactionType/physicalStock.html', {})
+            })
+        elif int(transaction_type) == 7:
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'transactionType': render_to_string('transactionType/verificationPositive.html', {})
+            })
+        elif int(transaction_type) == 8:
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'transactionType': render_to_string('transactionType/verificationNegative.html', {})
+            })
+        else:
+            return JsonResponse({
+                'code': 502,
+                'status': "ERROR",
+                'message': "Transaction Type not found."
+            })
+    else:
+        return JsonResponse({
+            'code': 501,
+            'status': "ERROR",
+            'message': "There should be ajax method."
+        })
 
 
 def signin(request):
@@ -931,11 +1000,12 @@ def storeTransactionList(request):
 @login_required
 def storeTransactionAdd(request):
     context = {}
-    vendors = models.VendorMaster.objects.filter(deleted=0)
-    stores = models.StoreMaster.objects.filter(deleted=0)
     transactionTypes = models.TransactionType.objects.filter(deleted=0)
-    items = models.ItemMaster.objects.filter(deleted=0)
-    context.update({'vendors': vendors, 'stores': stores, 'items': items, 'transactionTypes': transactionTypes})
+    # vendors = models.VendorMaster.objects.filter(deleted=0)
+    # stores = models.StoreMaster.objects.filter(deleted=0)
+    # items = models.ItemMaster.objects.filter(deleted=0)
+    # context.update({'vendors': vendors, 'stores': stores, 'items': items, 'transactionTypes': transactionTypes})
+    context.update({'transactionTypes': transactionTypes})
     if request.method == "POST":
         transaction_count = models.StoreTransactionHeader.objects.filter(
             deleted=0).count()
@@ -974,10 +1044,10 @@ def storeTransactionAdd(request):
                 purchaseOrderItem.delivered_quantity += Decimal(request.POST.getlist('quantity[]')[index])
                 purchaseOrderItem.save()
             purchaseHeader = models.PurchaseOrderHeader.objects.prefetch_related('purchaseorderdetails_set').get(pk=request.POST['purchase_order_header_id'])
-            flag = False
+            flag = True
             for purchaseOrderDetail in purchaseHeader.purchaseorderdetails_set.all():
-                if Decimal(purchaseOrderDetail.quantity) <= Decimal(purchaseOrderDetail.delivered_quantity):
-                    flag = True
+                if Decimal(purchaseOrderDetail.quantity) > Decimal(purchaseOrderDetail.delivered_quantity):
+                    flag = False
                     break
             if flag == True:
                 purchaseHeader.status = 3
