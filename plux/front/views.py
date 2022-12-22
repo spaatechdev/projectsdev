@@ -1423,12 +1423,22 @@ def storeTransactionAdd(request):
                 storeFromItem.save()
             models.OnTransitDetails.objects.bulk_create(transit_details)
         elif int(request.POST['transaction_type_id']) == 5:
-            onTransitHeader = models.OnTransitHeader.objects.get(
-                pk=request.POST['transfer_number'])
+            transaction_count = models.StoreTransactionHeader.objects.filter(deleted=0).count()
+            transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
+            storeTransaction = models.StoreTransactionHeader()
+            storeTransaction.transaction_number = transaction_number
+            # storeTransaction.transaction_date = request.POST['transaction_date']
+            storeTransaction.transaction_date = datetime.now()
+            storeTransaction.on_transit_header_id = request.POST['transfer_number']
+            storeTransaction.store_id = request.POST['store_to']
+            storeTransaction.transaction_type_id = request.POST['transaction_type_id']
+            storeTransaction.total_amount = 0
+            storeTransaction.save()
+            order_details = []
             for index, item in enumerate(request.POST.getlist('on_transit_details_id[]')):
+                order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
                 transitDetails = models.OnTransitDetails.objects.get(pk=item)
-                transitDetails.delivered_quantity += Decimal(
-                    request.POST.getlist('quantity[]')[index])
+                transitDetails.delivered_quantity += Decimal(request.POST.getlist('quantity[]')[index])
                 transitDetails.delivery_date = datetime.now()
                 transitDetails.save()
                 storeToItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist(
@@ -1450,6 +1460,7 @@ def storeTransactionAdd(request):
                     storeToItem.closing_qty += Decimal(
                         request.POST.getlist('quantity[]')[index])
                     storeToItem.save()
+            models.StoreTransactionDetails.objects.bulk_create(order_details)
             onTransitHeader = models.OnTransitHeader.objects.prefetch_related('ontransitdetails_set').get(pk=request.POST['transfer_number'])
             flag = True
             for onTransitDetail in onTransitHeader.ontransitdetails_set.all():
@@ -1461,17 +1472,6 @@ def storeTransactionAdd(request):
             else:
                 onTransitHeader.status = 2
             onTransitHeader.save()
-            transaction_count = models.StoreTransactionHeader.objects.filter(deleted=0).count()
-            transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
-            storeTransaction = models.StoreTransactionHeader()
-            storeTransaction.transaction_number = transaction_number
-            # storeTransaction.transaction_date = request.POST['transaction_date']
-            storeTransaction.transaction_date = datetime.now()
-            storeTransaction.on_transit_header_id = request.POST['transfer_number']
-            storeTransaction.store_id = request.POST['store_to']
-            storeTransaction.transaction_type_id = request.POST['transaction_type_id']
-            storeTransaction.total_amount = 0
-            storeTransaction.save()
         elif int(request.POST['transaction_type_id']) == 6:
             pass
         elif int(request.POST['transaction_type_id']) == 7:
@@ -1562,8 +1562,7 @@ def storeTransactionDelete(request, id):
 @login_required
 def storeTransactionDetailsList(request, header_id):
     page = request.GET.get('page', 1)
-    storeTransactionHeader = models.StoreTransactionHeader.objects.prefetch_related(
-        'storetransactiondetails_set').get(pk=header_id)
+    storeTransactionHeader = models.StoreTransactionHeader.objects.prefetch_related('storetransactiondetails_set').get(pk=header_id)
     context = {'storeTransactionHeader': storeTransactionHeader}
     return render(request, 'storeTransaction/orderDetailsList.html', context)
 

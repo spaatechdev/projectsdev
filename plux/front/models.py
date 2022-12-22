@@ -413,9 +413,9 @@ class StoreTransactionDetails(models.Model):
                              on_delete=models.CASCADE, blank=True, null=True)
     type = models.ForeignKey(
         TransactionType, on_delete=models.CASCADE, blank=True, null=True)
-    quantity = models.DecimalField(max_digits=10, decimal_places=2)
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     delivery_date = models.DateField(blank=True, null=True)
     deleted = models.BooleanField(default=0)
 
