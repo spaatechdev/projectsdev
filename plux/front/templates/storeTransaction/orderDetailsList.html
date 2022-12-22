@@ -45,6 +45,14 @@
                                             Store To
                                         </th>
                                         {% endif %}
+                                        {% if storeTransactionHeader.physical_stock_header_id is not None %}
+                                        <th>
+                                            Store
+                                        </th>
+                                        <th>
+                                            Actual Quantity
+                                        </th>
+                                        {% endif %}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -73,6 +81,14 @@
                                         </td>
                                         <td>
                                             {{storeTransactionHeaderDetail.store_transaction_header.on_transit_header.store_to.name}}
+                                        </td>
+                                        {% endif %}
+                                        {% if storeTransactionHeaderDetail.store_transaction_header.physical_stock_header_id is not None %}
+                                        <td>
+                                            {{storeTransactionHeaderDetail.store_transaction_header.physical_stock_header.store.name}}
+                                        </td>
+                                        <td>
+                                            {{storeTransactionHeaderDetail.actual_quantity}}
                                         </td>
                                         {% endif %}
                                     </tr>

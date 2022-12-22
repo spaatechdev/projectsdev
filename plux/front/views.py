@@ -69,7 +69,8 @@ def getTransactionType(request):
                 'transactionType': render_to_string('transactionType/transferOut.html', context)
             })
         elif int(transaction_type) == 5:
-            onTransitOrders = models.OnTransitHeader.objects.filter(deleted=0).exclude(status=3)
+            onTransitOrders = models.OnTransitHeader.objects.filter(
+                deleted=0).exclude(status=3)
             context.update({'onTransitOrders': onTransitOrders})
             return JsonResponse({
                 'code': 200,
@@ -77,22 +78,12 @@ def getTransactionType(request):
                 'transactionType': render_to_string('transactionType/transferIn.html', context)
             })
         elif int(transaction_type) == 6:
+            stores = models.StoreMaster.objects.filter(deleted=0)
+            context.update({'stores': stores})
             return JsonResponse({
                 'code': 200,
                 'status': "SUCCESS",
                 'transactionType': render_to_string('transactionType/physicalStock.html', context)
-            })
-        elif int(transaction_type) == 7:
-            return JsonResponse({
-                'code': 200,
-                'status': "SUCCESS",
-                'transactionType': render_to_string('transactionType/verificationPositive.html', context)
-            })
-        elif int(transaction_type) == 8:
-            return JsonResponse({
-                'code': 200,
-                'status': "SUCCESS",
-                'transactionType': render_to_string('transactionType/verificationNegative.html', context)
             })
         else:
             return JsonResponse({
@@ -978,10 +969,12 @@ def plyDimensionImport(request):
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     plyDimension_list.append(models.PlyDimensionMaster(description=row['Description'], length_ft=row['Length(Ft)'],
-                                            breadth_ft=row['Breadth(Ft)'], length_mt=0.3048*float(row['Length(Ft)']),
-                                            breadth_mt=0.3048*float(row['Breadth(Ft)']),square_ft=float(row['Length(Ft)'])*float(row['Breadth(Ft)']),
-                                            square_mt= 0.09290304*float(row['Length(Ft)'])*float(row['Breadth(Ft)'])))
-                models.PlyDimensionMaster.objects.bulk_create(plyDimension_list)
+                                                                       breadth_ft=row['Breadth(Ft)'], length_mt=0.3048*float(
+                                                                           row['Length(Ft)']),
+                                                                       breadth_mt=0.3048*float(row['Breadth(Ft)']), square_ft=float(row['Length(Ft)'])*float(row['Breadth(Ft)']),
+                                                                       square_mt=0.09290304*float(row['Length(Ft)'])*float(row['Breadth(Ft)'])))
+                models.PlyDimensionMaster.objects.bulk_create(
+                    plyDimension_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
             messages.success(request, 'Ply Dimension Created Successfully.')
@@ -1085,9 +1078,12 @@ def itemImport(request):
                 reader = csv.DictReader(csvfile)
                 item_list = []
                 for row in reader:
-                    item_category_obj = models.ItemCtegory.objects.filter(description=row['Item Category']).first()
-                    uom_obj = models.UomMaster.objects.filter(description=row['UOM']).first()
-                    ply_dimension_obj = models.PlyDimensionMaster.objects.filter(description=row['Ply Dimension']).first()
+                    item_category_obj = models.ItemCtegory.objects.filter(
+                        description=row['Item Category']).first()
+                    uom_obj = models.UomMaster.objects.filter(
+                        description=row['UOM']).first()
+                    ply_dimension_obj = models.PlyDimensionMaster.objects.filter(
+                        description=row['Ply Dimension']).first()
                     if item_category_obj is None:
                         item_category_obj = models.ItemCtegory()
                         item_category_obj.description = row['Item Category']
@@ -1096,7 +1092,8 @@ def itemImport(request):
                         uom_obj = models.UomMaster()
                         uom_obj.description = row['UOM']
                         uom_obj.save()
-                    item_list.append(models.ItemMaster(description=row['Description'], item_category_id=item_category_obj.id, ply_dimension_id=ply_dimension_obj.id, uom_id=uom_obj.id, unit_price=row['Unit Price'], hsn_code=row['HSN Code'], gst_percentage=row['GST %']))
+                    item_list.append(models.ItemMaster(description=row['Description'], item_category_id=item_category_obj.id, ply_dimension_id=ply_dimension_obj.id,
+                                     uom_id=uom_obj.id, unit_price=row['Unit Price'], hsn_code=row['HSN Code'], gst_percentage=row['GST %']))
                 models.ItemMaster.objects.bulk_create(item_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
@@ -1208,8 +1205,8 @@ def storeItemImport(request):
                         description=row['Item']).first()
                     store_id = store_obj.id if store_obj is not None else None
                     item_id = item_obj.id if item_obj is not None else None
-                    storeItem_list.append(models.StoreItemMaster(store_id=store_id, item_id = item_id, opening_qty=Decimal(row['Opening Quantity']),
-                     on_hand_qty=Decimal(row['Opening Quantity']), closing_qty=Decimal(row['Opening Quantity'])))
+                    storeItem_list.append(models.StoreItemMaster(store_id=store_id, item_id=item_id, opening_qty=Decimal(row['Opening Quantity']),
+                                                                 on_hand_qty=Decimal(row['Opening Quantity']), closing_qty=Decimal(row['Opening Quantity'])))
                 models.StoreItemMaster.objects.bulk_create(storeItem_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
@@ -1228,7 +1225,6 @@ def downloadstoreItemExcel(request):
             response['Content-Disposition'] = 'attachment; filename=' + \
                 os.path.basename(file_path)
             return response
-
 
 
 @login_required
@@ -1331,7 +1327,8 @@ def storeTransactionList(request):
 @login_required
 def storeTransactionAdd(request):
     context = {}
-    transactionTypes = models.TransactionType.objects.filter(deleted=0).exclude(id__in=[2,3])
+    transactionTypes = models.TransactionType.objects.filter(
+        deleted=0).exclude(id__in=[2, 3])
     context.update({'transactionTypes': transactionTypes})
     if request.method == "POST":
         if int(request.POST['transaction_type_id']) == 1:
@@ -1420,7 +1417,8 @@ def storeTransactionAdd(request):
                 storeFromItem.save()
             models.OnTransitDetails.objects.bulk_create(transit_details)
         elif int(request.POST['transaction_type_id']) == 5:
-            transaction_count = models.StoreTransactionHeader.objects.filter(deleted=0).count()
+            transaction_count = models.StoreTransactionHeader.objects.filter(
+                deleted=0).count()
             transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
             storeTransaction = models.StoreTransactionHeader()
             storeTransaction.transaction_number = transaction_number
@@ -1433,9 +1431,11 @@ def storeTransactionAdd(request):
             storeTransaction.save()
             order_details = []
             for index, item in enumerate(request.POST.getlist('on_transit_details_id[]')):
-                order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
+                order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist(
+                    'quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
                 transitDetails = models.OnTransitDetails.objects.get(pk=item)
-                transitDetails.delivered_quantity += Decimal(request.POST.getlist('quantity[]')[index])
+                transitDetails.delivered_quantity += Decimal(
+                    request.POST.getlist('quantity[]')[index])
                 transitDetails.delivery_date = datetime.now()
                 transitDetails.save()
                 storeToItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist(
@@ -1448,7 +1448,8 @@ def storeTransactionAdd(request):
                         request.POST.getlist('quantity[]')[index])
                     storeToItem.closing_qty = Decimal(
                         request.POST.getlist('quantity[]')[index])
-                    storeToItem.item_id = request.POST.getlist('item_id[]')[index]
+                    storeToItem.item_id = request.POST.getlist('item_id[]')[
+                        index]
                     storeToItem.store_id = request.POST['store_to']
                     storeToItem.save()
                 else:
@@ -1458,7 +1459,8 @@ def storeTransactionAdd(request):
                         request.POST.getlist('quantity[]')[index])
                     storeToItem.save()
             models.StoreTransactionDetails.objects.bulk_create(order_details)
-            onTransitHeader = models.OnTransitHeader.objects.prefetch_related('ontransitdetails_set').get(pk=request.POST['transfer_number'])
+            onTransitHeader = models.OnTransitHeader.objects.prefetch_related(
+                'ontransitdetails_set').get(pk=request.POST['transfer_number'])
             flag = True
             for onTransitDetail in onTransitHeader.ontransitdetails_set.all():
                 if Decimal(onTransitDetail.quantity) > Decimal(onTransitDetail.delivered_quantity):
@@ -1470,7 +1472,52 @@ def storeTransactionAdd(request):
                 onTransitHeader.status = 2
             onTransitHeader.save()
         elif int(request.POST['transaction_type_id']) == 6:
-            pass
+            physical_stock_check_count = models.PhysicalStockHeader.objects.filter(
+                deleted=0).count()
+            physical_stock_check_number = "PS-" + \
+                str(physical_stock_check_count + 1).zfill(8)
+            physicalStockHeader = models.PhysicalStockHeader()
+            physicalStockHeader.physical_stock_check_number = physical_stock_check_number
+            # physicalStockHeader.physical_stock_check_date = request.POST['transaction_date']
+            physicalStockHeader.physical_stock_check_date = datetime.now()
+            physicalStockHeader.store_id = request.POST['store']
+            physicalStockHeader.save()
+            physical_stock_details = []
+            for index, item in enumerate(request.POST.getlist('item_id[]')):
+                storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist('item_id[]')[index], store_id=request.POST['store']).first()
+                physical_stock_details.append(models.PhysicalStockDetails(item_id=request.POST.getlist('item_id[]')[
+                                              index], quantity=storeItem.opening_qty, original_quantity=request.POST.getlist('quantity[]')[index], physical_stock_header_id=physicalStockHeader.id))
+            models.PhysicalStockDetails.objects.bulk_create(physical_stock_details)
+
+            transaction_count = models.StoreTransactionHeader.objects.filter(
+                deleted=0).count()
+            transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
+            storeTransaction = models.StoreTransactionHeader()
+            storeTransaction.transaction_number = transaction_number
+            # storeTransaction.transaction_date = request.POST['transaction_date']
+            storeTransaction.transaction_date = datetime.now()
+            storeTransaction.physical_stock_header_id = physicalStockHeader.id
+            storeTransaction.store_id = request.POST['store']
+            storeTransaction.transaction_type_id = request.POST['transaction_type_id']
+            storeTransaction.total_amount = 0
+            storeTransaction.save()
+            order_details = []
+            for index, item in enumerate(request.POST.getlist('item_id[]')):
+                order_details.append(models.StoreTransactionDetails(type_id=request.POST['transaction_type_id'], quantity=request.POST.getlist(
+                    'quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], store_transaction_header_id=storeTransaction.id))
+            models.StoreTransactionDetails.objects.bulk_create(order_details)
+            physicalStockHeader = models.PhysicalStockHeader.objects.prefetch_related(
+                'physicalstockdetails_set').get(pk=physicalStockHeader.id)
+            flag = True
+            for physicalDetail in physicalStockHeader.physicalstockdetails_set.all():
+                if Decimal(physicalDetail.quantity) == Decimal(physicalDetail.original_quantity):
+                    status = 1
+                elif Decimal(physicalDetail.quantity) > Decimal(physicalDetail.original_quantity):
+                    status = 2
+                else:
+                    status = 3
+            physicalStockHeader.status = status
+            physicalStockHeader.save()
         elif int(request.POST['transaction_type_id']) == 7:
             pass
         elif int(request.POST['transaction_type_id']) == 8:
@@ -1491,7 +1538,8 @@ def storeTransactionEdit(request, id):
     vendorPurchaseOrders = models.PurchaseOrderHeader.objects.filter(
         vendor_id=storeTransaction.vendor_id, deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    transactionTypes = models.TransactionType.objects.filter(deleted=0).exclude(id__in=[2,3])
+    transactionTypes = models.TransactionType.objects.filter(
+        deleted=0).exclude(id__in=[2, 3])
     items = models.ItemMaster.objects.filter(deleted=0)
     context.update({'storeTransaction': storeTransaction, 'vendors': vendors, 'stores': stores,
                    'items': items, 'transactionTypes': transactionTypes, 'vendorPurchaseOrders': vendorPurchaseOrders})
@@ -1560,6 +1608,10 @@ def storeTransactionDelete(request, id):
 def storeTransactionDetailsList(request, header_id):
     page = request.GET.get('page', 1)
     storeTransactionHeader = models.StoreTransactionHeader.objects.prefetch_related('storetransactiondetails_set').get(pk=header_id)
+    for storeTransactionHeaderDetail in storeTransactionHeader.storetransactiondetails_set.all():
+        if (storeTransactionHeaderDetail.type_id == 6):
+            physicalStockDetails = models.PhysicalStockDetails.objects.filter(item_id=storeTransactionHeaderDetail.item_id, physical_stock_header_id=storeTransactionHeaderDetail.store_transaction_header.physical_stock_header_id).first()
+            storeTransactionHeaderDetail.actual_quantity = physicalStockDetails.quantity
     context = {'storeTransactionHeader': storeTransactionHeader}
     return render(request, 'storeTransaction/orderDetailsList.html', context)
 
@@ -1655,7 +1707,8 @@ def standardTermDelete(request, id):
 @login_required
 def onTransitOrderList(request):
     page = request.GET.get('page', 1)
-    onTransitOrders = models.OnTransitHeader.objects.filter(deleted=0).exclude(status=3)
+    onTransitOrders = models.OnTransitHeader.objects.filter(
+        deleted=0).exclude(status=3)
     paginator = Paginator(onTransitOrders, env("PER_PAGE_DATA"))
     onTransitOrders = paginator.page(page)
     context = {'onTransitOrders': onTransitOrders}

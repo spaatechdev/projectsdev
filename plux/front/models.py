@@ -379,6 +379,37 @@ class OnTransitDetails(models.Model):
         db_table = 'on_transit_details'
         verbose_name_plural = 'on_transit_details'
 
+class PhysicalStockHeader(models.Model):
+    store = models.ForeignKey(StoreMaster, related_name='PhysicalStockStore', on_delete=models.CASCADE, blank=True, null=True)
+    physical_stock_check_number = models.CharField(max_length=15, blank=True, null=True)
+    physical_stock_check_date = models.DateField(blank=True, null=True)
+    status = models.SmallIntegerField(default=1)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.physical_stock_check_number
+
+    class Meta:
+        managed = True
+        db_table = 'physical_stock_header'
+        verbose_name_plural = 'physical_stock_header'
+
+
+class PhysicalStockDetails(models.Model):
+    physical_stock_header = models.ForeignKey(PhysicalStockHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(ItemMaster, related_name='PhysicalStockItem', on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    original_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.physical_stock_header.physical_stock_check_number
+
+    class Meta:
+        managed = True
+        db_table = 'physical_stock_details'
+        verbose_name_plural = 'physical_stock_details'
+
 
 class StoreTransactionHeader(models.Model):
     vendor = models.ForeignKey(
@@ -388,6 +419,8 @@ class StoreTransactionHeader(models.Model):
         PurchaseOrderHeader, on_delete=models.CASCADE, blank=True, null=True)
     on_transit_header = models.ForeignKey(
         OnTransitHeader, on_delete=models.CASCADE, blank=True, null=True)
+    physical_stock_header = models.ForeignKey(
+        PhysicalStockHeader, on_delete=models.CASCADE, blank=True, null=True)
     transaction_date = models.DateField(blank=True, null=True)
     transaction_type = models.ForeignKey(
         TransactionType, on_delete=models.CASCADE, blank=True, null=True)
