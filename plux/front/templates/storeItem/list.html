@@ -14,6 +14,9 @@
                         <div class="col-md-6">
                             <a href="{% url 'storeItemAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
                         </div>
+                        <div class="col-md-12">
+                            <a href="{% url 'storeItemImport' %}" class="btn btn-primary btn-sm float-end">Import</a>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="table-responsive">
@@ -29,15 +32,15 @@
                                         <th>
                                             Item
                                         </th>
-                                        <th>
+                                        <!-- <th>
                                             Opening Quantity
-                                        </th>
+                                        </th> -->
                                         <th>
                                             On Hand Quantity
                                         </th>
-                                        <th>
+                                        <!-- <th>
                                             Closing Quantity
-                                        </th>
+                                        </th> -->
                                         <th>
                                             Action
                                         </th>
@@ -55,15 +58,15 @@
                                         <td>
                                             {{storeItem.item.description}}
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                             {{storeItem.opening_qty}}
-                                        </td>
+                                        </td> -->
                                         <td>
                                             {{storeItem.on_hand_qty}}
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                             {{storeItem.closing_qty}}
-                                        </td>
+                                        </td> -->
                                         <td>
                                             <a href="{% url 'storeItemEdit' storeItem.id %}"
                                                 class="btn btn-info btn-sm">
