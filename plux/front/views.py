@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from decimal import Decimal
 from django.http import HttpResponse
 from .decorators import login_required
 from django.contrib.messages import get_messages
@@ -645,6 +646,45 @@ def itemCategoryDelete(request, id):
 
 
 @login_required
+def itemCategoryImport(request):
+    context = {}
+    if request.method == "POST":
+        itemCategory_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/item categories/", MEDIA_ROOT + "/excels/item categories/")
+            fs.save(tmpname, file)
+            file_name = "excels/item categories/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    itemCategory_list.append(models.ItemCtegory(
+                        description=row['Description']))
+                models.ItemCtegory.objects.bulk_create(itemCategory_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Item categories Created Successfully.')
+            return redirect('itemCategoryList')
+    return render(request, 'itemCategory/import.html', context)
+
+
+@login_required
+def downloaditemCategoryExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "item categories.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
+
+
+@login_required
 def plyDimensionList(request):
     page = request.GET.get('page', 1)
     plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
@@ -699,6 +739,48 @@ def plyDimensionDelete(request, id):
     plyDimension.deleted = 1
     plyDimension.save()
     return redirect('plyDimensionList')
+
+
+@login_required
+def plyDimensionImport(request):
+    context = {}
+    if request.method == "POST":
+        plyDimension_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/ply dimensions/", MEDIA_ROOT + "/excels/ply dimensions/")
+            fs.save(tmpname, file)
+            file_name = "excels/ply dimensions/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    plyDimension_list.append(models.PlyDimensionMaster(description=row['Description'], length_ft=row['Length(Ft)'],
+                                            breadth_ft=row['Breadth(Ft)'], length_mt=0.3048*float(row['Length(Ft)']),
+                                            breadth_mt=0.3048*float(row['Breadth(Ft)']),square_ft=float(row['Length(Ft)'])*float(row['Breadth(Ft)']),
+                                            square_mt= 0.09290304*float(row['Length(Ft)'])*float(row['Breadth(Ft)'])))
+                models.PlyDimensionMaster.objects.bulk_create(plyDimension_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Ply Dimension Created Successfully.')
+            return redirect('plyDimensionList')
+    return render(request, 'plyDimension/import.html', context)
+
+
+@login_required
+def downloadplyDimensionExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "ply dimensions.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                # fh.read(), content_type="application/vnd.ms-excel")
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
 
 
 @login_required
@@ -829,6 +911,54 @@ def storeItemDelete(request, id):
     storeItem.deleted = 1
     storeItem.save()
     return redirect('storeItemList')
+
+
+@login_required
+def storeItemImport(request):
+    context = {}
+    if request.method == "POST":
+        storeItem_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/store items/", MEDIA_ROOT + "/excels/store items/")
+            fs.save(tmpname, file)
+            file_name = "excels/store items/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if not row['Store'] and not row['Item']:
+                        break
+                    store_obj = models.StoreMaster.objects.filter(
+                        name=row['Store']).first()
+                    item_obj = models.ItemMaster.objects.filter(
+                        description=row['Item']).first()
+                    store_id = store_obj.id if store_obj is not None else None
+                    item_id = item_obj.id if item_obj is not None else None
+                    storeItem_list.append(models.StoreItemMaster(store_id=store_id, item_id = item_id, opening_qty=Decimal(row['Opening Quantity']),
+                     on_hand_qty=Decimal(row['Opening Quantity']), closing_qty=Decimal(row['Opening Quantity'])))
+                models.StoreItemMaster.objects.bulk_create(storeItem_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Store Item Created Successfully.')
+            return redirect('storeItemList')
+    return render(request, 'storeItem/import.html', context)
+
+
+@login_required
+def downloadstoreItemExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "store items.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
+
 
 
 @login_required

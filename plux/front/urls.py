@@ -46,11 +46,15 @@ urlpatterns = [
     path('itemCategoryAdd', views.itemCategoryAdd, name='itemCategoryAdd'),
     path('itemCategoryEdit/<int:id>', views.itemCategoryEdit, name='itemCategoryEdit'),
     path('itemCategoryDelete/<int:id>', views.itemCategoryDelete, name='itemCategoryDelete'),
+    path('itemCategoryImport', views.itemCategoryImport, name='itemCategoryImport'),
+    path('downloaditemCategoryExcel', views.downloaditemCategoryExcel, name='downloaditemCategoryExcel'),
     
     path('plyDimensionList', views.plyDimensionList, name='plyDimensionList'),
     path('plyDimensionAdd', views.plyDimensionAdd, name='plyDimensionAdd'),
     path('plyDimensionEdit/<int:id>', views.plyDimensionEdit, name='plyDimensionEdit'),
     path('plyDimensionDelete/<int:id>', views.plyDimensionDelete, name='plyDimensionDelete'),
+    path('plyDimensionImport', views.plyDimensionImport, name='plyDimensionImport'),
+    path('downloadplyDimensionExcel', views.downloadplyDimensionExcel, name='downloadplyDimensionExcel'),
 
     path('itemList', views.itemList, name='itemList'),
     path('itemAdd', views.itemAdd, name='itemAdd'),
@@ -61,6 +65,8 @@ urlpatterns = [
     path('storeItemAdd', views.storeItemAdd, name='storeItemAdd'),
     path('storeItemEdit/<int:id>', views.storeItemEdit, name='storeItemEdit'),
     path('storeItemDelete/<int:id>', views.storeItemDelete, name='storeItemDelete'),
+    path('storeItemImport', views.storeItemImport, name='storeItemImport'),
+    path('downloadstoreItemExcel', views.downloadstoreItemExcel, name='downloadstoreItemExcel'),
 
     path('purchaseOrderList', views.purchaseOrderList, name='purchaseOrderList'),
     path('purchaseOrderAdd', views.purchaseOrderAdd, name='purchaseOrderAdd'),
