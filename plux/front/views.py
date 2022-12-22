@@ -115,7 +115,7 @@ def getExceptStores(request):
         exceptStore = list(models.StoreMaster.objects.filter(
             deleted=0).exclude(id=store_from_id).values('id', 'name'))
         storeItems = list(models.StoreItemMaster.objects.filter(
-            deleted=0, store_id=store_from_id).values('id', 'item_id', 'on_hand_qty', 'item__description'))
+            deleted=0, store_id=store_from_id, on_hand_qty__gt=0).values('id', 'item_id', 'on_hand_qty', 'item__description'))
         return JsonResponse({
             'code': 200,
             'status': 'SUCCESS',
@@ -259,9 +259,6 @@ def enter_otp(request):
 
 def password_reset(request):
     if request.method == "POST":
-        # print(request.POST['password'])
-        # print(request.POST['confirmpassword'])
-        # exit()
         if (request.POST['password'] == request.POST['confirmpassword']):
             messages.success(request, "Passwords matched!!")
             return redirect('signin')
@@ -1451,7 +1448,7 @@ def storeTransactionAdd(request):
                         request.POST.getlist('quantity[]')[index])
                     storeToItem.closing_qty = Decimal(
                         request.POST.getlist('quantity[]')[index])
-                    storeToItem.item_id = item
+                    storeToItem.item_id = request.POST.getlist('item_id[]')[index]
                     storeToItem.store_id = request.POST['store_to']
                     storeToItem.save()
                 else:
