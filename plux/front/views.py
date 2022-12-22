@@ -63,7 +63,7 @@ def getTransactionType(request):
                 'transactionType': render_to_string('transactionType/transferOut.html', context)
             })
         elif int(transaction_type) == 5:
-            onTransitOrders = models.OnTransitHeader.objects.filter(deleted=0, status=1)
+            onTransitOrders = models.OnTransitHeader.objects.filter(deleted=0).exclude(status=3)
             context.update({'onTransitOrders': onTransitOrders})
             return JsonResponse({
                 'code': 200,
@@ -167,13 +167,17 @@ def getExceptedStoreItems(request):
             'message': "There should be ajax method."
         })
 
+
 @login_required
 def getTransferDetails(request):
     if request.method == "POST":
         transfer_number = request.POST['transfer_number']
-        onTransitHeader = list(models.OnTransitHeader.objects.filter(id=transfer_number).values('id', 'transfer_number', 'transfer_date', 'store_from_id', 'store_from__name', 'store_to_id', 'store_to__name'))[0]
-        onTransitDetails = list(models.OnTransitDetails.objects.filter(deleted=0,on_transit_header_id=transfer_number).values('id', 'quantity', 'item__description', 'item_id', 'delivered_quantity'))
-        items = list(models.ItemMaster.objects.filter(deleted=0).values('id', 'description'))
+        onTransitHeader = list(models.OnTransitHeader.objects.filter(id=transfer_number).values(
+            'id', 'transfer_number', 'transfer_date', 'store_from_id', 'store_from__name', 'store_to_id', 'store_to__name'))[0]
+        onTransitDetails = list(models.OnTransitDetails.objects.filter(deleted=0, on_transit_header_id=transfer_number).values(
+            'id', 'quantity', 'item__description', 'item_id', 'delivered_quantity'))
+        items = list(models.ItemMaster.objects.filter(
+            deleted=0).values('id', 'description'))
         return JsonResponse({
             'code': 200,
             'status': 'SUCCESS',
@@ -187,6 +191,7 @@ def getTransferDetails(request):
             'status': "ERROR",
             'message': "There should be ajax method."
         })
+
 
 def signin(request):
     context = {}
@@ -1102,7 +1107,8 @@ def storeTransactionAdd(request):
             transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
             storeTransaction = models.StoreTransactionHeader()
             storeTransaction.transaction_number = transaction_number
-            storeTransaction.transaction_date = request.POST['transaction_date']
+            # storeTransaction.transaction_date = request.POST['transaction_date']
+            storeTransaction.transaction_date = datetime.now()
             storeTransaction.purchase_order_header_id = request.POST['purchase_order_header_id']
             storeTransaction.store_id = request.POST['store_id']
             storeTransaction.transaction_type_id = request.POST['transaction_type_id']
@@ -1163,7 +1169,8 @@ def storeTransactionAdd(request):
             transfer_number = "TF-" + str(transfer_count + 1).zfill(8)
             onTransitHeader = models.OnTransitHeader()
             onTransitHeader.transfer_number = transfer_number
-            onTransitHeader.transfer_date = request.POST['transaction_date']
+            # onTransitHeader.transfer_date = request.POST['transaction_date']
+            onTransitHeader.transfer_date = datetime.now()
             onTransitHeader.store_from_id = request.POST['store_from']
             onTransitHeader.store_to_id = request.POST['store_to']
             onTransitHeader.save()
@@ -1171,16 +1178,64 @@ def storeTransactionAdd(request):
             for index, item in enumerate(request.POST.getlist('item_id[]')):
                 transit_details.append(models.OnTransitDetails(item_id=request.POST.getlist('item_id[]')[
                                        index], quantity=request.POST.getlist('quantity[]')[index], on_transit_header_id=onTransitHeader.id))
-                storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist(
+                storeFromItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist(
                     'item_id[]')[index], store_id=request.POST['store_from']).first()
-                storeItem.on_hand_qty -= Decimal(
+                storeFromItem.on_hand_qty -= Decimal(
                     request.POST.getlist('quantity[]')[index])
-                storeItem.closing_qty -= Decimal(
+                storeFromItem.closing_qty -= Decimal(
                     request.POST.getlist('quantity[]')[index])
-                storeItem.save()
+                storeFromItem.save()
             models.OnTransitDetails.objects.bulk_create(transit_details)
         elif int(request.POST['transaction_type_id']) == 5:
-            pass
+            onTransitHeader = models.OnTransitHeader.objects.get(
+                pk=request.POST['transfer_number'])
+            for index, item in enumerate(request.POST.getlist('on_transit_details_id[]')):
+                transitDetails = models.OnTransitDetails.objects.get(pk=item)
+                transitDetails.delivered_quantity += Decimal(
+                    request.POST.getlist('quantity[]')[index])
+                transitDetails.delivery_date = datetime.now()
+                transitDetails.save()
+                storeToItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist(
+                    'item_id[]')[index], store_id=request.POST['store_to']).first()
+                if storeToItem is None:
+                    storeToItem = models.StoreItemMaster()
+                    storeToItem.opening_qty = Decimal(
+                        request.POST.getlist('quantity[]')[index])
+                    storeToItem.on_hand_qty = Decimal(
+                        request.POST.getlist('quantity[]')[index])
+                    storeToItem.closing_qty = Decimal(
+                        request.POST.getlist('quantity[]')[index])
+                    storeToItem.item_id = item
+                    storeToItem.store_id = request.POST['store_to']
+                    storeToItem.save()
+                else:
+                    storeToItem.on_hand_qty += Decimal(
+                        request.POST.getlist('quantity[]')[index])
+                    storeToItem.closing_qty += Decimal(
+                        request.POST.getlist('quantity[]')[index])
+                    storeToItem.save()
+            onTransitHeader = models.OnTransitHeader.objects.prefetch_related('ontransitdetails_set').get(pk=request.POST['transfer_number'])
+            flag = True
+            for onTransitDetail in onTransitHeader.ontransitdetails_set.all():
+                if Decimal(onTransitDetail.quantity) > Decimal(onTransitDetail.delivered_quantity):
+                    flag = False
+                    break
+            if flag == True:
+                onTransitHeader.status = 3
+            else:
+                onTransitHeader.status = 2
+            onTransitHeader.save()
+            transaction_count = models.StoreTransactionHeader.objects.filter(deleted=0).count()
+            transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
+            storeTransaction = models.StoreTransactionHeader()
+            storeTransaction.transaction_number = transaction_number
+            # storeTransaction.transaction_date = request.POST['transaction_date']
+            storeTransaction.transaction_date = datetime.now()
+            storeTransaction.on_transit_header_id = request.POST['transfer_number']
+            storeTransaction.store_id = request.POST['store_to']
+            storeTransaction.transaction_type_id = request.POST['transaction_type_id']
+            storeTransaction.total_amount = 0
+            storeTransaction.save()
         elif int(request.POST['transaction_type_id']) == 6:
             pass
         elif int(request.POST['transaction_type_id']) == 7:
@@ -1302,7 +1357,8 @@ def getPurchaseOrderDetails(request):
         purchase_order_header_id = request.POST['purchase_order_header_id']
         purchase_order_details = list(models.PurchaseOrderDetails.objects.filter(
             purchase_order_header_id=purchase_order_header_id).values('id', 'ammend_no', 'quantity', 'delivered_quantity', 'unit_price', 'amount', 'item_id'))
-        items = list(models.ItemMaster.objects.filter(deleted=0).values('id', 'description'))
+        items = list(models.ItemMaster.objects.filter(
+            deleted=0).values('id', 'description'))
         purchase_order_details = list(models.PurchaseOrderDetails.objects.filter(
             purchase_order_header_id=purchase_order_header_id).values('id', 'ammend_no', 'quantity', 'delivered_quantity', 'unit_price', 'amount', 'item_id'))
         return JsonResponse({
@@ -1367,7 +1423,7 @@ def standardTermDelete(request, id):
 @login_required
 def onTransitOrderList(request):
     page = request.GET.get('page', 1)
-    onTransitOrders = models.OnTransitHeader.objects.filter(deleted=0)
+    onTransitOrders = models.OnTransitHeader.objects.filter(deleted=0).exclude(status=3)
     paginator = Paginator(onTransitOrders, env("PER_PAGE_DATA"))
     onTransitOrders = paginator.page(page)
     context = {'onTransitOrders': onTransitOrders}
@@ -1377,6 +1433,7 @@ def onTransitOrderList(request):
 @login_required
 def onTransitOrderDetailsList(request, header_id):
     page = request.GET.get('page', 1)
-    onTransitOrder = models.OnTransitHeader.objects.prefetch_related('ontransitdetails_set').get(pk=header_id)
+    onTransitOrder = models.OnTransitHeader.objects.prefetch_related(
+        'ontransitdetails_set').get(pk=header_id)
     context = {'onTransitOrder': onTransitOrder}
     return render(request, 'onTransitOrder/orderDetailsList.html', context)

@@ -91,7 +91,7 @@
                                     <div class="form-group">
                                         <label>Quantity</label>
                                         <input type="text" class="form-control item_quantity" name="quantity[]" min="1" max="${response.onTransitDetails[index].quantity - response.onTransitDetails[index].delivered_quantity}"
-                                            placeholder="100" required value="${response.onTransitDetails[index].quantity - response.onTransitDetails[index].delivered_quantity}"
+                                            required value="${response.onTransitDetails[index].quantity - response.onTransitDetails[index].delivered_quantity}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
                                             onkeyup="checkMaxMin(this)">
                                     </div>

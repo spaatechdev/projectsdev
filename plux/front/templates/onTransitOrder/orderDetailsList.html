@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load mathfilters %}
 
 {% block content %}
 <div class="content-wrapper">
@@ -41,7 +42,7 @@
                                             {{ontransitdetail.item.description}}
                                         </td>
                                         <td>
-                                            {{ontransitdetail.quantity}}
+                                            {{ ontransitdetail.quantity|sub:ontransitdetail.delivered_quantity }}
                                         </td>
                                     </tr>
                                     {% endfor %}

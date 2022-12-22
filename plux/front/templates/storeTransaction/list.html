@@ -68,7 +68,11 @@
                                             {{storeTransaction.transaction_date|date:"M d, Y"}}
                                         </td>
                                         <td>
+                                            {% if storeTransaction.purchase_order_header_id is not None %}
                                             {{storeTransaction.purchase_order_header.purchase_order_no}}
+                                            {% elif storeTransaction.on_transit_header_id is not None %}
+                                            {{storeTransaction.on_transit_header.transfer_number}}
+                                            {% endif %}
                                         </td>
                                         <td>
                                             {{storeTransaction.total_amount}}

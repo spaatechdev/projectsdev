@@ -35,7 +35,7 @@
         <div class="col-md-5">
             <div class="form-group">
                 <label>Quantity</label>
-                <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required
+                <input type="text" class="form-control item_quantity" name="quantity[]" required
                     min="1" onkeyup="checkMaxMin(this)"
                     onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
             </div>
@@ -69,7 +69,7 @@
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label>Quantity</label>
-                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required min="1" onkeyup="checkMaxMin(this)"
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" required min="1" onkeyup="checkMaxMin(this)"
                                         onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -137,6 +137,7 @@
             success: function (response) {
                 if (response.code == 200) {
                     elem.parents('.content_parent').find('.item_quantity').attr('max', parseInt(response.storeItems.on_hand_qty))
+                    elem.parents('.content_parent').find('.item_quantity').val(parseInt(response.storeItems.on_hand_qty))
                 } else {
                     alert(response.message);
                 }
