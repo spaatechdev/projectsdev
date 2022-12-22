@@ -1334,7 +1334,7 @@ def storeTransactionList(request):
 @login_required
 def storeTransactionAdd(request):
     context = {}
-    transactionTypes = models.TransactionType.objects.filter(deleted=0, id__in=[1,4,5])
+    transactionTypes = models.TransactionType.objects.filter(deleted=0).exclude(id__in=[2,3])
     context.update({'transactionTypes': transactionTypes})
     if request.method == "POST":
         if int(request.POST['transaction_type_id']) == 1:
@@ -1494,7 +1494,7 @@ def storeTransactionEdit(request, id):
     vendorPurchaseOrders = models.PurchaseOrderHeader.objects.filter(
         vendor_id=storeTransaction.vendor_id, deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    transactionTypes = models.TransactionType.objects.filter(deleted=0, id__in=[1,4,5])
+    transactionTypes = models.TransactionType.objects.filter(deleted=0).exclude(id__in=[2,3])
     items = models.ItemMaster.objects.filter(deleted=0)
     context.update({'storeTransaction': storeTransaction, 'vendors': vendors, 'stores': stores,
                    'items': items, 'transactionTypes': transactionTypes, 'vendorPurchaseOrders': vendorPurchaseOrders})

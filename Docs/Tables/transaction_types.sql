@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 21, 2022 at 10:02 AM
+-- Generation Time: Dec 22, 2022 at 11:11 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -43,9 +43,7 @@ INSERT INTO `transaction_types` (`id`, `name`, `deleted`) VALUES
 (3, 'Return', 0),
 (4, 'Transfer Out', 0),
 (5, 'Transfer In', 0),
-(6, 'Physical Stock', 0),
-(7, 'Verification +ve', 0),
-(8, 'Verification -ve', 0);
+(6, 'Physical Stock', 0);
 
 --
 -- Indexes for dumped tables
