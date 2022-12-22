@@ -143,6 +143,14 @@ class PurchaseOrderTermsAdmin(admin.ModelAdmin):
     list_per_page = 25
 
 
+class TransactionTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    list_display_links = ['id', 'name']
+    list_filter = ('id', 'name')
+    search_fields = ('id', 'name')
+    list_per_page = 25
+
+
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(ItemCtegory, ItemCtegoryAdmin)
 admin.site.register(PlyDimensionMaster, PlyDimensionMasterAdmin)
@@ -155,3 +163,4 @@ admin.site.register(StandardTermMaster, StandardTermMasterAdmin)
 admin.site.register(PurchaseOrderHeader, PurchaseOrderHeaderAdmin)
 admin.site.register(PurchaseOrderDetails, PurchaseOrderDetailsAdmin)
 admin.site.register(PurchaseOrderTerms, PurchaseOrderTermsAdmin)
+admin.site.register(TransactionType, TransactionTypeAdmin)

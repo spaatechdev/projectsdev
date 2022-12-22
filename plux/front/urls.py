@@ -1,5 +1,5 @@
 from django.urls import path, re_path
-
+from django.views.decorators.csrf import csrf_exempt
 from . import views
 
 urlpatterns = [
@@ -26,8 +26,12 @@ urlpatterns = [
     path('uomAdd', views.uomAdd, name='uomAdd'),
     path('uomEdit/<int:id>', views.uomEdit, name='uomEdit'),
     path('uomDelete/<int:id>', views.uomDelete, name='uomDelete'),
+    path('uomImport', views.uomImport, name='uomImport'),
+    path('downloadUomExcel', views.downloadUomExcel, name='downloadUomExcel'),
     
     path('storeList', views.storeList, name='storeList'),
+    path('storeImport', views.storeImport, name='storeImport'),
+    path('downloadStoreExcel', views.downloadStoreExcel, name='downloadStoreExcel'),
 
     path('vendorList', views.vendorList, name='vendorList'),
     path('vendorAdd', views.vendorAdd, name='vendorAdd'),
@@ -69,13 +73,29 @@ urlpatterns = [
     path('purchaseOrderAdd', views.purchaseOrderAdd, name='purchaseOrderAdd'),
     path('purchaseOrderEdit/<int:id>', views.purchaseOrderEdit, name='purchaseOrderEdit'),
     path('purchaseOrderDelete/<int:id>', views.purchaseOrderDelete, name='purchaseOrderDelete'),
-
     path('purchaseOrderDetailsList/<int:header_id>', views.purchaseOrderDetailsList, name='purchaseOrderDetailsList'),
 
     path('standardTermList', views.standardTermList, name='standardTermList'),
     path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
     path('standardTermEdit/<int:id>', views.standardTermEdit, name='standardTermEdit'),
     path('standardTermDelete/<int:id>', views.standardTermDelete, name='standardTermDelete'),
+
+    path('storeTransactionList', views.storeTransactionList, name='storeTransactionList'),
+    path('storeTransactionAdd', views.storeTransactionAdd, name='storeTransactionAdd'),
+    path('storeTransactionEdit/<int:id>', views.storeTransactionEdit, name='storeTransactionEdit'),
+    path('storeTransactionDelete/<int:id>', views.storeTransactionDelete, name='storeTransactionDelete'),
+    path('storeTransactionDetailsList/<int:header_id>', views.storeTransactionDetailsList, name='storeTransactionDetailsList'),
+
+    path('onTransitOrderList', views.onTransitOrderList, name='onTransitOrderList'),
+    path('onTransitOrderDetailsList/<int:header_id>', views.onTransitOrderDetailsList, name='onTransitOrderDetailsList'),
+
+    path('getVendorPurchaseOrders', csrf_exempt(views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
+    path('getPurchaseOrderDetails', csrf_exempt(views.getPurchaseOrderDetails), name='getPurchaseOrderDetails'),
+    path('getTransactionType', csrf_exempt(views.getTransactionType), name='getTransactionType'),
+    path('getExceptStores', csrf_exempt(views.getExceptStores), name='getExceptStores'),
+    path('getItemsDetailsByStore', csrf_exempt(views.getItemsDetailsByStore), name='getItemsDetailsByStore'),
+    path('getExceptedStoreItems', csrf_exempt(views.getExceptedStoreItems), name='getExceptedStoreItems'),
+    path('getTransferDetails', csrf_exempt(views.getTransferDetails), name='getTransferDetails'),
     
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),

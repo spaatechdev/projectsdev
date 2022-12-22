@@ -1,0 +1,128 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="transfer_number">Transfer Number</label>
+            <select name="transfer_number" id="transfer_number" class="form-control" required>
+                <option value="">Select Transfer Number</option>
+                {% for onTransitOrder in onTransitOrders %}
+                <option value="{{onTransitOrder.id}}">{{onTransitOrder.transfer_number}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="store_from">Store From</label>
+            <select name="store_from" id="store_from" class="form-control" required>
+                <option value="">Select Store From</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="store_to">Store To</label>
+            <select name="store_to" id="store_to" class="form-control" required>
+                <option value="">Select Store To</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="purchase_order_details">
+    <div class="row content_parent">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label>Item</label>
+                <select name="item_id[]" class="form-control store_item" required>
+                    <option value="">Select Item</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required
+                    min="1" onkeyup="checkMaxMin(this)"
+                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <button type="button" class="btn btn-sm btn-info mt-4 add_transfer_item">Add More
+                    Item</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).on('change', '#transfer_number', function () {
+        transfer_number = $(this).val();
+        $.ajax({
+            url: "{% url 'getTransferDetails' %}",
+            type: 'post',
+            data: ({ transfer_number: transfer_number }),
+            success: function (response) {
+                if (response.code == 200) {
+                    $('#store_from').html(`
+                        <option value="">Select Store From</option>
+                        <option selected value="${response.onTransitHeader.store_from_id}">${response.onTransitHeader.store_from__name}</option>
+                    `);
+                    $('#store_to').html(`
+                        <option value="">Select Store To</option>
+                        <option selected value="${response.onTransitHeader.store_to_id}">${response.onTransitHeader.store_to__name}</option>
+                    `);
+
+                    var transit_text = ``;
+                    for (let index = 0; index < response.onTransitDetails.length; index++) {
+                        transit_text += `<div class="row content_parent">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>Item</label>
+                                        <select name="item_id[]" class="form-control" required disabled>
+                                            <option value="">Select Item</option>
+                                            ${response.items.map((item) => `<option ${item.id == response.onTransitDetails[index].item_id ? "selected" : ""} value="${item.id}">${item.description}</option>`)}
+                                        </select>
+                                        <input type="hidden" name="item_id[]" value="${response.onTransitDetails[index].item_id}">
+                                        <input type="hidden" name="on_transit_details_id[]" value="${response.onTransitDetails[index].id}">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" min="1" max="${response.onTransitDetails[index].quantity - response.onTransitDetails[index].delivered_quantity}"
+                                            required value="${response.onTransitDetails[index].quantity - response.onTransitDetails[index].delivered_quantity}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            onkeyup="checkMaxMin(this)">
+                                    </div>
+                                </div>
+                                ${index == 0 ? `<div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
+                                    </div>
+                                </div>`: `<div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger mt-4 remove_item">Remove</button>
+                                    </div>
+                                </div>`}
+                            </div>`;
+                    }
+                    $(".purchase_order_details").html(transit_text);
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    });
+
+    function checkMaxMin(element) {
+        if (parseInt($(element).attr('max')) < parseInt($(element).val())) {
+            $(element).val($(element).attr('max'));
+        }
+        if (parseInt($(element).attr('min')) > parseInt($(element).val())) {
+            $(element).val($(element).attr('min'));
+        }
+    }
+</script>

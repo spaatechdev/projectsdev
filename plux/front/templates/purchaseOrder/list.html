@@ -74,9 +74,11 @@
                                             <a href="{% url 'purchaseOrderDetailsList' purchaseOrder.id %}"
                                                 class="btn btn-primary btn-sm">
                                                 Order Details </a>
+                                            {% if purchaseOrder.status == 1 %}
                                             <a href="{% url 'purchaseOrderEdit' purchaseOrder.id %}"
                                                 class="btn btn-info btn-sm">
                                                 Edit </a>
+                                            {% endif %}
                                             <a onclick="return confirm('Are you sure you want to delete this?')"
                                                 href="{% url 'purchaseOrderDelete' purchaseOrder.id %}"
                                                 class="btn btn-danger btn-sm">
