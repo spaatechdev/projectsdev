@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'mathfilters',
     'front'
 ]
 
@@ -255,3 +256,10 @@ AUTHENTICATION_BACKENDS = [
     # 'front.backends.AuthBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'info@spaatech.net'
+EMAIL_HOST_PASSWORD = 'PROJECT#321'

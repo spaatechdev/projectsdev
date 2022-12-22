@@ -68,7 +68,11 @@
                                             {{storeTransaction.transaction_date|date:"M d, Y"}}
                                         </td>
                                         <td>
+                                            {% if storeTransaction.purchase_order_header_id is not None %}
                                             {{storeTransaction.purchase_order_header.purchase_order_no}}
+                                            {% elif storeTransaction.on_transit_header_id is not None %}
+                                            {{storeTransaction.on_transit_header.transfer_number}}
+                                            {% endif %}
                                         </td>
                                         <td>
                                             {{storeTransaction.total_amount}}
@@ -80,9 +84,9 @@
                                             <a href="{% url 'storeTransactionDetailsList' storeTransaction.id %}"
                                                 class="btn btn-primary btn-sm">
                                                 Details </a>
-                                            <a href="{% url 'storeTransactionEdit' storeTransaction.id %}"
+                                            <!-- <a href="{% url 'storeTransactionEdit' storeTransaction.id %}"
                                                 class="btn btn-info btn-sm">
-                                                Edit </a>
+                                                Edit </a> -->
                                             <a onclick="return confirm('Are you sure you want to delete this?')"
                                                 href="{% url 'storeTransactionDelete' storeTransaction.id %}"
                                                 class="btn btn-danger btn-sm">

@@ -176,7 +176,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
-                            <button type="reset" class="btn btn-light">Cancel</button>
+                            <button type="reset" class="btn btn-light">Reset</button>
                         </form>
                     </div>
                 </div>
@@ -423,20 +423,22 @@
                                             ${response.items.map((item) => `<option ${item.id == response.data[index].item_id ? "selected" : ""} value="${item.id}">${item.description}</option>`)}
                                         </select>
                                         <input type="hidden" name="item_id[]" value="${response.data[index].item_id}">
+                                        <input type="hidden" name="purchase_details_id[]" value="${response.data[index].id}">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Quantity</label>
-                                        <input type="text" class="form-control item_quantity" name="quantity[]"
-                                            placeholder="100" required value="${response.data[index].quantity}"
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" min="1" max="${response.data[index].quantity - response.data[index].delivered_quantity}"
+                                            placeholder="100" required value="${response.data[index].quantity - response.data[index].delivered_quantity}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            onkeyup="checkMaxMin(this)">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Unit Price</label>
-                                        <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" readonly
                                             placeholder="10" required value="${response.data[index].unit_price}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
@@ -444,7 +446,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Amount</label>
-                                        <input type="text" class="form-control item_total_amount" name="amount[]"
+                                        <input type="text" class="form-control item_total_amount" name="amount[]" readonly
                                             placeholder="100,000" required value="${response.data[index].amount}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
@@ -471,5 +473,14 @@
             },
         });
     });
+
+    function checkMaxMin(element) {
+        if (parseInt($(element).attr('max')) < parseInt($(element).val())) {
+            $(element).val($(element).attr('max'));
+        }
+        if (parseInt($(element).attr('min')) > parseInt($(element).val())) {
+            $(element).val($(element).attr('min'));
+        }
+    }
 </script>
 {% endblock %}
