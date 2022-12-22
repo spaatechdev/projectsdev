@@ -29,12 +29,30 @@
                                         <th>
                                             Quantity
                                         </th>
+                                        {% if storeTransactionHeader.purchase_order_header_id is not None %}
                                         <th>
                                             Unit Price
                                         </th>
                                         <th>
                                             Amount
                                         </th>
+                                        {% endif %}
+                                        {% if storeTransactionHeader.on_transit_header_id is not None %}
+                                        <th>
+                                            Store From
+                                        </th>
+                                        <th>
+                                            Store To
+                                        </th>
+                                        {% endif %}
+                                        {% if storeTransactionHeader.physical_stock_header_id is not None %}
+                                        <th>
+                                            Store
+                                        </th>
+                                        <th>
+                                            Actual Quantity
+                                        </th>
+                                        {% endif %}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -49,21 +67,41 @@
                                         <td>
                                             {{storeTransactionHeaderDetail.quantity}}
                                         </td>
+                                        {% if storeTransactionHeaderDetail.store_transaction_header.purchase_order_header_id is not None %}
                                         <td>
                                             {{storeTransactionHeaderDetail.unit_price}}
                                         </td>
                                         <td>
                                             {{storeTransactionHeaderDetail.amount}}
                                         </td>
+                                        {% endif %}
+                                        {% if storeTransactionHeaderDetail.store_transaction_header.on_transit_header_id is not None %}
+                                        <td>
+                                            {{storeTransactionHeaderDetail.store_transaction_header.on_transit_header.store_from.name}}
+                                        </td>
+                                        <td>
+                                            {{storeTransactionHeaderDetail.store_transaction_header.on_transit_header.store_to.name}}
+                                        </td>
+                                        {% endif %}
+                                        {% if storeTransactionHeaderDetail.store_transaction_header.physical_stock_header_id is not None %}
+                                        <td>
+                                            {{storeTransactionHeaderDetail.store_transaction_header.physical_stock_header.store.name}}
+                                        </td>
+                                        <td>
+                                            {{storeTransactionHeaderDetail.actual_quantity}}
+                                        </td>
+                                        {% endif %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+                                {% if storeTransactionHeaderDetail.store_transaction_header.purchase_order_header_id is not None %}
                                 <tfoot>
                                     <tr>
                                         <td colspan="4">Total Amount</td>
                                         <td>{{storeTransactionHeader.total_amount}}</td>
                                     </tr>
                                 </tfoot>
+                                {% endif %}
                             </table>
                         </div>
                     </div>

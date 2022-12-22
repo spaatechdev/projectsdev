@@ -30,6 +30,12 @@
                                         <th>
                                             Quantity
                                         </th>
+                                        <th>
+                                            Store From
+                                        </th>
+                                        <th>
+                                            Store To
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -43,6 +49,12 @@
                                         </td>
                                         <td>
                                             {{ ontransitdetail.quantity|sub:ontransitdetail.delivered_quantity }}
+                                        </td>
+                                        <td>
+                                            {{ ontransitdetail.on_transit_header.store_from.name }}
+                                        </td>
+                                        <td>
+                                            {{ ontransitdetail.on_transit_header.store_to.name }}
                                         </td>
                                     </tr>
                                     {% endfor %}
