@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .decorators import login_required
+from django.core.mail import send_mail
 from django.contrib.messages import get_messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -14,8 +15,12 @@ from django.core.paginator import Paginator
 import environ
 import os
 from plux.settings import MEDIA_ROOT
+from plux import settings
 from django.core.files.storage import FileSystemStorage
 import csv
+import math
+import random
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -46,6 +51,56 @@ def signin(request):
             messages.error(request, 'Please Provide Valid Credentials.')
             return redirect('signin')
     return render(request, 'signin.html', context)
+
+# class forgot(views):
+#     def get(self, request):
+#         return render(request, "forgot_password.html")
+
+
+def forgot(request):
+    if request.method == "POST":
+        digits = [i for i in range(0, 10)]
+        otp = ""
+        for i in range(6):
+            index = math.floor(random.random() * 10)
+            otp += str(digits[index])
+        request.session['OTP'] = otp
+        subject = 'OTP for Password Reset'
+        message = otp
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [request.POST['email']]
+        # send_mail(subject, message, email_from, recipient_list)
+        return redirect('enter_otp')
+    return render(request, "forgot_password.html")
+
+
+# class enter_otp(View):
+#     def get(self, request):
+#         return render(request, "enter_otp.html")
+
+def enter_otp(request):
+    if request.method == "POST":
+        if (request.POST['verify_otp'] == request.session['OTP']):
+            messages.success(request, "OTP verified!!")
+            return redirect('password_reset')
+        else:
+            messages.error(request, "OTP is not correct")
+            return redirect('enter_otp')
+    return render(request, "enter_otp.html")
+
+
+def password_reset(request):
+    if request.method == "POST":
+        # print(request.POST['password'])
+        # print(request.POST['confirmpassword'])
+        # exit()
+        if (request.POST['password'] == request.POST['confirmpassword']):
+            messages.success(request, "Passwords matched!!")
+            return redirect('signin')
+        else:
+            messages.error(request, "Passwords do not match")
+            return redirect('password_reset')
+    return render(request, "password_reset.html")
 
 
 def signup(request):
@@ -336,7 +391,7 @@ def vendorImport(request):
                         contact_email=row['Contact Email'])
                     if (not vendor_email_qs.exists()):
                         vendor_list.append(models.VendorMaster(name=row['Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
-                                             'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                            'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
                 models.VendorMaster.objects.bulk_create(vendor_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
@@ -356,6 +411,7 @@ def downloadVendorExcel(request):
             response['Content-Disposition'] = 'attachment; filename=' + \
                 os.path.basename(file_path)
             return response
+
 
 @login_required
 def storeList(request):
@@ -670,6 +726,57 @@ def itemDelete(request, id):
     item.deleted = 1
     item.save()
     return redirect('itemList')
+
+
+@login_required
+def itemImport(request):
+    context = {}
+    if request.method == "POST":
+        item_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/items/", MEDIA_ROOT + "/excels/items/")
+            fs.save(tmpname, file)
+            file_name = "excels/items/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                item_list = []
+                for row in reader:
+                    item_category_obj = models.ItemCtegory.objects.filter(description=row['Item Category']).first()
+                    uom_obj = models.UomMaster.objects.filter(description=row['UOM']).first()
+                    ply_dimension_obj = models.PlyDimensionMaster.objects.filter(description=row['Ply Dimension']).first()
+                    if item_category_obj is None:
+                        item_category_obj = models.ItemCtegory()
+                        item_category_obj.description = row['Item Category']
+                        item_category_obj.save()
+                    if uom_obj is None:
+                        uom_obj = models.UomMaster()
+                        uom_obj.description = row['UOM']
+                        uom_obj.save()
+                    item_list.append(models.ItemMaster(description=row['Description'], item_category_id=item_category_obj.id, ply_dimension_id=ply_dimension_obj.id, uom_id=uom_obj.id, unit_price=row['Unit Price'], hsn_code=row['HSN Code'], gst_percentage=row['GST %']))
+                models.ItemMaster.objects.bulk_create(item_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Items Created Successfully.')
+            return redirect('itemList')
+    return render(request, 'item/import.html', context)
+
+
+@login_required
+def downloadItemExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "items.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                # fh.read(), content_type="application/vnd.ms-excel")
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
 
 
 @login_required

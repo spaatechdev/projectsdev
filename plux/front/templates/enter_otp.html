@@ -1,3 +1,8 @@
+<!--================ Start Forgot Password Area =================-->
+
+<!--================ Start Content Area =================-->
+
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -33,7 +38,8 @@
                     <img src="{% static 'images/logo/plux-login-logo.png' %}" alt="" />
                 </div>
                 <div class="col-md-10 mx-auto col-lg-5">
-                    <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST" action="{% url 'signin' %}">
+                    <form class="p-4 p-md-5 border rounded-3 bg-light" id="register_form" method="POST"
+                        action="{% url 'signup' %}">
                         {% csrf_token %}
                         {% if messages %}
                         {% for message in messages %}
@@ -42,29 +48,26 @@
                         {% endif %}
                         {% endfor %}
                         {% endif %}
+                        <span class="text-center text-danger" id="error_msg"></span>
+                        <h3>Enter OTP To Reset Password</h3>
                         <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingInput" name="email"
-                                placeholder="name@example.com">
-                            <label for="floatingInput">Email address</label>
+
+                            <input type="text" name="verify_otp" class="form-control" id="otp"
+                                placeholder="One Time Password (OTP)" onfocus="this.placeholder = ''"
+                                onblur="this.placeholder = 'One Time Password (OTP)'">
+
+                            <!-- <input type="email" class="form-control" id="email" name="email" required
+                        placeholder="name@example.com">                         -->
+
                         </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" class="form-control" name="password" id="floatingPassword"
-                                placeholder="Password">
-                            <label for="floatingPassword">Password</label>
-                        </div>
-                        <button class="w-100 btn btn-lg btn-success" type="submit">Sign In</button>
-                        <div class="my-2 d-flex justify-content-between align-items-center">
-                            <a href="/forgot" class="auth-link" >Forgot password?</a>
-                        </div>
+                        <button class="w-100 btn btn-lg btn-success" type="submit">Submit OTP</button>
                         <hr class="my-4">
-                        <small class="text-muted">By clicking <a href="{% url 'signup' %}">Sign up</a>, you agree to the
-                            terms of use.</small>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <!-- container-scroller -->
 
     <!-- plugins:js -->
     <script src="{% static 'vendors/js/vendor.bundle.base.js' %}"></script>
@@ -87,6 +90,8 @@
     <script src="{% static 'js/dashboard.js' %}"></script>
     <script src="{% static 'js/Chart.roundedBarCharts.js' %}"></script>
     <!-- End custom js for this page-->
+    {% block js %}
+    {% endblock %}
 </body>
 
 </html>

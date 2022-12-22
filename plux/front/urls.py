@@ -9,6 +9,11 @@ urlpatterns = [
     path('dashboard', views.dashboard, name='dashboard'),
     path('myProfile', views.myProfile, name='myProfile'),
     path('userList', views.userList, name='userList'),
+    path('forgot/', views.forgot, name='forgot'),
+    path('enter_otp/',views.enter_otp,name='enter_otp'),
+    path('password_reset/',views.password_reset,name='password_reset'),
+
+
 
     path('customerList', views.customerList, name='customerList'),
     path('customerAdd', views.customerAdd, name='customerAdd'),
@@ -52,6 +57,8 @@ urlpatterns = [
     path('itemAdd', views.itemAdd, name='itemAdd'),
     path('itemEdit/<int:id>', views.itemEdit, name='itemEdit'),
     path('itemDelete/<int:id>', views.itemDelete, name='itemDelete'),
+    path('itemImport', views.itemImport, name='itemImport'),
+    path('downloadItemExcel', views.downloadItemExcel, name='downloadItemExcel'),
 
     path('storeItemList', views.storeItemList, name='storeItemList'),
     path('storeItemAdd', views.storeItemAdd, name='storeItemAdd'),
