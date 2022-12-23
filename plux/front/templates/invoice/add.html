@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Add Invoice</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'invoiceList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <form class="forms-sample" action="{% url 'invoiceAdd' %}" method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="store">Store</label>
+                                        <select name="store" id="store" class="form-control" required>
+                                            <option value="">Select Store</option>
+                                            {% for store in stores %}
+                                            <option value="{{store.id}}">{{store.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="customer_id">Customer</label>
+                                        <select name="customer_id" id="customer_id" class="form-control" required>
+                                            <option value="">Select Customer</option>
+                                            {% for customer in customers %}
+                                            <option value="{{customer.id}}">{{customer.customer_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="purchase_order_details">
+                                <div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control invoice_store_item" required>
+                                                <option value="">Select Item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                required min="1" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                                readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>GST Percentage</label>
+                                            <input type="text" class="form-control item_gst_percentage"
+                                                name="gst_percentage[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Total Price</label>
+                                            <input type="text" class="form-control item_total_price"
+                                                name="item_total_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>GST Price</label>
+                                            <input type="text" class="form-control item_gst_price" name="item_gst_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_invoice_item">Add
+                                                More Item</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="add_more_content">
+                            </div>
+                            <button type="submit" class="btn btn-primary me-2">Submit</button>
+                            <button type="reset" class="btn btn-light">Reset</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    var item_count = 1;
+    $(document).on('click', '.add_invoice_item', function () {
+        if ($('.content_parent').length < item_count) {
+            $('.add_more_content').append(`<div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control invoice_store_item" required>
+                                                <option value="">Select Item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                required min="1" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" class="form-control item_unit_price" name="unit_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>GST Percentage</label>
+                                            <input type="text" class="form-control item_gst_percentage" name="gst_percentage[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Total Price</label>
+                                            <input type="text" class="form-control item_total_price" name="item_total_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>GST Price</label>
+                                            <input type="text" class="form-control item_gst_price" name="item_gst_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>`);
+            showItemsByStore();
+        }
+    });
+
+    $(document).on('click', '.remove_invoice_item', function () {
+        if ($(this).parents().find('.content_parent').length > 1) {
+            $(this).parents().closest('.content_parent').remove();
+            calculateTotalAmount();
+        } else {
+            alert("You must submit one of the items in an Invoice Order.")
+        }
+    });
+
+    $(document).on('change', '#store', function () {
+        showItemsByStore();
+    })
+
+    function showItemsByStore() {
+        store_from_id = $('#store').val();
+        $.ajax({
+            url: "{% url 'getExceptStores' %}",
+            type: 'post',
+            data: ({ store_from_id: store_from_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    item_count = response.storeItems.length;
+                    var store_item_text = `<option value="">Select Item</option>`;
+                    for (let index = 0; index < response.storeItems.length; index++) {
+                        store_item_text += `<option value="${response.storeItems[index].item_id}">${response.storeItems[index].item__description}</option>`;
+                    }
+                    $(".invoice_store_item").html(store_item_text);
+                    if (item_count == 0) {
+                        $('.add_more_content').html(``);
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    }
+
+    $(document).on('change', '.invoice_store_item', function () {
+        elem = $(this);
+        store_from_id = $("#store").val();
+        store_item = $(this).val();
+        $.ajax({
+            url: "{% url 'getItemsDetailsByStore' %}",
+            type: 'post',
+            data: ({ store_from_id: store_from_id, store_item: store_item }),
+            success: function (response) {
+                if (response.code == 200) {
+                    item_toal_price = (response.storeItems.on_hand_qty * response.storeItems.item__unit_price);
+                    gst_price = item_toal_price * (response.storeItems.item__gst_percentage / 100)
+                    item_price_after_gst = item_toal_price - gst_price
+                    elem.parents('.content_parent').find('.item_quantity').attr('max', parseInt(response.storeItems.on_hand_qty))
+                    elem.parents('.content_parent').find('.item_quantity').val(parseInt(response.storeItems.on_hand_qty))
+                    elem.parents('.content_parent').find('.item_unit_price').val(parseInt(response.storeItems.item__unit_price))
+                    elem.parents('.content_parent').find('.item_gst_percentage').val(parseInt(response.storeItems.item__gst_percentage))
+                    elem.parents('.content_parent').find('.item_total_price').val(parseInt(item_toal_price.toFixed(2)))
+                    elem.parents('.content_parent').find('.item_gst_price').val(parseInt(gst_price.toFixed(2)))
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    })
+
+    function checkMaxMin(element) {
+        if (parseInt($(element).attr('max')) < parseInt($(element).val())) {
+            $(element).val($(element).attr('max'));
+        }
+        if (parseInt($(element).attr('min')) > parseInt($(element).val())) {
+            $(element).val($(element).attr('min'));
+        }
+    }
+</script>
+{% endblock %}

@@ -126,8 +126,7 @@ def getItemsDetailsByStore(request):
     if request.method == "POST":
         store_from_id = request.POST['store_from_id']
         store_item = request.POST['store_item']
-        storeItem = list(models.StoreItemMaster.objects.filter(
-            store_id=store_from_id, item_id=store_item).values('id', 'on_hand_qty'))[0]
+        storeItem = list(models.StoreItemMaster.objects.filter(store_id=store_from_id, item_id=store_item).values('id', 'on_hand_qty', 'item__unit_price', 'item__gst_percentage'))[0]
         return JsonResponse({
             'code': 200,
             'status': 'SUCCESS',
@@ -1722,3 +1721,49 @@ def onTransitOrderDetailsList(request, header_id):
         'ontransitdetails_set').get(pk=header_id)
     context = {'onTransitOrder': onTransitOrder}
     return render(request, 'onTransitOrder/orderDetailsList.html', context)
+
+
+@login_required
+def invoiceList(request):
+    page = request.GET.get('page', 1)
+    invoices = models.InvoiceHeader.objects.filter(deleted=0).exclude(status=3)
+    paginator = Paginator(invoices, env("PER_PAGE_DATA"))
+    invoices = paginator.page(page)
+    context = {'invoices': invoices}
+    return render(request, 'invoice/list.html', context)
+
+
+@login_required
+def invoiceDetailsList(request, header_id):
+    page = request.GET.get('page', 1)
+    invoiceOrder = models.OnTransitHeader.objects.prefetch_related('invoicedetails_set').get(pk=header_id)
+    context = {'invoiceOrder': invoiceOrder}
+    return render(request, 'invoice/orderDetailsList.html', context)
+
+@login_required
+def invoiceAdd(request):
+    context = {}
+    customers = models.Customer.objects.filter(deleted=0)
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    context.update({'customers': customers, 'stores': stores})
+    if request.method == "POST":
+        print(request.POST)
+        exit()
+        total_item_price = 0
+        total_gst_price = 0
+        for index, item in enumerate(request.POST.getlist('item_total_price[]')):
+            total_item_price += Decimal(item)
+            total_gst_price += Decimal(request.POST.getlist('item_gst_price[]')[index])
+        invoice_count = models.InvoiceHeader.objects.filter(deleted=0).count()
+        invoice_number = "IN-" + str(invoice_count + 1).zfill(8)
+        invoiceHeader = models.InvoiceHeader()
+        invoiceHeader.invoice_number = invoice_number
+        invoiceHeader.invoice_date = datetime.now()
+        invoiceHeader.invoice_total = total_item_price
+        invoiceHeader.invoice_gst_total = total_gst_price
+        invoiceHeader.customer_id = request.POST['customer_id']
+        invoiceHeader.store_id	 = request.POST['store']
+        invoiceHeader.save()
+        messages.success(request, 'Invoice Created Successfully.')
+        return redirect('invoiceList')
+    return render(request, 'invoice/add.html', context)

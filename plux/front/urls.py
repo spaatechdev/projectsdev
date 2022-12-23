@@ -95,6 +95,10 @@ urlpatterns = [
     path('onTransitOrderList', views.onTransitOrderList, name='onTransitOrderList'),
     path('onTransitOrderDetailsList/<int:header_id>', views.onTransitOrderDetailsList, name='onTransitOrderDetailsList'),
 
+    path('invoiceList', views.invoiceList, name='invoiceList'),
+    path('invoiceAdd', views.invoiceAdd, name='invoiceAdd'),
+    path('invoiceDetailsList/<int:header_id>', views.invoiceDetailsList, name='invoiceDetailsList'),
+
     path('getVendorPurchaseOrders', csrf_exempt(views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
     path('getPurchaseOrderDetails', csrf_exempt(views.getPurchaseOrderDetails), name='getPurchaseOrderDetails'),
     path('getTransactionType', csrf_exempt(views.getTransactionType), name='getTransactionType'),

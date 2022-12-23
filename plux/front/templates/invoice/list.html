@@ -9,10 +9,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Store Transactions</h4>
+                            <h4 class="card-title">Invoices</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'storeTransactionAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                            <a href="{% url 'invoiceAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
                         </div>
                     </div>
                     <div class="row">
@@ -24,25 +24,22 @@
                                             SL. No
                                         </th>
                                         <th>
-                                            Vendor
+                                            Customer
                                         </th>
                                         <th>
                                             Store
                                         </th>
                                         <th>
-                                            Transaction Number
+                                            Invoice Number
                                         </th>
                                         <th>
-                                            Transaction Date
+                                            Invoice Date
                                         </th>
                                         <th>
-                                            Reference Id
+                                            Invoice Total
                                         </th>
                                         <th>
-                                            Total Amount
-                                        </th>
-                                        <th>
-                                            Transaction Type
+                                            Invoice GST Total
                                         </th>
                                         <th>
                                             Action
@@ -50,47 +47,33 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for storeTransaction in storeTransactions %}
+                                    {% for invoice in invoices %}
                                     <tr>
                                         <td>
                                             {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.vendor.name}}
+                                            {{invoice.customer.customer_name}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.store.name}}
+                                            {{invoice.store.name}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.transaction_number}}
+                                            {{invoice.invoice_number}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.transaction_date|date:"M d, Y"}}
+                                            {{invoice.invoice_date|date:"M d, Y"}}
                                         </td>
                                         <td>
-                                            {% if storeTransaction.purchase_order_header_id is not None %}
-                                            {{storeTransaction.purchase_order_header.purchase_order_no}}
-                                            {% elif storeTransaction.on_transit_header_id is not None %}
-                                            {{storeTransaction.on_transit_header.transfer_number}}
-                                            {% endif %}
+                                            {{invoice.invoice_total}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.total_amount}}
+                                            {{invoice.invoice_gst_total}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.transaction_type.name}}
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'storeTransactionDetailsList' storeTransaction.id %}"
+                                            <a href="{% url 'invoiceDetailsList' invoice.id %}"
                                                 class="btn btn-primary btn-sm">
-                                                Details </a>
-                                            <!-- <a href="{% url 'storeTransactionEdit' storeTransaction.id %}"
-                                                class="btn btn-info btn-sm">
-                                                Edit </a> -->
-                                            <a onclick="return confirm('Are you sure you want to delete this?')"
-                                                href="{% url 'storeTransactionDelete' storeTransaction.id %}"
-                                                class="btn btn-danger btn-sm">
-                                                Delete </a>
+                                                Order Details </a>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -98,23 +81,23 @@
                             </table>
                         </div>
                     </div>
-                    {% if storeTransactions.has_other_pages %}
+                    {% if invoices.has_other_pages %}
                     <div class="float-end">
                         <ul class="pagination">
-                            {% if storeTransactions.has_previous %}
-                            <li class="mx-2"><a href="?page={{ storeTransactions.previous_page_number }}">&laquo;</a></li>
+                            {% if invoices.has_previous %}
+                            <li class="mx-2"><a href="?page={{ invoices.previous_page_number }}">&laquo;</a></li>
                             {% else %}
                             <li class="disabled mx-2"><span>&laquo;</span></li>
                             {% endif %}
-                            {% for i in storeTransactions.paginator.page_range %}
-                            {% if storeTransactions.number == i %}
+                            {% for i in invoices.paginator.page_range %}
+                            {% if invoices.number == i %}
                             <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
                             {% else %}
                             <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
                             {% endif %}
                             {% endfor %}
-                            {% if storeTransactions.has_next %}
-                            <li class="mx-2"><a href="?page={{ storeTransactions.next_page_number }}">&raquo;</a></li>
+                            {% if invoices.has_next %}
+                            <li class="mx-2"><a href="?page={{ invoices.next_page_number }}">&raquo;</a></li>
                             {% else %}
                             <li class="disabled mx-2"><span>&raquo;</span></li>
                             {% endif %}

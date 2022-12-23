@@ -100,6 +100,8 @@ class Customer(models.Model):
     contact_no = models.CharField(max_length=40, blank=True, null=True)
     contact_name = models.CharField(max_length=40, blank=True, null=True)
     contact_email = models.CharField(max_length=100, blank=True, null=True)
+    existing_invoice_balance = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
@@ -379,9 +381,12 @@ class OnTransitDetails(models.Model):
         db_table = 'on_transit_details'
         verbose_name_plural = 'on_transit_details'
 
+
 class PhysicalStockHeader(models.Model):
-    store = models.ForeignKey(StoreMaster, related_name='PhysicalStockStore', on_delete=models.CASCADE, blank=True, null=True)
-    physical_stock_check_number = models.CharField(max_length=15, blank=True, null=True)
+    store = models.ForeignKey(StoreMaster, related_name='PhysicalStockStore',
+                              on_delete=models.CASCADE, blank=True, null=True)
+    physical_stock_check_number = models.CharField(
+        max_length=15, blank=True, null=True)
     physical_stock_check_date = models.DateField(blank=True, null=True)
     status = models.SmallIntegerField(default=1)
     deleted = models.BooleanField(default=0)
@@ -396,10 +401,13 @@ class PhysicalStockHeader(models.Model):
 
 
 class PhysicalStockDetails(models.Model):
-    physical_stock_header = models.ForeignKey(PhysicalStockHeader, on_delete=models.CASCADE, default=1)
-    item = models.ForeignKey(ItemMaster, related_name='PhysicalStockItem', on_delete=models.CASCADE, blank=True, null=True)
+    physical_stock_header = models.ForeignKey(
+        PhysicalStockHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(ItemMaster, related_name='PhysicalStockItem',
+                             on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    original_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    original_quantity = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
@@ -409,6 +417,50 @@ class PhysicalStockDetails(models.Model):
         managed = True
         db_table = 'physical_stock_details'
         verbose_name_plural = 'physical_stock_details'
+
+
+class InvoiceHeader(models.Model):
+    store = models.ForeignKey(StoreMaster, related_name='InvoiceStore',
+                              on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        Customer, related_name='InvoiceCustomer', on_delete=models.CASCADE, blank=True, null=True)
+    invoice_number = models.CharField(max_length=15, blank=True, null=True)
+    invoice_date = models.DateField(blank=True, null=True)
+    invoice_total = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    invoice_gst_total = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    status = models.SmallIntegerField(default=1)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.physical_stock_check_number
+
+    class Meta:
+        managed = True
+        db_table = 'invoice_header'
+        verbose_name_plural = 'invoice_header'
+
+
+class InvoiceDetails(models.Model):
+    invoice_header = models.ForeignKey(
+        InvoiceHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(ItemMaster, related_name='InvoiceItem',
+                             on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    invoice_item_value = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    invoice_item_gst_value = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.invoice_header.invoice_number
+
+    class Meta:
+        managed = True
+        db_table = 'invoice_details'
+        verbose_name_plural = 'invoice_details'
 
 
 class StoreTransactionHeader(models.Model):
@@ -447,7 +499,8 @@ class StoreTransactionDetails(models.Model):
     type = models.ForeignKey(
         TransactionType, on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    unit_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     delivery_date = models.DateField(blank=True, null=True)
     deleted = models.BooleanField(default=0)
