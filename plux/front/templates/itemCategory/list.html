@@ -11,13 +11,16 @@
                         <div class="col-md-6">
                             <h4 class="card-title">Item Categories</h4>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <a href="{% url 'itemCategoryAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'itemCategoryImport' %}" class="btn btn-primary btn-sm float-end">Import</a>
                         </div>
                     </div>
                     <div class="row">
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped" id="dataTable">
                                 <thead>
                                     <tr>
                                         <th>
@@ -55,9 +58,49 @@
                             </table>
                         </div>
                     </div>
+                    {% if itemCategories.has_other_pages %}
+                    <div class="float-end">
+                        <ul class="pagination">
+                            {% if itemCategories.has_previous %}
+                            <li class="mx-2"><a href="?page={{ itemCategories.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in itemCategories.paginator.page_range %}
+                            {% if itemCategories.number == i %}
+                            <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
+                            {% else %}
+                            <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if itemCategories.has_next %}
+                            <li class="mx-2"><a href="?page={{ itemCategories.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#dataTable').dataTable({
+            "paginate": true,
+            "sort": true,
+            "language": {
+                "emptyTable": "No Data Is Available."
+            },
+            "order": [
+                [0, "desc"]
+            ],
+        });
+    });
+</script>
 {% endblock %}

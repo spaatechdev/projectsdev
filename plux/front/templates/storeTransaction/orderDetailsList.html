@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Store Transaction Details Of {{storeTransactionHeader.transaction_number }}</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'storeTransactionList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            SL. No
+                                        </th>
+                                        <th>
+                                            Item
+                                        </th>
+                                        <th>
+                                            Quantity
+                                        </th>
+                                        {% if storeTransactionHeader.purchase_order_header_id is not None %}
+                                        <th>
+                                            Unit Price
+                                        </th>
+                                        <th>
+                                            Amount
+                                        </th>
+                                        {% endif %}
+                                        {% if storeTransactionHeader.on_transit_header_id is not None %}
+                                        <th>
+                                            Store From
+                                        </th>
+                                        <th>
+                                            Store To
+                                        </th>
+                                        {% endif %}
+                                        {% if storeTransactionHeader.physical_stock_header_id is not None %}
+                                        <th>
+                                            Store
+                                        </th>
+                                        <th>
+                                            Actual Quantity
+                                        </th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for storeTransactionHeaderDetail in storeTransactionHeader.storetransactiondetails_set.all %}
+                                    <tr>
+                                        <td>
+                                            {{forloop.counter}}
+                                        </td>
+                                        <td>
+                                            {{storeTransactionHeaderDetail.item.description}}
+                                        </td>
+                                        <td>
+                                            {{storeTransactionHeaderDetail.quantity}}
+                                        </td>
+                                        {% if storeTransactionHeaderDetail.store_transaction_header.purchase_order_header_id is not None %}
+                                        <td>
+                                            {{storeTransactionHeaderDetail.unit_price}}
+                                        </td>
+                                        <td>
+                                            {{storeTransactionHeaderDetail.amount}}
+                                        </td>
+                                        {% endif %}
+                                        {% if storeTransactionHeaderDetail.store_transaction_header.on_transit_header_id is not None %}
+                                        <td>
+                                            {{storeTransactionHeaderDetail.store_transaction_header.on_transit_header.store_from.name}}
+                                        </td>
+                                        <td>
+                                            {{storeTransactionHeaderDetail.store_transaction_header.on_transit_header.store_to.name}}
+                                        </td>
+                                        {% endif %}
+                                        {% if storeTransactionHeaderDetail.store_transaction_header.physical_stock_header_id is not None %}
+                                        <td>
+                                            {{storeTransactionHeaderDetail.store_transaction_header.physical_stock_header.store.name}}
+                                        </td>
+                                        <td>
+                                            {{storeTransactionHeaderDetail.actual_quantity}}
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                {% if storeTransactionHeaderDetail.store_transaction_header.purchase_order_header_id is not None %}
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4">Total Amount</td>
+                                        <td>{{storeTransactionHeader.total_amount}}</td>
+                                    </tr>
+                                </tfoot>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#dataTable').dataTable({
+            "paginate": true,
+            "sort": true,
+            "language": {
+                "emptyTable": "No Data Is Available."
+            },
+            "order": [
+                [0, "desc"]
+            ],
+        });
+    });
+</script>
+{% endblock %}

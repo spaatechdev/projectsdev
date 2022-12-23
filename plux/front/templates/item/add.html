@@ -23,53 +23,72 @@
                                 <textarea name="description" class="form-control" id="description" rows="5"
                                     placeholder="Description" required></textarea>
                             </div>
-                            <div class="form-group">
-                                <label for="item_category_id">Item Category</label>
-                                <select name="item_category_id" id="item_category_id" class="form-control" required>
-                                    <option value="">Select Item Category</option>
-                                    {% for itemCategory in itemCategories %}
-                                    <option value="{{itemCategory.id}}">{{itemCategory.description}}</option>
-                                    {% endfor %}
-                                </select>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="item_category_id">Item Category</label>
+                                        <select name="item_category_id" id="item_category_id" class="form-control"
+                                            required>
+                                            <option value="">Select Item Category</option>
+                                            {% for itemCategory in itemCategories %}
+                                            <option value="{{itemCategory.id}}">{{itemCategory.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="ply_dimension_id">Ply Dimension</label>
+                                        <select name="ply_dimension_id" id="ply_dimension_id" class="form-control">
+                                            <option value="">Select Ply Dimension</option>
+                                            {% for plyDimension in plyDimensions %}
+                                            <option value="{{plyDimension.id}}">{{plyDimension.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="ply_dimension_id">Ply Dimension</label>
-                                <select name="ply_dimension_id" id="ply_dimension_id" class="form-control" required>
-                                    <option value="">Select Ply Dimension</option>
-                                    {% for plyDimension in plyDimensions %}
-                                    <option value="{{plyDimension.id}}">{{plyDimension.description}}</option>
-                                    {% endfor %}
-                                </select>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="uom_id">UOM</label>
+                                        <select name="uom_id" id="uom_id" class="form-control" required>
+                                            <option value="">Select UOM</option>
+                                            {% for uom in uoms %}
+                                            <option value="{{uom.id}}">{{uom.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="unit_price">Unit Price</label>
+                                        <input type="text" name="unit_price" class="form-control" id="unit_price"
+                                            required placeholder="Unit Price"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="uom_id">UOM</label>
-                                <select name="uom_id" id="uom_id" class="form-control" required>
-                                    <option value="">Select UOM</option>
-                                    {% for uom in uoms %}
-                                    <option value="{{uom.id}}">{{uom.description}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="unit_price">Unit Price</label>
-                                <input type="text" name="unit_price" class="form-control" id="unit_price" required
-                                    placeholder="Unit Price"
-                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
-                            </div>
-                            <div class="form-group">
-                                <label for="hsn_code">HSN Code</label>
-                                <input type="text" name="hsn_code" class="form-control" id="hsn_code" required
-                                    placeholder="HSN Code"
-                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
-                            </div>
-                            <div class="form-group">
-                                <label for="gst_percentage">GST Percentage</label>
-                                <input type="text" name="gst_percentage" class="form-control" id="gst_percentage" required
-                                    placeholder="GST Percentage"
-                                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="hsn_code">HSN Code</label>
+                                        <input type="text" name="hsn_code" class="form-control" id="hsn_code" required
+                                            placeholder="HSN Code"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="gst_percentage">GST Percentage</label>
+                                        <input type="text" name="gst_percentage" class="form-control"
+                                            id="gst_percentage" required placeholder="GST Percentage"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
-                            <button class="btn btn-light">Cancel</button>
+                            <button type="reset" class="btn btn-light">Reset</button>
                         </form>
                     </div>
                 </div>

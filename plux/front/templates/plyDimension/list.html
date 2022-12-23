@@ -11,13 +11,16 @@
                         <div class="col-md-6">
                             <h4 class="card-title">Ply Dimensions</h4>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <a href="{% url 'plyDimensionAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'plyDimensionImport' %}" class="btn btn-primary btn-sm float-end">Import</a>
                         </div>
                     </div>
                     <div class="row">
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped" id="dataTable">
                                 <thead>
                                     <tr>
                                         <th>
@@ -85,9 +88,49 @@
                             </table>
                         </div>
                     </div>
+                    {% if plyDimensions.has_other_pages %}
+                    <div class="float-end">
+                        <ul class="pagination">
+                            {% if plyDimensions.has_previous %}
+                            <li class="mx-2"><a href="?page={{ plyDimensions.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in plyDimensions.paginator.page_range %}
+                            {% if plyDimensions.number == i %}
+                            <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
+                            {% else %}
+                            <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if plyDimensions.has_next %}
+                            <li class="mx-2"><a href="?page={{ plyDimensions.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#dataTable').dataTable({
+            "paginate": true,
+            "sort": true,
+            "language": {
+                "emptyTable": "No Data Is Available."
+            },
+            "order": [
+                [0, "desc"]
+            ],
+        });
+    });
+</script>
 {% endblock %}

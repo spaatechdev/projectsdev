@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Import Excel</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'plyDimensionList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{% url 'downloadplyDimensionExcel' %}" type="button"
+                                class="btn btn-info download_excel">Download CSV Template
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="excel"></label>
+                                    <input class="form-control" id="excel" type="file" name="excel">
+                                </div>
+                                <div class="">
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
