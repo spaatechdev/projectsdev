@@ -425,6 +425,7 @@ class InvoiceHeader(models.Model):
     customer = models.ForeignKey(
         Customer, related_name='InvoiceCustomer', on_delete=models.CASCADE, blank=True, null=True)
     invoice_number = models.CharField(max_length=15, blank=True, null=True)
+    vehicle_number = models.CharField(max_length=15, blank=True, null=True)
     invoice_date = models.DateField(blank=True, null=True)
     invoice_total = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)

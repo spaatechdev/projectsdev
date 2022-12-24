@@ -1756,6 +1756,7 @@ def invoiceAdd(request):
         invoice_number = "IN-" + str(invoice_count + 1).zfill(8)
         invoiceHeader = models.InvoiceHeader()
         invoiceHeader.invoice_number = invoice_number
+        invoiceHeader.vehicle_number = request.POST['vehicle_number']
         invoiceHeader.invoice_date = datetime.now()
         invoiceHeader.invoice_total = total_item_price
         invoiceHeader.invoice_gst_total = total_gst_price
