@@ -473,13 +473,15 @@ class StoreTransactionHeader(models.Model):
         OnTransitHeader, on_delete=models.CASCADE, blank=True, null=True)
     physical_stock_header = models.ForeignKey(
         PhysicalStockHeader, on_delete=models.CASCADE, blank=True, null=True)
+    invoice_header = models.ForeignKey(
+        InvoiceHeader, on_delete=models.CASCADE, blank=True, null=True)
     transaction_date = models.DateField(blank=True, null=True)
     transaction_type = models.ForeignKey(
         TransactionType, on_delete=models.CASCADE, blank=True, null=True)
     store = models.ForeignKey(
         StoreMaster, on_delete=models.CASCADE, blank=True, null=True)
-    total_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_gst_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
@@ -492,15 +494,13 @@ class StoreTransactionHeader(models.Model):
 
 
 class StoreTransactionDetails(models.Model):
-    store_transaction_header = models.ForeignKey(
-        StoreTransactionHeader, on_delete=models.CASCADE, default=1)
-    item = models.ForeignKey(ItemMaster, related_name='StoreItem',
-                             on_delete=models.CASCADE, blank=True, null=True)
-    type = models.ForeignKey(
-        TransactionType, on_delete=models.CASCADE, blank=True, null=True)
+    store_transaction_header = models.ForeignKey(StoreTransactionHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(ItemMaster, related_name='StoreItem', on_delete=models.CASCADE, blank=True, null=True)
+    type = models.ForeignKey(TransactionType, on_delete=models.CASCADE, blank=True, null=True)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    unit_price = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    gst_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    gst_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     delivery_date = models.DateField(blank=True, null=True)
     deleted = models.BooleanField(default=0)
