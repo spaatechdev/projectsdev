@@ -10,10 +10,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">On-Transit Order Details Of {{onTransitOrder.transfer_number }}</h4>
+                            <h4 class="card-title">Invoice Order Details Of {{invoiceOrder.invoice_number }}</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'onTransitOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                            <a href="{% url 'invoiceList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
@@ -31,34 +31,48 @@
                                             Quantity
                                         </th>
                                         <th>
-                                            Store From
+                                            Total Value
                                         </th>
                                         <th>
-                                            Store To
+                                            Total GST Value
+                                        </th>
+                                        <th>
+                                            Total Value Without GST
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for ontransitdetail in onTransitOrder.ontransitdetails_set.all %}
+                                    {% for invoicedetail in invoiceOrder.invoicedetails_set.all %}
                                     <tr>
                                         <td>
                                             {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{ontransitdetail.item.description}}
+                                            {{invoicedetail.item.description}}
                                         </td>
                                         <td>
-                                            {{ ontransitdetail.quantity|sub:ontransitdetail.delivered_quantity }}
+                                            {{ invoicedetail.quantity }}
                                         </td>
                                         <td>
-                                            {{ ontransitdetail.on_transit_header.store_from.name }}
+                                            {{ invoicedetail.invoice_item_value }}
                                         </td>
                                         <td>
-                                            {{ ontransitdetail.on_transit_header.store_to.name }}
+                                            {{ invoicedetail.invoice_item_gst_value }}
+                                        </td>
+                                        <td>
+                                            {{ invoicedetail.invoice_item_value|sub:invoicedetail.invoice_item_gst_value }}
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3">Total</td>
+                                        <td>{{invoiceOrder.invoice_total}}</td>
+                                        <td>{{invoiceOrder.invoice_gst_total}}</td>
+                                        <td>{{invoiceOrder.invoice_total|sub:invoiceOrder.invoice_gst_total}}</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>

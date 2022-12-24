@@ -1736,7 +1736,7 @@ def invoiceList(request):
 @login_required
 def invoiceDetailsList(request, header_id):
     page = request.GET.get('page', 1)
-    invoiceOrder = models.OnTransitHeader.objects.prefetch_related('invoicedetails_set').get(pk=header_id)
+    invoiceOrder = models.InvoiceHeader.objects.prefetch_related('invoicedetails_set').get(pk=header_id)
     context = {'invoiceOrder': invoiceOrder}
     return render(request, 'invoice/orderDetailsList.html', context)
 

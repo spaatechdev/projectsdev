@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load mathfilters %}
 
 {% block content %}
 <div class="content-wrapper">
@@ -42,6 +43,9 @@
                                             Invoice GST Total
                                         </th>
                                         <th>
+                                            Total without GST
+                                        </th>
+                                        <th>
                                             Action
                                         </th>
                                     </tr>
@@ -69,6 +73,9 @@
                                         </td>
                                         <td>
                                             {{invoice.invoice_gst_total}}
+                                        </td>
+                                        <td>
+                                            {{invoice.invoice_total|sub:invoice.invoice_gst_total}}
                                         </td>
                                         <td>
                                             <a href="{% url 'invoiceDetailsList' invoice.id %}"
