@@ -111,6 +111,33 @@ class Customer(models.Model):
         verbose_name_plural = 'customer'
 
 
+class Salesperson(models.Model):
+    salesperson_name = models.CharField(max_length=60, blank=False, null=False)
+    address_1 = models.CharField(max_length=60, blank=False, null=False)
+    address_2 = models.CharField(max_length=60, blank=True, null=True)
+    country = models.ForeignKey(
+        Countries, related_name='CountrySalesperson', on_delete=models.CASCADE, blank=True, null=True)
+    state = models.ForeignKey(
+        States, related_name='StateSalesperson', on_delete=models.CASCADE, blank=True, null=True)
+    city = models.ForeignKey(
+        Cities, related_name='CitySalesperson', on_delete=models.CASCADE, blank=True, null=True)
+    pin = models.CharField(max_length=6, validators=[
+                           RegexValidator('^[0-9]{6}$', _('Invalid Pin Number'))])
+    gst_no = models.CharField(max_length=16, blank=True, null=True)
+    contact_no = models.CharField(max_length=40, blank=True, null=True)
+    contact_name = models.CharField(max_length=40, blank=True, null=True)
+    contact_email = models.CharField(max_length=100, blank=True, null=True)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.salesperson_name
+
+    class Meta:
+        managed = True
+        db_table = 'salesperson'
+        verbose_name_plural = 'salesperson'
+
+
 class ItemCtegory(models.Model):
     description = models.CharField(max_length=30, blank=False, null=False)
     deleted = models.BooleanField(default=0)

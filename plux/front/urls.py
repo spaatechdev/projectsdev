@@ -21,6 +21,13 @@ urlpatterns = [
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
     path('customerImport', views.customerImport, name='customerImport'),
     path('downloadCustomerExcel', views.downloadCustomerExcel, name='downloadCustomerExcel'),
+
+    path('salespersonList', views.salespersonList, name='salespersonList'),
+    path('salespersonAdd', views.salespersonAdd, name='salespersonAdd'),
+    path('salespersonEdit/<int:id>', views.salespersonEdit, name='salespersonEdit'),
+    path('salespersonDelete/<int:id>', views.salespersonDelete, name='salespersonDelete'),
+    path('salespersonImport', views.salespersonImport, name='salespersonImport'),
+    path('downloadSalespersonExcel', views.downloadSalespersonExcel, name='downloadSalespersonExcel'),
     
     path('uomList', views.uomList, name='uomList'),
     path('uomAdd', views.uomAdd, name='uomAdd'),
