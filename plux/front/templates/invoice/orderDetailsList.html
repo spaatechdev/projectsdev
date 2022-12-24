@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load mathfilters %}
 
 {% block content %}
 <div class="content-wrapper">
@@ -9,7 +10,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">On-Transits Orders</h4>
+                            <h4 class="card-title">Invoice Order Details Of {{invoiceOrder.invoice_number }}</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'invoiceList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
@@ -21,74 +25,57 @@
                                             SL. No
                                         </th>
                                         <th>
-                                            Transfer Number
+                                            Item
                                         </th>
                                         <th>
-                                            Store From
+                                            Quantity
                                         </th>
                                         <th>
-                                            Store To
+                                            Total Value
                                         </th>
                                         <th>
-                                            Transfer Date
+                                            Total GST Value
                                         </th>
                                         <th>
-                                            Action
+                                            Total Value Without GST
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for onTransitOrder in onTransitOrders %}
+                                    {% for invoicedetail in invoiceOrder.invoicedetails_set.all %}
                                     <tr>
                                         <td>
                                             {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{onTransitOrder.transfer_number}}
+                                            {{invoicedetail.item.description}}
                                         </td>
                                         <td>
-                                            {{onTransitOrder.store_from.name}}
+                                            {{ invoicedetail.quantity }}
                                         </td>
                                         <td>
-                                            {{onTransitOrder.store_to.name}}
+                                            {{ invoicedetail.invoice_item_value }}
                                         </td>
                                         <td>
-                                            {{onTransitOrder.transfer_date|date:"M d, Y"}}
+                                            {{ invoicedetail.invoice_item_gst_value }}
                                         </td>
                                         <td>
-                                            <a href="{% url 'onTransitOrderDetailsList' onTransitOrder.id %}"
-                                                class="btn btn-primary btn-sm">
-                                                Order Details </a>
+                                            {{ invoicedetail.invoice_item_value|sub:invoicedetail.invoice_item_gst_value }}
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3">Total</td>
+                                        <td>{{invoiceOrder.invoice_total}}</td>
+                                        <td>{{invoiceOrder.invoice_gst_total}}</td>
+                                        <td>{{invoiceOrder.invoice_total|sub:invoiceOrder.invoice_gst_total}}</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
-                    {% if onTransitOrders.has_other_pages %}
-                    <div class="float-end">
-                        <ul class="pagination">
-                            {% if onTransitOrders.has_previous %}
-                            <li class="mx-2"><a href="?page={{ onTransitOrders.previous_page_number }}">&laquo;</a></li>
-                            {% else %}
-                            <li class="disabled mx-2"><span>&laquo;</span></li>
-                            {% endif %}
-                            {% for i in onTransitOrders.paginator.page_range %}
-                            {% if onTransitOrders.number == i %}
-                            <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
-                            {% else %}
-                            <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
-                            {% endif %}
-                            {% endfor %}
-                            {% if onTransitOrders.has_next %}
-                            <li class="mx-2"><a href="?page={{ onTransitOrders.next_page_number }}">&raquo;</a></li>
-                            {% else %}
-                            <li class="disabled mx-2"><span>&raquo;</span></li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </div>

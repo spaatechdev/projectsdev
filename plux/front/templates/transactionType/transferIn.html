@@ -30,30 +30,6 @@
     </div>
 </div>
 <div class="purchase_order_details">
-    <div class="row content_parent">
-        <div class="col-md-5">
-            <div class="form-group">
-                <label>Item</label>
-                <select name="item_id[]" class="form-control store_item" required>
-                    <option value="">Select Item</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="form-group">
-                <label>Quantity</label>
-                <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required
-                    min="1" onkeyup="checkMaxMin(this)"
-                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <button type="button" class="btn btn-sm btn-info mt-4 add_transfer_item">Add More
-                    Item</button>
-            </div>
-        </div>
-    </div>
 </div>
 <script>
     $(document).on('change', '#transfer_number', function () {
