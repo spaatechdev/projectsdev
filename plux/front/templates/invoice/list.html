@@ -46,6 +46,9 @@
                                             Total without GST
                                         </th>
                                         <th>
+                                            Vehicle Number
+                                        </th>
+                                        <th>
                                             Action
                                         </th>
                                     </tr>
@@ -76,6 +79,9 @@
                                         </td>
                                         <td>
                                             {{invoice.invoice_total|sub:invoice.invoice_gst_total}}
+                                        </td>
+                                        <td>
+                                            {{invoice.vehicle_number.upper}}
                                         </td>
                                         <td>
                                             <a href="{% url 'invoiceDetailsList' invoice.id %}"
