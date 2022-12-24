@@ -42,6 +42,15 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="vehicle_number">Vehicle Number</label>
+                                        <input type="text" name="vehicle_number" id="vehicle_number"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="purchase_order_details">
                                 <div class="row content_parent">
                                     <div class="col-md-3">
@@ -85,7 +94,8 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label>GST Price</label>
-                                            <input type="text" class="form-control item_gst_price" name="item_gst_price[]" readonly>
+                                            <input type="text" class="form-control item_gst_price"
+                                                name="item_gst_price[]" readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -177,7 +187,7 @@
 
     $(document).on('change', '#store', function () {
         showItemsByStore();
-    })
+    });
 
     function showItemsByStore() {
         store_from_id = $('#store').val();
@@ -215,7 +225,7 @@
                 if (response.code == 200) {
                     item_toal_price = (response.storeItems.on_hand_qty * response.storeItems.item__unit_price);
                     gst_price = item_toal_price * (response.storeItems.item__gst_percentage / 100)
-                    item_price_after_gst = item_toal_price - gst_price
+                    item_price_after_gst = item_toal_price - gst_price;
                     elem.parents('.content_parent').find('.item_quantity').attr('max', parseInt(response.storeItems.on_hand_qty))
                     elem.parents('.content_parent').find('.item_quantity').val(parseInt(response.storeItems.on_hand_qty))
                     elem.parents('.content_parent').find('.item_unit_price').val(parseInt(response.storeItems.item__unit_price))
@@ -227,7 +237,7 @@
                 }
             },
         });
-    })
+    });
 
     function checkMaxMin(element) {
         if (parseInt($(element).attr('max')) < parseInt($(element).val())) {
@@ -237,5 +247,18 @@
             $(element).val($(element).attr('min'));
         }
     }
+
+    $(document).on('keyup', '.item_quantity', function () {
+        elem = $(this);
+        item_quantity = elem.val();
+        unit_price = elem.parents('.content_parent').find('.item_unit_price').val();
+        gst_percentage = elem.parents('.content_parent').find('.item_gst_percentage').val();
+
+        toal_price = (item_quantity * unit_price);
+        gst = toal_price * (gst_percentage / 100)
+        price_after_gst = toal_price - gst;
+        elem.parents('.content_parent').find('.item_total_price').val(toal_price.toFixed(2));
+        elem.parents('.content_parent').find('.item_gst_price').val(gst.toFixed(2));
+    })
 </script>
 {% endblock %}
