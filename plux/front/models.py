@@ -357,6 +357,51 @@ class PurchaseOrderTerms(models.Model):
         verbose_name_plural = 'purchase_order_terms'
 
 
+class SalesOrderHeader(models.Model):
+    ammend_no = models.CharField(max_length=50, blank=True, null=True)
+    sales_order_no = models.CharField(
+        default="PO-00000001", max_length=50, blank=False, null=False)
+    sales_order_date = models.DateField(blank=True, null=True)
+    salesperson = models.ForeignKey(
+        Salesperson, on_delete=models.CASCADE, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    # store = models.ForeignKey(StoreMaster, related_name='SalesStore', on_delete=models.CASCADE, blank=True, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.IntegerField(default=1)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.sales_order_no
+
+    class Meta:
+        managed = True
+        db_table = 'sales_order_header'
+        verbose_name_plural = 'sales_order_header'
+
+
+class SalesOrderDetails(models.Model):
+    ammend_no = models.CharField(max_length=50, blank=True, null=True)
+    sales_order_header = models.ForeignKey(
+        SalesOrderHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(
+        ItemMaster, related_name='SalesItem', on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    delivery_date = models.DateField(blank=True, null=True)
+    delivered_quantity = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.sales_order_header.sales_order_no
+
+    class Meta:
+        managed = True
+        db_table = 'sales_order_details'
+        verbose_name_plural = 'sales_order_details'
+
+
 class TransactionType(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     deleted = models.BooleanField(default=0)

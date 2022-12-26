@@ -88,6 +88,13 @@ urlpatterns = [
     path('purchaseOrderDelete/<int:id>', views.purchaseOrderDelete, name='purchaseOrderDelete'),
     path('purchaseOrderDetailsList/<int:header_id>', views.purchaseOrderDetailsList, name='purchaseOrderDetailsList'),
 
+
+    path('salesOrderList', views.salesOrderList, name='salesOrderList'),
+    path('salesOrderAdd', views.salesOrderAdd, name='salesOrderAdd'),
+    path('salesOrderEdit/<int:id>', views.salesOrderEdit, name='salesOrderEdit'),
+    path('salesOrderDelete/<int:id>', views.salesOrderDelete, name='salesOrderDelete'),
+    path('salesOrderDetailsList/<int:header_id>', views.salesOrderDetailsList, name='salesOrderDetailsList'),
+
     path('standardTermList', views.standardTermList, name='standardTermList'),
     path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
     path('standardTermEdit/<int:id>', views.standardTermEdit, name='standardTermEdit'),

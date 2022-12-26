@@ -1436,6 +1436,94 @@ def purchaseOrderDetailsList(request, header_id):
 
 
 @login_required
+def salesOrderList(request):
+    page = request.GET.get('page', 1)
+    salesOrders = models.SalesOrderHeader.objects.filter(deleted=0)
+    paginator = Paginator(salesOrders, env("PER_PAGE_DATA"))
+    salesOrders = paginator.page(page)
+    context = {'salesOrders': salesOrders}
+    return render(request, 'salesOrder/list.html', context)
+
+
+@login_required
+def salesOrderAdd(request):
+    context = {}
+    salespersons = models.Salesperson.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'salespersons': salespersons, 'items': items})
+    if request.method == "POST":
+        sales_order_count = models.SalesOrderHeader.objects.filter(
+            deleted=0).count()
+        sales_order_no = "SO-" + str(sales_order_count + 1).zfill(8)
+        salesOrder = models.SalesOrderHeader()
+        # salesOrder.ammend_no = request.POST['ammend_no']
+        salesOrder.sales_order_no = sales_order_no
+        salesOrder.sales_order_date = request.POST['sales_order_date']
+        salesOrder.notes = request.POST['notes']
+        salesOrder.total_amount = request.POST['total_amount']
+        salesOrder.salesperson_id = request.POST['salesperson_id']
+        salesOrder.save()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.SalesOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], sales_order_header_id=salesOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.SalesOrderDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Sales Order Created Successfully.')
+        return redirect('salesOrderList')
+    return render(request, 'salesOrder/add.html', context)
+
+
+@login_required
+def salesOrderEdit(request, id):
+    context = {}
+    salesOrder = models.SalesOrderHeader.objects.prefetch_related(
+        'salesorderdetails_set').get(pk=id)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    context.update({'salesOrder': salesOrder,
+                   'items': items, 'vendors': vendors})
+    if request.method == "POST":
+        salesOrder = models.SalesOrderHeader.objects.get(
+            pk=request.POST['id'])
+        # salesOrder.ammend_no = request.POST['ammend_no']
+        salesOrder.sales_order_date = request.POST['sales_order_date']
+        salesOrder.notes = request.POST['notes']
+        salesOrder.total_amount = request.POST['total_amount']
+        salesOrder.vendor_id = request.POST['vendor_id']
+        salesOrder.save()
+        models.SalesOrderDetails.objects.filter(
+            sales_order_header_id=salesOrder.id).delete()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.SalesOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], sales_order_header_id=salesOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.SalesOrderDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Sales Order Updated Successfully.')
+        return redirect('salesOrderList')
+    return render(request, 'salesOrder/edit.html', context)
+
+
+@login_required
+def salesOrderDelete(request, id):
+    salesOrder = models.SalesOrderHeader.objects.get(pk=id)
+    salesOrder.deleted = 1
+    salesOrder.save()
+    models.SalesOrderDetails.objects.filter(
+        sales_order_header_id=salesOrder.id).update(deleted=1)
+    return redirect('salesOrderList')
+
+
+@login_required
+def salesOrderDetailsList(request, header_id):
+    page = request.GET.get('page', 1)
+    salesHeader = models.SalesOrderHeader.objects.prefetch_related(
+        'salesorderdetails_set').get(pk=header_id)
+    context = {'salesHeader': salesHeader}
+    return render(request, 'salesOrder/orderDetailsList.html', context)
+
+
+
+@login_required
 def storeTransactionList(request):
     page = request.GET.get('page', 1)
     storeTransactions = models.StoreTransactionHeader.objects.filter(deleted=0)

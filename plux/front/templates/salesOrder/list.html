@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Sales Orders</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'salesOrderAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            SL. No
+                                        </th>
+                                        <th>
+                                            Salesperson
+                                        </th>
+                                        <th>
+                                            Sales Order Number
+                                        </th>
+                                        <!-- <th>
+                                            Ammend No
+                                        </th> -->
+                                        <th>
+                                            Sales Order Date
+                                        </th>
+                                        <th>
+                                            Total Amount
+                                        </th>
+                                        <th>
+                                            Notes
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for salesOrder in salesOrders %}
+                                    <tr>
+                                        <td>
+                                            {{forloop.counter}}
+                                        </td>
+                                        <td>
+                                            {{salesOrder.salesperson.salesperson_name}}
+                                        </td>
+                                        <td>
+                                            {{salesOrder.sales_order_no}}
+                                        </td>
+                                        <!-- <td>
+                                            {{salesOrder.ammend_no}}
+                                        </td> -->
+                                        <td>
+                                            {{salesOrder.sales_order_date|date:"M d, Y"}}
+                                        </td>
+                                        <td>
+                                            {{salesOrder.total_amount}}
+                                        </td>
+                                        <td>
+                                            {{salesOrder.notes}}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'salesOrderDetailsList' salesOrder.id %}"
+                                                class="btn btn-primary btn-sm">
+                                                Order Details </a>
+                                            {% if salesOrder.status == 1 %}
+                                            <a href="{% url 'salesOrderEdit' salesOrder.id %}"
+                                                class="btn btn-info btn-sm">
+                                                Edit </a>
+                                            {% endif %}
+                                            <a onclick="return confirm('Are you sure you want to delete this?')"
+                                                href="{% url 'salesOrderDelete' salesOrder.id %}"
+                                                class="btn btn-danger btn-sm">
+                                                Delete </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% if salesOrders.has_other_pages %}
+                    <div class="float-end">
+                        <ul class="pagination">
+                            {% if salesOrders.has_previous %}
+                            <li class="mx-2"><a href="?page={{ salesOrders.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in salesOrders.paginator.page_range %}
+                            {% if salesOrders.number == i %}
+                            <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
+                            {% else %}
+                            <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if salesOrders.has_next %}
+                            <li class="mx-2"><a href="?page={{ salesOrders.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#dataTable').dataTable({
+            "paginate": true,
+            "sort": true,
+            "language": {
+                "emptyTable": "No Data Is Available."
+            },
+            "order": [
+                [0, "desc"]
+            ],
+        });
+    });
+</script>
+{% endblock %}
