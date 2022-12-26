@@ -439,6 +439,128 @@ def downloadCustomerExcel(request):
 
 
 @login_required
+def salespersonList(request):
+    page = request.GET.get('page', 1)
+    salespersons = models.Salesperson.objects.filter(deleted=0)
+    paginator = Paginator(salespersons, env("PER_PAGE_DATA"))
+    salespersons = paginator.page(page)
+    context = {'salespersons': salespersons}
+    return render(request, 'salesperson/list.html', context)
+
+
+@login_required
+def salespersonAdd(request):
+    context = {}
+    countries = models.Countries.objects.filter(id=101)
+    context.update({'countries': countries})
+    if request.method == "POST":
+        salesperson = models.Salesperson()
+        salesperson.salesperson_name = request.POST['salesperson_name']
+        salesperson.address_1 = request.POST['address_1']
+        salesperson.address_2 = request.POST['address_2']
+        salesperson.pin = request.POST['pin']
+        salesperson.gst_no = request.POST['gst_no']
+        salesperson.contact_no = request.POST['contact_no']
+        salesperson.contact_name = request.POST['contact_name']
+        salesperson.contact_email = request.POST['contact_email']
+        salesperson.country_id = request.POST['country']
+        salesperson.state_id = request.POST['state']
+        salesperson.city_id = request.POST['city']
+        salesperson.save()
+        messages.success(request, 'Salesperson Created Successfully.')
+        return redirect('salespersonList')
+    return render(request, 'salesperson/add.html', context)
+
+
+@login_required
+def salespersonEdit(request, id):
+    context = {}
+    countries = models.Countries.objects.filter(id=101)
+    salesperson = models.Salesperson.objects.get(pk=id)
+    context.update({'countries': countries, 'salesperson': salesperson})
+    if request.method == "POST":
+        salesperson = models.Salesperson.objects.get(pk=request.POST['id'])
+        salesperson.salesperson_name = request.POST['salesperson_name']
+        salesperson.address_1 = request.POST['address_1']
+        salesperson.address_2 = request.POST['address_2']
+        salesperson.pin = request.POST['pin']
+        salesperson.gst_no = request.POST['gst_no']
+        salesperson.contact_no = request.POST['contact_no']
+        salesperson.contact_name = request.POST['contact_name']
+        salesperson.contact_email = request.POST['contact_email']
+        salesperson.country_id = request.POST['country']
+        salesperson.state_id = request.POST['state']
+        salesperson.city_id = request.POST['city']
+        salesperson.save()
+        messages.success(request, 'Salesperson Updated Successfully.')
+        return redirect('salespersonList')
+    return render(request, 'salesperson/edit.html', context)
+
+
+@login_required
+def salespersonDelete(request, id):
+    salesperson = models.Salesperson.objects.get(pk=id)
+    salesperson.deleted = 1
+    salesperson.save()
+    return redirect('salespersonList')
+
+
+@login_required
+def salespersonImport(request):
+    context = {}
+    if request.method == "POST":
+        salesperson_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/salespersons/", MEDIA_ROOT + "/excels/salespersons/")
+            fs.save(tmpname, file)
+            file_name = "excels/salespersons/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if not row['Salesperson Name']:
+                        break
+                    country_obj = models.Countries.objects.filter(
+                        name=row['Country']).first()
+                    state_obj = models.States.objects.filter(
+                        name=row['State']).first()
+                    city_obj = models.Cities.objects.filter(
+                        name=row['City']).first()
+                    country_id = country_obj.id if country_obj is not None else None
+                    state_id = state_obj.id if state_obj is not None else None
+                    city_id = city_obj.id if city_obj is not None else None
+                    salesperson_email_qs = models.Salesperson.objects.filter(
+                        contact_email=row['Contact Email'])
+                    if (not salesperson_email_qs.exists()):
+                        salesperson_list.append(models.Salesperson(salesperson_name=row['Salesperson Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
+                                             'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                models.Salesperson.objects.bulk_create(salesperson_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Salespersons Created Successfully.')
+            return redirect('salespersonList')
+    return render(request, 'salesperson/import.html', context)
+
+
+@login_required
+def downloadSalespersonExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "salespersons.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                # fh.read(), content_type="application/vnd.ms-excel")
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
+
+
+
+@login_required
 def userList(request):
     page = request.GET.get('page', 1)
     users = models.User.objects.all()
@@ -1312,6 +1434,94 @@ def purchaseOrderDetailsList(request, header_id):
         'purchaseorderdetails_set').get(pk=header_id)
     context = {'purchaseHeader': purchaseHeader}
     return render(request, 'purchaseOrder/orderDetailsList.html', context)
+
+
+@login_required
+def salesOrderList(request):
+    page = request.GET.get('page', 1)
+    salesOrders = models.SalesOrderHeader.objects.filter(deleted=0)
+    paginator = Paginator(salesOrders, env("PER_PAGE_DATA"))
+    salesOrders = paginator.page(page)
+    context = {'salesOrders': salesOrders}
+    return render(request, 'salesOrder/list.html', context)
+
+
+@login_required
+def salesOrderAdd(request):
+    context = {}
+    salespersons = models.Salesperson.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'salespersons': salespersons, 'items': items})
+    if request.method == "POST":
+        sales_order_count = models.SalesOrderHeader.objects.filter(
+            deleted=0).count()
+        sales_order_no = "SO-" + str(sales_order_count + 1).zfill(8)
+        salesOrder = models.SalesOrderHeader()
+        # salesOrder.ammend_no = request.POST['ammend_no']
+        salesOrder.sales_order_no = sales_order_no
+        salesOrder.sales_order_date = request.POST['sales_order_date']
+        salesOrder.notes = request.POST['notes']
+        salesOrder.total_amount = request.POST['total_amount']
+        salesOrder.salesperson_id = request.POST['salesperson_id']
+        salesOrder.save()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.SalesOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], sales_order_header_id=salesOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.SalesOrderDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Sales Order Created Successfully.')
+        return redirect('salesOrderList')
+    return render(request, 'salesOrder/add.html', context)
+
+
+@login_required
+def salesOrderEdit(request, id):
+    context = {}
+    salesOrder = models.SalesOrderHeader.objects.prefetch_related(
+        'salesorderdetails_set').get(pk=id)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    vendors = models.VendorMaster.objects.filter(deleted=0)
+    context.update({'salesOrder': salesOrder,
+                   'items': items, 'vendors': vendors})
+    if request.method == "POST":
+        salesOrder = models.SalesOrderHeader.objects.get(
+            pk=request.POST['id'])
+        # salesOrder.ammend_no = request.POST['ammend_no']
+        salesOrder.sales_order_date = request.POST['sales_order_date']
+        salesOrder.notes = request.POST['notes']
+        salesOrder.total_amount = request.POST['total_amount']
+        salesOrder.vendor_id = request.POST['vendor_id']
+        salesOrder.save()
+        models.SalesOrderDetails.objects.filter(
+            sales_order_header_id=salesOrder.id).delete()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.SalesOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], sales_order_header_id=salesOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.SalesOrderDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Sales Order Updated Successfully.')
+        return redirect('salesOrderList')
+    return render(request, 'salesOrder/edit.html', context)
+
+
+@login_required
+def salesOrderDelete(request, id):
+    salesOrder = models.SalesOrderHeader.objects.get(pk=id)
+    salesOrder.deleted = 1
+    salesOrder.save()
+    models.SalesOrderDetails.objects.filter(
+        sales_order_header_id=salesOrder.id).update(deleted=1)
+    return redirect('salesOrderList')
+
+
+@login_required
+def salesOrderDetailsList(request, header_id):
+    page = request.GET.get('page', 1)
+    salesHeader = models.SalesOrderHeader.objects.prefetch_related(
+        'salesorderdetails_set').get(pk=header_id)
+    context = {'salesHeader': salesHeader}
+    return render(request, 'salesOrder/orderDetailsList.html', context)
+
 
 
 @login_required

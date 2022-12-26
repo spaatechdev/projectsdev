@@ -113,6 +113,33 @@ class Customer(models.Model):
         verbose_name_plural = 'customer'
 
 
+class Salesperson(models.Model):
+    salesperson_name = models.CharField(max_length=60, blank=False, null=False)
+    address_1 = models.CharField(max_length=60, blank=False, null=False)
+    address_2 = models.CharField(max_length=60, blank=True, null=True)
+    country = models.ForeignKey(
+        Countries, related_name='CountrySalesperson', on_delete=models.CASCADE, blank=True, null=True)
+    state = models.ForeignKey(
+        States, related_name='StateSalesperson', on_delete=models.CASCADE, blank=True, null=True)
+    city = models.ForeignKey(
+        Cities, related_name='CitySalesperson', on_delete=models.CASCADE, blank=True, null=True)
+    pin = models.CharField(max_length=6, validators=[
+                           RegexValidator('^[0-9]{6}$', _('Invalid Pin Number'))])
+    gst_no = models.CharField(max_length=16, blank=True, null=True)
+    contact_no = models.CharField(max_length=40, blank=True, null=True)
+    contact_name = models.CharField(max_length=40, blank=True, null=True)
+    contact_email = models.CharField(max_length=100, blank=True, null=True)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.salesperson_name
+
+    class Meta:
+        managed = True
+        db_table = 'salesperson'
+        verbose_name_plural = 'salesperson'
+
+
 class ItemCtegory(models.Model):
     description = models.CharField(max_length=30, blank=False, null=False)
     deleted = models.BooleanField(default=0)
@@ -280,7 +307,7 @@ class PurchaseOrderHeader(models.Model):
     notes = models.TextField(blank=True, null=True)
     # store = models.ForeignKey(StoreMaster, related_name='PurchaseStore', on_delete=models.CASCADE, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.SmallIntegerField(default=1)
+    status = models.IntegerField(default=1)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
@@ -328,6 +355,51 @@ class PurchaseOrderTerms(models.Model):
         managed = True
         db_table = 'purchase_order_terms'
         verbose_name_plural = 'purchase_order_terms'
+
+
+class SalesOrderHeader(models.Model):
+    ammend_no = models.CharField(max_length=50, blank=True, null=True)
+    sales_order_no = models.CharField(
+        default="PO-00000001", max_length=50, blank=False, null=False)
+    sales_order_date = models.DateField(blank=True, null=True)
+    salesperson = models.ForeignKey(
+        Salesperson, on_delete=models.CASCADE, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    # store = models.ForeignKey(StoreMaster, related_name='SalesStore', on_delete=models.CASCADE, blank=True, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.IntegerField(default=1)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.sales_order_no
+
+    class Meta:
+        managed = True
+        db_table = 'sales_order_header'
+        verbose_name_plural = 'sales_order_header'
+
+
+class SalesOrderDetails(models.Model):
+    ammend_no = models.CharField(max_length=50, blank=True, null=True)
+    sales_order_header = models.ForeignKey(
+        SalesOrderHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(
+        ItemMaster, related_name='SalesItem', on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    delivery_date = models.DateField(blank=True, null=True)
+    delivered_quantity = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.sales_order_header.sales_order_no
+
+    class Meta:
+        managed = True
+        db_table = 'sales_order_details'
+        verbose_name_plural = 'sales_order_details'
 
 
 class TransactionType(models.Model):

@@ -21,6 +21,13 @@ urlpatterns = [
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
     path('customerImport', views.customerImport, name='customerImport'),
     path('downloadCustomerExcel', views.downloadCustomerExcel, name='downloadCustomerExcel'),
+
+    path('salespersonList', views.salespersonList, name='salespersonList'),
+    path('salespersonAdd', views.salespersonAdd, name='salespersonAdd'),
+    path('salespersonEdit/<int:id>', views.salespersonEdit, name='salespersonEdit'),
+    path('salespersonDelete/<int:id>', views.salespersonDelete, name='salespersonDelete'),
+    path('salespersonImport', views.salespersonImport, name='salespersonImport'),
+    path('downloadSalespersonExcel', views.downloadSalespersonExcel, name='downloadSalespersonExcel'),
     
     path('uomList', views.uomList, name='uomList'),
     path('uomAdd', views.uomAdd, name='uomAdd'),
@@ -80,6 +87,13 @@ urlpatterns = [
     path('purchaseOrderEdit/<int:id>', views.purchaseOrderEdit, name='purchaseOrderEdit'),
     path('purchaseOrderDelete/<int:id>', views.purchaseOrderDelete, name='purchaseOrderDelete'),
     path('purchaseOrderDetailsList/<int:header_id>', views.purchaseOrderDetailsList, name='purchaseOrderDetailsList'),
+
+
+    path('salesOrderList', views.salesOrderList, name='salesOrderList'),
+    path('salesOrderAdd', views.salesOrderAdd, name='salesOrderAdd'),
+    path('salesOrderEdit/<int:id>', views.salesOrderEdit, name='salesOrderEdit'),
+    path('salesOrderDelete/<int:id>', views.salesOrderDelete, name='salesOrderDelete'),
+    path('salesOrderDetailsList/<int:header_id>', views.salesOrderDetailsList, name='salesOrderDetailsList'),
 
     path('standardTermList', views.standardTermList, name='standardTermList'),
     path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
