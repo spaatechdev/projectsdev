@@ -441,7 +441,7 @@ def downloadCustomerExcel(request):
 @login_required
 def salespersonList(request):
     page = request.GET.get('page', 1)
-    salespersons = models.Salesperson.objects.filter(deleted=0)
+    salespersons = models.SalesPerson.objects.filter(deleted=0)
     paginator = Paginator(salespersons, env("PER_PAGE_DATA"))
     salespersons = paginator.page(page)
     context = {'salespersons': salespersons}
@@ -454,7 +454,7 @@ def salespersonAdd(request):
     countries = models.Countries.objects.filter(id=101)
     context.update({'countries': countries})
     if request.method == "POST":
-        salesperson = models.Salesperson()
+        salesperson = models.SalesPerson()
         salesperson.salesperson_name = request.POST['salesperson_name']
         salesperson.address_1 = request.POST['address_1']
         salesperson.address_2 = request.POST['address_2']
@@ -476,10 +476,10 @@ def salespersonAdd(request):
 def salespersonEdit(request, id):
     context = {}
     countries = models.Countries.objects.filter(id=101)
-    salesperson = models.Salesperson.objects.get(pk=id)
+    salesperson = models.SalesPerson.objects.get(pk=id)
     context.update({'countries': countries, 'salesperson': salesperson})
     if request.method == "POST":
-        salesperson = models.Salesperson.objects.get(pk=request.POST['id'])
+        salesperson = models.SalesPerson.objects.get(pk=request.POST['id'])
         salesperson.salesperson_name = request.POST['salesperson_name']
         salesperson.address_1 = request.POST['address_1']
         salesperson.address_2 = request.POST['address_2']
@@ -499,7 +499,7 @@ def salespersonEdit(request, id):
 
 @login_required
 def salespersonDelete(request, id):
-    salesperson = models.Salesperson.objects.get(pk=id)
+    salesperson = models.SalesPerson.objects.get(pk=id)
     salesperson.deleted = 1
     salesperson.save()
     return redirect('salespersonList')
@@ -533,12 +533,12 @@ def salespersonImport(request):
                     country_id = country_obj.id if country_obj is not None else None
                     state_id = state_obj.id if state_obj is not None else None
                     city_id = city_obj.id if city_obj is not None else None
-                    salesperson_email_qs = models.Salesperson.objects.filter(
+                    salesperson_email_qs = models.SalesPerson.objects.filter(
                         contact_email=row['Contact Email'])
                     if (not salesperson_email_qs.exists()):
-                        salesperson_list.append(models.Salesperson(salesperson_name=row['Salesperson Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
-                                             'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
-                models.Salesperson.objects.bulk_create(salesperson_list)
+                        salesperson_list.append(models.SalesPerson(salesperson_name=row['Salesperson Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
+                            'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                models.SalesPerson.objects.bulk_create(salesperson_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
             messages.success(request, 'Salespersons Created Successfully.')
@@ -557,7 +557,6 @@ def downloadSalespersonExcel(request):
             response['Content-Disposition'] = 'attachment; filename=' + \
                 os.path.basename(file_path)
             return response
-
 
 
 @login_required
@@ -1449,7 +1448,7 @@ def salesOrderList(request):
 @login_required
 def salesOrderAdd(request):
     context = {}
-    salespersons = models.Salesperson.objects.filter(deleted=0)
+    salespersons = models.SalesPerson.objects.filter(deleted=0)
     items = models.ItemMaster.objects.filter(deleted=0)
     context.update({'salespersons': salespersons, 'items': items})
     if request.method == "POST":
@@ -1521,7 +1520,6 @@ def salesOrderDetailsList(request, header_id):
         'salesorderdetails_set').get(pk=header_id)
     context = {'salesHeader': salesHeader}
     return render(request, 'salesOrder/orderDetailsList.html', context)
-
 
 
 @login_required
@@ -1953,7 +1951,8 @@ def invoiceAdd(request):
     context = {}
     customers = models.Customer.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    context.update({'customers': customers, 'stores': stores})
+    terms = models.StandardTermMaster.objects.filter(deleted=0)
+    context.update({'customers': customers, 'stores': stores, 'terms': terms})
     if request.method == "POST":
         total_item_price = 0
         total_gst_price = 0
@@ -1977,6 +1976,10 @@ def invoiceAdd(request):
             order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist(
                 'item_total_price[]')[index], invoice_item_gst_value=request.POST.getlist('item_gst_price[]')[index], invoice_header_id=invoiceHeader.id))
         models.InvoiceDetails.objects.bulk_create(order_details)
+        terms_list = []
+        for index, item in enumerate(request.POST.getlist('terms[]')):
+            terms_list.append(models.InvoiceTerms(term_id=request.POST.getlist('terms[]')[index], invoice_header_id=invoiceHeader.id))
+        models.InvoiceTerms.objects.bulk_create(terms_list)
         transaction_count = models.StoreTransactionHeader.objects.filter(
             deleted=0).count()
         transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
@@ -2013,8 +2016,7 @@ def invoiceAdd(request):
                 storeItem.closing_qty -= Decimal(
                     request.POST.getlist('quantity[]')[index])
                 storeItem.save()
-        models.StoreTransactionDetails.objects.bulk_create(
-            transaction_order_details)
+        models.StoreTransactionDetails.objects.bulk_create(transaction_order_details)
         messages.success(request, 'Invoice Created Successfully.')
         return redirect('invoiceList')
     return render(request, 'invoice/add.html', context)
@@ -2027,6 +2029,7 @@ def invoiceDetailsList(request, header_id):
         'invoicedetails_set').get(pk=header_id)
     context = {'invoiceOrder': invoiceOrder}
     return render(request, 'invoice/orderDetailsList.html', context)
+
 
 @login_required
 def printInvoice(request, header_id):

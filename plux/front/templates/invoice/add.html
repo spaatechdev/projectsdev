@@ -47,7 +47,18 @@
                                     <div class="form-group">
                                         <label for="vehicle_number">Vehicle Number</label>
                                         <input type="text" name="vehicle_number" id="vehicle_number"
-                                        style="text-transform: uppercase" class="form-control">
+                                            style="text-transform: uppercase" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="terms">Terms</label>
+                                        <select name="terms[]" id="terms" class="selectpicker form-control" required
+                                            multiple="multiple" data-live-search="true">
+                                            {% for term in terms %}
+                                            <option value="{{term.id}}">{{term.description}}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -259,6 +270,12 @@
         price_after_gst = toal_price - gst;
         elem.parents('.content_parent').find('.item_total_price').val(toal_price.toFixed(2));
         elem.parents('.content_parent').find('.item_gst_price').val(gst.toFixed(2));
-    })
+    });
+
+    $(document).ready(function () {
+        $('.selectpicker').select2({
+            placeholder: 'Select Terms'
+        });
+    });
 </script>
 {% endblock %}
