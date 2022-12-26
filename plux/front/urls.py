@@ -98,6 +98,7 @@ urlpatterns = [
     path('invoiceList', views.invoiceList, name='invoiceList'),
     path('invoiceAdd', views.invoiceAdd, name='invoiceAdd'),
     path('invoiceDetailsList/<int:header_id>', views.invoiceDetailsList, name='invoiceDetailsList'),
+    path('printInvoice/<int:header_id>', views.printInvoice, name='printInvoice'),
 
     path('getVendorPurchaseOrders', csrf_exempt(views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
     path('getPurchaseOrderDetails', csrf_exempt(views.getPurchaseOrderDetails), name='getPurchaseOrderDetails'),

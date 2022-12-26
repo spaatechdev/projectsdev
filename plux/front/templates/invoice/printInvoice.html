@@ -1,0 +1,126 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Invoice</title>
+  <link rel="stylesheet" href="{% static 'invoice/invoiceStyle.css' %}" media="all" />
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+</head>
+
+<body>
+  <header class="clearfix">
+    <div id="logo">
+      <img src="{% static 'invoice/cpc.png' %}">
+    </div>
+    <div id="company" style="width: 100%;">
+      <h2 class="name">Chakda Ply Centre</h2>
+      <div>Lalpur, Rathtala, Chakdaha - 741222,<br />
+        Near 50 No Rail Gate.</div>
+      <div>+91 9732856236</div>
+      <div><a href="mailto:company@example.com">chakdaplycentre@gmail.com</a></div>
+    </div>
+    </div>
+  </header>
+  <main>
+    <div id="details" class="clearfix">
+      <div id="client">
+        <div class="to">INVOICE TO:</div>
+        <h2 class="name">Plywood House</h2>
+        <div class="address">191/3, Netaji Subash Chandra Bose Roads, <br />
+          Regent Park, Regent Park, Kolkata, West Bengal 700040.</div>
+        <div class="email"><a href="mailto:john@example.com">plywood@house.com</a></div>
+      </div>
+      <div id="invoice">
+        <h1>INVOICE</h1>
+        <div class="date">Date of Invoice: 01/06/2014</div>
+        <div class="date">Due Date: 30/06/2014</div>
+        <div class="date">GSTIN No: 30/06/2014</div>
+      </div>
+    </div>
+    <table border="0" cellspacing="0" cellpadding="0">
+      <thead>
+        <tr>
+          <th class="no">SL No:</th>
+          <th class="desc">Product</th>
+          <th class="unit">8x4</th>
+          <th class="unit">8x3</th>
+          <th class="unit">7x4</th>
+          <th class="unit">7x3</th>
+          <th class="unit">6x4</th>
+          <th class="unit">6x3</th>
+          <th class="unit">5x4</th>
+          <th class="unit">5x3</th>
+          <th class="qty">q. Ft.</th>
+          <th class="total">Qty</th>
+          <th class="total">Price/Unite</th>
+          <th class="total">TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="no">01</td>
+          <td class="desc">
+            <h3>Website Design</h3>Creating a recognizable design solution based on the company's existing visual
+            identity
+          </td>
+          <td class="unit">$40.00</td>
+          <td class="qty">30</td>
+          <td class="total">$1,200.00</td>
+        </tr>
+        <tr>
+          <td class="no">02</td>
+          <td class="desc">
+            <h3>Website Development</h3>Developing a Content Management System-based Website
+          </td>
+          <td class="unit">$40.00</td>
+          <td class="qty">80</td>
+          <td class="total">$3,200.00</td>
+        </tr>
+        <tr>
+          <td class="no">03</td>
+          <td class="desc">
+            <h3>Search Engines Optimization</h3>Optimize the site for search engines (SEO)
+          </td>
+          <td class="unit">$40.00</td>
+          <td class="qty">20</td>
+          <td class="total">$800.00</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="8"></td>
+          <td>SUBTOTAL</td>
+          <td>$5,200.00</td>
+        </tr>
+        <tr>
+          <td colspan="2"></td>
+          <td colspan="2">TAX 25%</td>
+          <td>$1,300.00</td>
+        </tr>
+        <tr>
+          <td colspan="2"></td>
+          <td colspan="2">GRAND TOTAL</td>
+          <td>$6,500.00</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div id="thanks">Thank you!</div>
+    <div id="notices">
+      <div>NOTICE:</div>
+      <div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>
+    </div>
+  </main>
+  <footer>
+    Invoice was created on a computer and is valid without the signature and seal.
+  </footer>
+</body>
+<script>
+  $(document).ready(function () {
+    window.print();
+  });
+</script>
+
+</html>

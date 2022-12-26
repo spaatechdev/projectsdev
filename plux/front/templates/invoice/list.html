@@ -87,6 +87,9 @@
                                             <a href="{% url 'invoiceDetailsList' invoice.id %}"
                                                 class="btn btn-primary btn-sm">
                                                 Order Details </a>
+                                            <a href="{% url 'printInvoice' invoice.id %}"
+                                                class="btn btn-primary btn-sm">
+                                                Print </a>
                                         </td>
                                     </tr>
                                     {% endfor %}
