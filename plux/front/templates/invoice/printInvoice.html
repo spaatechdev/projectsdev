@@ -49,6 +49,9 @@
         float: left;">
         <div style="color: #777777;">INVOICE TO:</div>
         <h2 style="font-size: 1.4em; font-weight: normal; margin: 0;">{{invoiceOrder.customer.customer_name}}</h2>
+        {% if invoiceOrder.customer.gst_no %}
+        <div class="date">GSTIN No: {{invoiceOrder.customer.gst_no}}</div>
+        {% endif %}
         <div>{{invoiceOrder.customer.address_1}}<br />
           {{invoiceOrder.customer.address_2}}, {{invoiceOrder.customer.city.name}}, {{invoiceOrder.customer.state.name}}
           {{invoiceOrder.customer.pin}}.
@@ -58,11 +61,9 @@
         </div>
       </div>
       <div style="float: right; text-align: right; padding-right: 6px;">
-        <div>INVOICE No: {{invoiceOrder.invoice_number}}</div>
-        <div class="date">Date of Invoice: {{invoiceOrder.invoice_date}}</div>
-        {% if invoiceOrder.customer.gst_no %}
-        <div class="date">GSTIN No: {{invoiceOrder.customer.gst_no}}</div>
-        {% endif %}
+        <div>INVOICE NO: {{invoiceOrder.invoice_number}}</div>
+        <div class="date">INVOICE DATE: {{invoiceOrder.invoice_date}}</div>
+        <div>STORE: {{invoiceOrder.store.name}}</div>
       </div>
     </div>
     <table border="1" cellspacing="0" cellpadding="0" style="width: 100%; border-collapse: collapse;

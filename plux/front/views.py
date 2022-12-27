@@ -1447,8 +1447,9 @@ def salesOrderList(request):
 def salesOrderAdd(request):
     context = {}
     salespersons = models.SalesPerson.objects.filter(deleted=0)
+    customers = models.Customer.objects.filter(deleted=0)
     items = models.ItemMaster.objects.filter(deleted=0)
-    context.update({'salespersons': salespersons, 'items': items})
+    context.update({'salespersons': salespersons, 'items': items, 'customers': customers})
     if request.method == "POST":
         sales_order_count = models.SalesOrderHeader.objects.filter(
             deleted=0).count()
@@ -1461,6 +1462,7 @@ def salesOrderAdd(request):
         salesOrder.total_amount = request.POST['total_amount']
         salesOrder.commission = request.POST['commission']
         salesOrder.sales_person_id = request.POST['salesperson_id']
+        salesOrder.customer_id = request.POST['customer_id']
         salesOrder.save()
         order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
@@ -1478,7 +1480,8 @@ def salesOrderEdit(request, id):
     salesOrder = models.SalesOrderHeader.objects.prefetch_related('salesorderdetails_set').get(pk=id)
     items = models.ItemMaster.objects.filter(deleted=0)
     salespersons = models.SalesPerson.objects.filter(deleted=0)
-    context.update({'salesOrder': salesOrder, 'items': items, 'salespersons': salespersons})
+    customers = models.Customer.objects.filter(deleted=0)
+    context.update({'salesOrder': salesOrder, 'items': items, 'salespersons': salespersons, 'customers': customers})
     if request.method == "POST":
         salesOrder = models.SalesOrderHeader.objects.get(
             pk=request.POST['id'])
@@ -1488,6 +1491,7 @@ def salesOrderEdit(request, id):
         salesOrder.total_amount = request.POST['total_amount']
         salesOrder.sales_person_id = request.POST['salesperson_id']
         salesOrder.commission = request.POST['commission']
+        salesOrder.customer_id = request.POST['customer_id']
         salesOrder.save()
         models.SalesOrderDetails.objects.filter(
             sales_order_header_id=salesOrder.id).delete()
@@ -1844,6 +1848,23 @@ def getVendorPurchaseOrders(request):
             'message': 'There should be post method.'
         })
 
+@login_required
+def getCustomerSalesOrders(request):
+    if request.method == "POST":
+        customer_id = request.POST['customer_id']
+        sales_orders = list(models.SalesOrderHeader.objects.filter(customer_id=customer_id, deleted=0).exclude(status__in=[3]).values('id', 'sales_order_no'))
+        return JsonResponse({
+            'code': 200,
+            'status': 'SUCCESS',
+            'data': sales_orders,
+        })
+    else:
+        return JsonResponse({
+            'code': 509,
+            'status': 'ERROR',
+            'message': 'There should be post method.'
+        })
+
 
 @login_required
 def getPurchaseOrderDetails(request):
@@ -1864,6 +1885,32 @@ def getPurchaseOrderDetails(request):
     else:
         return JsonResponse({
             'code': 504,
+            'status': 'ERROR',
+            'message': 'There should be post method.'
+        })
+
+@login_required
+def getSalesOrderDetails(request):
+    if request.method == "POST":
+        store_id = request.POST['store_id']
+        sales_order_header_id = request.POST['sales_order_header_id']
+        sales_order_details = list(models.SalesOrderDetails.objects.filter(
+            sales_order_header_id=sales_order_header_id).values('id', 'quantity', 'delivered_quantity', 'unit_price', 'amount', 'item_id', 'item__gst_percentage'))
+        items = list(models.ItemMaster.objects.filter(deleted=0).values('id', 'description'))
+        sales_order_details = list(models.SalesOrderDetails.objects.filter(
+            sales_order_header_id=sales_order_header_id).values('id', 'quantity', 'delivered_quantity', 'unit_price', 'amount', 'item_id', 'item__gst_percentage'))
+        for sales_order in sales_order_details:
+            store_item = models.StoreItemMaster.objects.filter(store_id=store_id, item_id=sales_order['item_id']).first()
+            sales_order['store_quantity'] = 0 if store_item is None else store_item.on_hand_qty
+        return JsonResponse({
+            'code': 200,
+            'status': 'SUCCESS',
+            'data': sales_order_details,
+            'items': items,
+        })
+    else:
+        return JsonResponse({
+            'code': 510,
             'status': 'ERROR',
             'message': 'There should be post method.'
         })
@@ -2016,6 +2063,22 @@ def invoiceAdd(request):
                     request.POST.getlist('quantity[]')[index])
                 storeItem.save()
         models.StoreTransactionDetails.objects.bulk_create(transaction_order_details)
+        if request.POST['sales_order_header_id'] != "":
+            for index, item in enumerate(request.POST.getlist('sales_details_id[]')):
+                salesOrderItem = models.SalesOrderDetails.objects.get(pk=request.POST.getlist('sales_details_id[]')[index])
+                salesOrderItem.delivered_quantity += Decimal(request.POST.getlist('quantity[]')[index])
+                salesOrderItem.save()
+            salesHeader = models.SalesOrderHeader.objects.prefetch_related('salesorderdetails_set').get(pk=request.POST['sales_order_header_id'])
+            flag = True
+            for salesOrderDetail in salesHeader.salesorderdetails_set.all():
+                if Decimal(salesOrderDetail.quantity) > Decimal(salesOrderDetail.delivered_quantity):
+                    flag = False
+                    break
+            if flag == True:
+                salesHeader.status = 3
+            else:
+                salesHeader.status = 2
+            salesHeader.save()
         messages.success(request, 'Invoice Created Successfully.')
         return redirect('invoiceList')
     return render(request, 'invoice/add.html', context)
