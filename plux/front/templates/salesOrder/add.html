@@ -16,7 +16,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <form class="forms-sample" action="{% url 'salesOrderAdd' %}" method="post">
+                        <form class="forms-sample" id="salesOrderForm" action="{% url 'salesOrderAdd' %}" method="post">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-6">
@@ -109,6 +109,14 @@
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="commission">commission</label>
+                                        <input type="text" name="commission" class="form-control" id="commission"
+                                            required placeholder="100"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
                             <button type="reset" class="btn btn-light">Reset</button>
@@ -180,6 +188,7 @@
         }
         calculateTotalAmount();
     });
+    
     $(document).on('keyup', '.item_unit_price', function () {
         item_total_amount = 0;
         item_unit_price = $(this).val();
@@ -200,5 +209,10 @@
         });
         $("#total_amount").val(total_amount);
     }
+
+    // $(document).on('keyup', '#commission', function () {
+    //     commission = $(this).val();
+    //     console.log(commission);
+    // });
 </script>
 {% endblock %}

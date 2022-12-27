@@ -1213,7 +1213,7 @@ def itemImport(request):
                         uom_obj = models.UomMaster()
                         uom_obj.description = row['UOM']
                         uom_obj.save()
-                    item_list.append(models.ItemMaster(description=row['Description'], item_category_id=item_category_obj.id, ply_dimension_id=ply_dimension_obj.id,
+                    item_list.append(models.ItemMaster(description=row['Description'], item_category_id=item_category_obj.id, ply_dimension_id=ply_dimension_obj.id if ply_dimension_obj is not None else None,
                                      uom_id=uom_obj.id, unit_price=row['Unit Price'], hsn_code=row['HSN Code'], gst_percentage=row['GST %']))
                 models.ItemMaster.objects.bulk_create(item_list)
                 csvfile.close()
@@ -1389,12 +1389,10 @@ def purchaseOrderAdd(request):
 @login_required
 def purchaseOrderEdit(request, id):
     context = {}
-    purchaseOrder = models.PurchaseOrderHeader.objects.prefetch_related(
-        'purchaseorderdetails_set').get(pk=id)
+    purchaseOrder = models.PurchaseOrderHeader.objects.prefetch_related('purchaseorderdetails_set').get(pk=id)
     items = models.ItemMaster.objects.filter(deleted=0)
     vendors = models.VendorMaster.objects.filter(deleted=0)
-    context.update({'purchaseOrder': purchaseOrder,
-                   'items': items, 'vendors': vendors})
+    context.update({'purchaseOrder': purchaseOrder, 'items': items, 'vendors': vendors})
     if request.method == "POST":
         purchaseOrder = models.PurchaseOrderHeader.objects.get(
             pk=request.POST['id'])
@@ -1461,7 +1459,8 @@ def salesOrderAdd(request):
         salesOrder.sales_order_date = request.POST['sales_order_date']
         salesOrder.notes = request.POST['notes']
         salesOrder.total_amount = request.POST['total_amount']
-        salesOrder.salesperson_id = request.POST['salesperson_id']
+        salesOrder.commission = request.POST['commission']
+        salesOrder.sales_person_id = request.POST['salesperson_id']
         salesOrder.save()
         order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
@@ -1476,12 +1475,10 @@ def salesOrderAdd(request):
 @login_required
 def salesOrderEdit(request, id):
     context = {}
-    salesOrder = models.SalesOrderHeader.objects.prefetch_related(
-        'salesorderdetails_set').get(pk=id)
+    salesOrder = models.SalesOrderHeader.objects.prefetch_related('salesorderdetails_set').get(pk=id)
     items = models.ItemMaster.objects.filter(deleted=0)
-    vendors = models.VendorMaster.objects.filter(deleted=0)
-    context.update({'salesOrder': salesOrder,
-                   'items': items, 'vendors': vendors})
+    salespersons = models.SalesPerson.objects.filter(deleted=0)
+    context.update({'salesOrder': salesOrder, 'items': items, 'salespersons': salespersons})
     if request.method == "POST":
         salesOrder = models.SalesOrderHeader.objects.get(
             pk=request.POST['id'])
@@ -1489,7 +1486,8 @@ def salesOrderEdit(request, id):
         salesOrder.sales_order_date = request.POST['sales_order_date']
         salesOrder.notes = request.POST['notes']
         salesOrder.total_amount = request.POST['total_amount']
-        salesOrder.vendor_id = request.POST['vendor_id']
+        salesOrder.sales_person_id = request.POST['salesperson_id']
+        salesOrder.commission = request.POST['commission']
         salesOrder.save()
         models.SalesOrderDetails.objects.filter(
             sales_order_header_id=salesOrder.id).delete()

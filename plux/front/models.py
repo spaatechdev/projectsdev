@@ -365,7 +365,8 @@ class SalesOrderHeader(models.Model):
     sales_person = models.ForeignKey(
         SalesPerson, on_delete=models.CASCADE, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    commission = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.IntegerField(default=1)
     deleted = models.BooleanField(default=0)
 

@@ -27,8 +27,8 @@
                                         <select name="salesperson_id" id="salesperson_id" class="form-control" required>
                                             <option value="">Select Salesperson</option>
                                             {% for salesperson in salespersons %}
-                                            <option {% if salesperson.id == salesOrder.salesperson_id %} selected {% endif %}
-                                                value="{{salesperson.id}}">{{salesperson.name}}</option>
+                                            <option {% if salesperson.id == salesOrder.sales_person_id %} selected {% endif %}
+                                                value="{{salesperson.id}}">{{salesperson.salesperson_name}}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -123,6 +123,14 @@
                                         <input type="text" name="total_amount" class="form-control" id="total_amount"
                                             required placeholder="Total Amount" readonly
                                             value="{{salesOrder.total_amount}}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="commission">commission</label>
+                                        <input type="text" name="commission" class="form-control" id="commission"
+                                            required placeholder="100" value="{{salesOrder.commission}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
