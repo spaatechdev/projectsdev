@@ -1447,8 +1447,9 @@ def salesOrderList(request):
 def salesOrderAdd(request):
     context = {}
     salespersons = models.SalesPerson.objects.filter(deleted=0)
+    customers = models.Customer.objects.filter(deleted=0)
     items = models.ItemMaster.objects.filter(deleted=0)
-    context.update({'salespersons': salespersons, 'items': items})
+    context.update({'salespersons': salespersons, 'items': items, 'customers': customers})
     if request.method == "POST":
         sales_order_count = models.SalesOrderHeader.objects.filter(
             deleted=0).count()
@@ -1461,6 +1462,7 @@ def salesOrderAdd(request):
         salesOrder.total_amount = request.POST['total_amount']
         salesOrder.commission = request.POST['commission']
         salesOrder.sales_person_id = request.POST['salesperson_id']
+        salesOrder.customer_id = request.POST['customer_id']
         salesOrder.save()
         order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
@@ -1478,7 +1480,8 @@ def salesOrderEdit(request, id):
     salesOrder = models.SalesOrderHeader.objects.prefetch_related('salesorderdetails_set').get(pk=id)
     items = models.ItemMaster.objects.filter(deleted=0)
     salespersons = models.SalesPerson.objects.filter(deleted=0)
-    context.update({'salesOrder': salesOrder, 'items': items, 'salespersons': salespersons})
+    customers = models.Customer.objects.filter(deleted=0)
+    context.update({'salesOrder': salesOrder, 'items': items, 'salespersons': salespersons, 'customers': customers})
     if request.method == "POST":
         salesOrder = models.SalesOrderHeader.objects.get(
             pk=request.POST['id'])
@@ -1488,6 +1491,7 @@ def salesOrderEdit(request, id):
         salesOrder.total_amount = request.POST['total_amount']
         salesOrder.sales_person_id = request.POST['salesperson_id']
         salesOrder.commission = request.POST['commission']
+        salesOrder.customer_id = request.POST['customer_id']
         salesOrder.save()
         models.SalesOrderDetails.objects.filter(
             sales_order_header_id=salesOrder.id).delete()
@@ -1840,6 +1844,23 @@ def getVendorPurchaseOrders(request):
     else:
         return JsonResponse({
             'code': 503,
+            'status': 'ERROR',
+            'message': 'There should be post method.'
+        })
+
+@login_required
+def getCustomerSalesOrders(request):
+    if request.method == "POST":
+        customer_id = request.POST['customer_id']
+        sales_orders = list(models.SalesOrderHeader.objects.filter(customer_id=customer_id, deleted=0).exclude(status__in=[3]).values('id', 'sales_order_no'))
+        return JsonResponse({
+            'code': 200,
+            'status': 'SUCCESS',
+            'data': sales_orders,
+        })
+    else:
+        return JsonResponse({
+            'code': 509,
             'status': 'ERROR',
             'message': 'There should be post method.'
         })

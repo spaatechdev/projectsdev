@@ -121,6 +121,8 @@ urlpatterns = [
     path('getItemsDetailsByStore', csrf_exempt(views.getItemsDetailsByStore), name='getItemsDetailsByStore'),
     path('getExceptedStoreItems', csrf_exempt(views.getExceptedStoreItems), name='getExceptedStoreItems'),
     path('getTransferDetails', csrf_exempt(views.getTransferDetails), name='getTransferDetails'),
+
+    path('getCustomerSalesOrders', csrf_exempt(views.getCustomerSalesOrders), name='getCustomerSalesOrders'),
     
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),

@@ -47,7 +47,18 @@
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div> -->
-                                <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="customer_id">Customer</label>
+                                        <select name="customer_id" id="customer_id" class="form-control" required>
+                                            <option value="">Select Customer</option>
+                                            {% for customer in customers %}
+                                            <option value="{{customer.id}}">{{customer.customer_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="notes">Notes</label>
                                         <textarea name="notes" id="notes" rows="5" class="form-control" required
@@ -188,7 +199,7 @@
         }
         calculateTotalAmount();
     });
-    
+
     $(document).on('keyup', '.item_unit_price', function () {
         item_total_amount = 0;
         item_unit_price = $(this).val();

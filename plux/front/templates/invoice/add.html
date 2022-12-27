@@ -65,8 +65,30 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="with_sales_order">With/Without Sales Order</label>
+                                        <select name="with_sales_order" id="with_sales_order" required
+                                            class="form-control">
+                                            <option value="1" selected>With Sales Order</option>
+                                            <option value="0">Without Sales Order</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group sales_order_type_content">
+                                        <label for="sales_order_header_id">Sales Order Reference</label>
+                                        <select name="sales_order_header_id" id="sales_order_header_id" required
+                                            class="form-control">
+                                            <option value="">Select Sales Order</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="carrying_cost">Carrying Cost</label>
-                                        <input type="text" name="carrying_cost" id="carrying_cost" class="form-control" required
+                                        <input type="text" name="carrying_cost" id="carrying_cost" class="form-control"
+                                            required
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -284,6 +306,83 @@
     $(document).ready(function () {
         $('.selectpicker').select2({
             placeholder: 'Select Terms'
+        });
+    });
+
+    $(document).on('change', '#customer_id', function () {
+        let customer_id = $(this).val();
+        $.ajax({
+            url: "{% url 'getCustomerSalesOrders' %}",
+            type: 'post',
+            data: ({ customer_id: customer_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    if (response.data.length > 0) {
+                        var options_text = `<option value="">Select Sales Order</option>`;
+                        for (let index = 0; index < response.data.length; index++) {
+                            options_text += `<option value="${response.data[index].id}">${response.data[index].sales_order_no}</option>`;
+                        }
+                        $("#sales_order_header_id").html(options_text);
+                    } else {
+                        var options_text = `<option value="">Select Sales Order</option>`;
+                        $("#sales_order_header_id").html(options_text);
+                        $('.sales_order_type_content').hide();
+                        $('#sales_order_header_id').removeAttr('required');
+                        purchase_details = `<div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control invoice_store_item" required>
+                                                <option value="">Select Item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                required min="1" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" class="form-control item_unit_price" name="unit_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>GST Percentage</label>
+                                            <input type="text" class="form-control item_gst_percentage" name="gst_percentage[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Total Price</label>
+                                            <input type="text" class="form-control item_total_price" name="item_total_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>GST Price</label>
+                                            <input type="text" class="form-control item_gst_price" name="item_gst_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        $(".sales_order_details").html(purchase_details);
+                        $("#with_sales_order").val(0);
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
         });
     });
 </script>
