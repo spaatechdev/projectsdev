@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 21, 2022 at 10:02 AM
+-- Generation Time: Dec 24, 2022 at 06:46 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -44,8 +44,7 @@ INSERT INTO `transaction_types` (`id`, `name`, `deleted`) VALUES
 (4, 'Transfer Out', 0),
 (5, 'Transfer In', 0),
 (6, 'Physical Stock', 0),
-(7, 'Verification +ve', 0),
-(8, 'Verification -ve', 0);
+(7, 'Invoice', 0);
 
 --
 -- Indexes for dumped tables
@@ -65,7 +64,7 @@ ALTER TABLE `transaction_types`
 -- AUTO_INCREMENT for table `transaction_types`
 --
 ALTER TABLE `transaction_types`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

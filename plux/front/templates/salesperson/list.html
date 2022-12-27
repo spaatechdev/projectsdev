@@ -9,10 +9,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Store Transactions</h4>
+                            <h4 class="card-title">Sales Persons</h4>
                         </div>
-                        <div class="col-md-6">
-                            <a href="{% url 'storeTransactionAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                        <div class="col-md-3">
+                            <a href="{% url 'salespersonAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'salespersonImport' %}" class="btn btn-primary btn-sm float-end">Import</a>
                         </div>
                     </div>
                     <div class="row">
@@ -21,28 +24,28 @@
                                 <thead>
                                     <tr>
                                         <th>
-                                            SL. No
+                                            Salesperson Name
                                         </th>
                                         <th>
-                                            Vendor
+                                            Country
                                         </th>
                                         <th>
-                                            Store
+                                            State
                                         </th>
                                         <th>
-                                            Transaction Number
+                                            City
                                         </th>
                                         <th>
-                                            Transaction Date
+                                            Address 1
                                         </th>
                                         <th>
-                                            Reference Id
+                                            Address 2
                                         </th>
                                         <th>
-                                            Total Amount
+                                            Pin
                                         </th>
                                         <th>
-                                            Transaction Type
+                                            Contact Number
                                         </th>
                                         <th>
                                             Action
@@ -50,45 +53,37 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for storeTransaction in storeTransactions %}
+                                    {% for salesperson in salespersons %}
                                     <tr>
-                                        <td>
-                                            {{forloop.counter}}
+                                        <td class="py-1">
+                                            {{salesperson.salesperson_name}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.vendor.name}}
+                                            {{salesperson.country.name}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.store.name}}
+                                            {{salesperson.state.name}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.transaction_number}}
+                                            {{salesperson.city.name}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.transaction_date|date:"M d, Y"}}
+                                            {{salesperson.address_1}}
                                         </td>
                                         <td>
-                                            {% if storeTransaction.purchase_order_header_id is not None %}
-                                            {{storeTransaction.purchase_order_header.purchase_order_no}}
-                                            {% elif storeTransaction.on_transit_header_id is not None %}
-                                            {{storeTransaction.on_transit_header.transfer_number}}
-                                            {% endif %}
+                                            {{salesperson.address_2}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.total_amount}}
+                                            {{salesperson.pin}}
                                         </td>
                                         <td>
-                                            {{storeTransaction.transaction_type.name}}
+                                            {{salesperson.contact_no}}
                                         </td>
                                         <td>
-                                            <a href="{% url 'storeTransactionDetailsList' storeTransaction.id %}"
-                                                class="btn btn-primary btn-sm">
-                                                Details </a>
-                                            <!-- <a href="{% url 'storeTransactionEdit' storeTransaction.id %}"
-                                                class="btn btn-info btn-sm">
-                                                Edit </a> -->
+                                            <a href="{% url 'salespersonEdit' salesperson.id %}" class="btn btn-info btn-sm">
+                                                Edit </a>
                                             <a onclick="return confirm('Are you sure you want to delete this?')"
-                                                href="{% url 'storeTransactionDelete' storeTransaction.id %}"
+                                                href="{% url 'salespersonDelete' salesperson.id %}"
                                                 class="btn btn-danger btn-sm">
                                                 Delete </a>
                                         </td>
@@ -98,23 +93,23 @@
                             </table>
                         </div>
                     </div>
-                    {% if storeTransactions.has_other_pages %}
+                    {% if salespersons.has_other_pages %}
                     <div class="float-end">
                         <ul class="pagination">
-                            {% if storeTransactions.has_previous %}
-                            <li class="mx-2"><a href="?page={{ storeTransactions.previous_page_number }}">&laquo;</a></li>
+                            {% if salespersons.has_previous %}
+                            <li class="mx-2"><a href="?page={{ salespersons.previous_page_number }}">&laquo;</a></li>
                             {% else %}
                             <li class="disabled mx-2"><span>&laquo;</span></li>
                             {% endif %}
-                            {% for i in storeTransactions.paginator.page_range %}
-                            {% if storeTransactions.number == i %}
+                            {% for i in salespersons.paginator.page_range %}
+                            {% if salespersons.number == i %}
                             <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
                             {% else %}
                             <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
                             {% endif %}
                             {% endfor %}
-                            {% if storeTransactions.has_next %}
-                            <li class="mx-2"><a href="?page={{ storeTransactions.next_page_number }}">&raquo;</a></li>
+                            {% if salespersons.has_next %}
+                            <li class="mx-2"><a href="?page={{ salespersons.next_page_number }}">&raquo;</a></li>
                             {% else %}
                             <li class="disabled mx-2"><span>&raquo;</span></li>
                             {% endif %}
@@ -140,6 +135,26 @@
             "order": [
                 [0, "desc"]
             ],
+            // initComplete: function (settings, json) {
+            //     this.api().columns(0).every(function () {
+            //         var column = this;
+            //         var select = $('<select class="form-control form-control-sm"><option value="">Customer Name</option></select>')
+            //             .appendTo($(column.header()).empty())
+            //             .on('change', function () {
+            //                 var val = $.fn.dataTable.util.escapeRegex(
+            //                     $(this).val()
+            //                 );
+
+            //                 column
+            //                     .search(val ? '^' + val + '$' : '', true, false)
+            //                     .draw();
+            //             });
+
+            //         column.data().unique().sort().each(function (d, j) {
+            //             select.append('<option value="' + d + '">' + d + '</option>')
+            //         });
+            //     });
+            // }
         });
     });
 </script>

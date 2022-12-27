@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% load mathfilters %}
 
 {% block content %}
 <div class="content-wrapper">
@@ -10,10 +9,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">On-Transit Order Details Of {{onTransitOrder.transfer_number }}</h4>
+                            <h4 class="card-title">Sales Order Details Of {{salesHeader.sales_order_no }}</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'onTransitOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                            <a href="{% url 'salesOrderList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
@@ -31,34 +30,40 @@
                                             Quantity
                                         </th>
                                         <th>
-                                            Store From
+                                            Unit Price
                                         </th>
                                         <th>
-                                            Store To
+                                            Amount
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for ontransitdetail in onTransitOrder.ontransitdetails_set.all %}
+                                    {% for salesOrderDetail in salesHeader.salesorderdetails_set.all %}
                                     <tr>
                                         <td>
                                             {{forloop.counter}}
                                         </td>
                                         <td>
-                                            {{ontransitdetail.item.description}}
+                                            {{salesOrderDetail.item.description}}
                                         </td>
                                         <td>
-                                            {{ ontransitdetail.quantity|sub:ontransitdetail.delivered_quantity }}
+                                            {{salesOrderDetail.quantity}}
                                         </td>
                                         <td>
-                                            {{ ontransitdetail.on_transit_header.store_from.name }}
+                                            {{salesOrderDetail.unit_price}}
                                         </td>
                                         <td>
-                                            {{ ontransitdetail.on_transit_header.store_to.name }}
+                                            {{salesOrderDetail.amount}}
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4">Total Amount</td>
+                                        <td>{{salesHeader.total_amount}}</td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>

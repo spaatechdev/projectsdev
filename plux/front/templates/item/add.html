@@ -39,8 +39,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="ply_dimension_id">Ply Dimension</label>
-                                        <select name="ply_dimension_id" id="ply_dimension_id" class="form-control"
-                                            required>
+                                        <select name="ply_dimension_id" id="ply_dimension_id" class="form-control">
                                             <option value="">Select Ply Dimension</option>
                                             {% for plyDimension in plyDimensions %}
                                             <option value="{{plyDimension.id}}">{{plyDimension.description}}</option>
