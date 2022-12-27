@@ -506,7 +506,7 @@ class InvoiceHeader(models.Model):
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
-        return self.physical_stock_check_number
+        return self.invoice_number
 
     class Meta:
         managed = True
@@ -543,12 +543,28 @@ class InvoiceTerms(models.Model):
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
-        return self.invoice_header.invoice_number + self.term.description
+        return self.invoice_header.invoice_number + " " +  self.term.description
 
     class Meta:
         managed = True
         db_table = 'invoice_terms'
         verbose_name_plural = 'invoice_terms'
+
+
+class InvoicePayments(models.Model):
+    invoice_header = models.ForeignKey(InvoiceHeader, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
+    invoice_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    status = models.SmallIntegerField(default=1)
+
+    def __str__(self):
+        return self.customer.customer_name + "=>" + self.invoice_header.invoice_number
+
+    class Meta:
+        managed = True
+        db_table = 'invoice_payments'
+        verbose_name_plural = 'invoice_payments'
 
 
 class StoreTransactionHeader(models.Model):
