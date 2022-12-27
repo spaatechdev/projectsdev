@@ -188,7 +188,7 @@ class UomMaster(models.Model):
 class ItemMaster(models.Model):
     item_category = models.ForeignKey(
         ItemCtegory, on_delete=models.CASCADE, blank=True, null=True)
-    description = models.CharField(max_length=80, blank=False, null=False)
+    description = models.TextField(blank=False, null=False)
     uom = models.ForeignKey(
         UomMaster, related_name='UomItem', on_delete=models.CASCADE, blank=True, null=True)
     ply_dimension = models.ForeignKey(
