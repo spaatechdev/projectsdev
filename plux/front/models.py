@@ -498,10 +498,9 @@ class InvoiceHeader(models.Model):
     invoice_number = models.CharField(max_length=15, blank=True, null=True)
     vehicle_number = models.CharField(max_length=15, blank=True, null=True)
     invoice_date = models.DateField(blank=True, null=True)
-    invoice_total = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
-    invoice_gst_total = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
+    invoice_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    invoice_gst_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    carrying_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.SmallIntegerField(default=1)
     deleted = models.BooleanField(default=0)
 

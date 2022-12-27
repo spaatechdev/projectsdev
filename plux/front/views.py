@@ -1968,6 +1968,7 @@ def invoiceAdd(request):
         invoiceHeader.invoice_date = datetime.now()
         invoiceHeader.invoice_total = total_item_price
         invoiceHeader.invoice_gst_total = total_gst_price
+        invoiceHeader.carrying_cost = request.POST['carrying_cost']
         invoiceHeader.customer_id = request.POST['customer_id']
         invoiceHeader.store_id = request.POST['store']
         invoiceHeader.save()
