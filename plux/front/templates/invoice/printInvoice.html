@@ -49,7 +49,7 @@
         </div>
       </div>
       <div style="float: right; text-align: right; padding-right: 6px;">
-        <div>INVOICE</div>
+        <div>INVOICE No: {{invoiceOrder.invoice_number}}</div>
         <div class="date">Date of Invoice: {{invoiceOrder.invoice_date}}</div>
         {% if invoiceOrder.customer.gst_no %}
         <div class="date">GSTIN No: {{invoiceOrder.customer.gst_no}}</div>
@@ -124,9 +124,9 @@
           <td colspan="6"></td>
           <td colspan="2" style="text-align: center">GRAND TOTAL</td>
           {% if invoiceOrder.customer.gst_no %}
-          <td style="text-align: center;">{{invoiceOrder.invoice_total}}</td>
-          {% else %}
           <td style="text-align: center;">{{invoiceOrder.invoice_total|add:invoiceOrder.invoice_gst_total}}</td>
+          {% else %}
+          <td style="text-align: center;">{{invoiceOrder.invoice_total}}</td>
           {% endif %}
         </tr>
       </tfoot>
