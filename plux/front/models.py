@@ -206,6 +206,19 @@ class ItemMaster(models.Model):
         db_table = 'item_master'
         verbose_name_plural = 'item_master'
 
+class ItemAttributes(models.Model):
+    item = models.ForeignKey(ItemMaster, on_delete=models.CASCADE, blank=True, null=True)
+    attribute_name = models.CharField(max_length=30, blank=True, null=True)
+    attribute_value = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.field
+
+    class Meta:
+        managed = True
+        db_table = 'item_attributes'
+        verbose_name_plural = 'item_attributes'
+
 
 class VendorMaster(models.Model):
     name = models.CharField(max_length=60, blank=False, null=False)

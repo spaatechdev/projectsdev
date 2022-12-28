@@ -87,6 +87,15 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                Want to Add any Attribute like color, size etc?
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-sm btn-info add_attribute">Add
+                                        Attribute</button>
+                                </div>
+                            </div>
+                            <div class="extra_attributes">
+                            </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
                             <button type="reset" class="btn btn-light">Reset</button>
                         </form>
@@ -100,6 +109,32 @@
 
 {% block js %}
 <script>
+    $(document).on('click', '.add_attribute', function () {
+        $('.extra_attributes').append(`<div class="row content_parent">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Attribute Name</label>
+                                        <input type="text" class="form-control attribute_name" name="attribute_name[]" placeholder="Color" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="form-group">
+                                        <label>Attribute Value</label>
+                                        <textarea name="attribute_value[]" class="form-control attribute_value" rows="5" placeholder="Red" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-sm btn-danger mt-4 remove_attribute">Remove</button>
+                                    </div>
+                                </div>
+                            </div>`);
+    });
+
+    $(document).on('click', '.remove_attribute', function () {
+        $(this).parents().closest('.content_parent').remove();
+    });
+
     $(document).on('keyup', '#length_ft', function () {
         setDimension();
     });
