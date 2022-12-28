@@ -1151,8 +1151,7 @@ def itemAdd(request):
     itemCategories = models.ItemCtegory.objects.filter(deleted=0)
     plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
     uoms = models.UomMaster.objects.filter(deleted=0)
-    context.update({'itemCategories': itemCategories,
-                   'plyDimensions': plyDimensions, 'uoms': uoms})
+    context.update({'itemCategories': itemCategories, 'plyDimensions': plyDimensions, 'uoms': uoms})
     if request.method == "POST":
         item = models.ItemMaster()
         item.description = request.POST['description']
@@ -1163,6 +1162,10 @@ def itemAdd(request):
         item.ply_dimension_id = request.POST['ply_dimension_id']
         item.uom_id = request.POST['uom_id']
         item.save()
+        attribute_details = []
+        for index, elem in enumerate(request.POST.getlist('attribute_name[]')):
+            attribute_details.append(models.ItemAttributes(item_id=item.id, attribute_name=request.POST.getlist('attribute_name[]')[index], attribute_value=request.POST.getlist('attribute_value[]')[index]))
+        models.ItemAttributes.objects.bulk_create(attribute_details)
         messages.success(request, 'Item Created Successfully.')
         return redirect('itemList')
     return render(request, 'item/add.html', context)
@@ -1171,7 +1174,7 @@ def itemAdd(request):
 @login_required
 def itemEdit(request, id):
     context = {}
-    item = models.ItemMaster.objects.get(pk=id)
+    item = models.ItemMaster.objects.prefetch_related('itemattributes_set').get(pk=id)
     itemCategories = models.ItemCtegory.objects.filter(deleted=0)
     plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
     uoms = models.UomMaster.objects.filter(deleted=0)
@@ -1187,6 +1190,11 @@ def itemEdit(request, id):
         item.ply_dimension_id = request.POST['ply_dimension_id']
         item.uom_id = request.POST['uom_id']
         item.save()
+        models.ItemAttributes.objects.filter(item_id=item.id).delete()
+        attribute_details = []
+        for index, elem in enumerate(request.POST.getlist('attribute_name[]')):
+            attribute_details.append(models.ItemAttributes(item_id=item.id, attribute_name=request.POST.getlist('attribute_name[]')[index], attribute_value=request.POST.getlist('attribute_value[]')[index]))
+        models.ItemAttributes.objects.bulk_create(attribute_details)
         messages.success(request, 'Item Updated Successfully.')
         return redirect('itemList')
     return render(request, 'item/edit.html', context)
