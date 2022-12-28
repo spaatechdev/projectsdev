@@ -478,6 +478,9 @@
                     var sales_details = ``;
                     for (let index = 0; index < response.data.length; index++) {
                         if ((response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity) > 0) {
+                            if (response.data[index].store_quantity < (response.data[index].quantity - response.data[index].delivered_quantity)) {
+                                sales_details += `<span class="text-danger">This Sales Order requires ${parseInt(response.data[index].quantity - response.data[index].delivered_quantity)} quantity but this store has only ${parseInt(response.data[index].store_quantity)} quantity</span>`
+                            }
                             sales_details += `<div class="row content_parent">
                                     <div class="col-md-3">
                                         <div class="form-group">
