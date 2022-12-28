@@ -163,8 +163,11 @@
 
 {% block js %}
 <script>
-    var item_count = 1;
+    var item_count = 0;
     $(document).on('click', '.add_invoice_item', function () {
+        if (item_count == 0) {
+            alert("Please Choose Store First");
+        }
         if ($('.content_parent').length < item_count) {
             $('.add_more_content').append(`<div class="row content_parent">
                                     <div class="col-md-3">
@@ -215,6 +218,8 @@
                                     </div>
                                 </div>`);
             showItemsByStore();
+        } else {
+            alert("Store Items Limit Reached");
         }
     });
 
@@ -373,7 +378,8 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_invoice_item">Add
+                                                More Item</button>
                                         </div>
                                     </div>
                                 </div>`;
@@ -530,6 +536,7 @@
                         }
                     }
                     $(".sales_order_details").html(sales_details);
+                    $(".add_more_content").html(``);
                 } else {
                     alert(response.message);
                 }

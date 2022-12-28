@@ -70,7 +70,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                        <select name="item_id[]" id="item_id" class="form-control item_id" required>
                                             <option value="">Select Item</option>
                                             {% for item in items %}
                                             <option value="{{item.id}}">{{item.description}}</option>
