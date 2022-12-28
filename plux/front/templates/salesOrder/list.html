@@ -24,6 +24,9 @@
                                             SL. No
                                         </th>
                                         <th>
+                                            Customer
+                                        </th>
+                                        <th>
                                             Salesperson
                                         </th>
                                         <th>
@@ -51,6 +54,9 @@
                                     <tr>
                                         <td>
                                             {{forloop.counter}}
+                                        </td>
+                                        <td>
+                                            {{salesOrder.customer.customer_name}}
                                         </td>
                                         <td>
                                             {{salesOrder.sales_person.salesperson_name}}

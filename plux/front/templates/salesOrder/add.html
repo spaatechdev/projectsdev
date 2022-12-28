@@ -70,7 +70,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                        <select name="item_id[]" id="item_id" class="form-control item_id" required>
                                             <option value="">Select Item</option>
                                             {% for item in items %}
                                             <option value="{{item.id}}">{{item.description}}</option>
@@ -90,7 +90,7 @@
                                     <div class="form-group">
                                         <label>Unit Price</label>
                                         <input type="text" class="form-control item_unit_price" name="unit_price[]"
-                                            placeholder="10" required
+                                            placeholder="10" required readonly
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -98,7 +98,7 @@
                                     <div class="form-group">
                                         <label>Amount</label>
                                         <input type="text" class="form-control item_total_amount" name="amount[]"
-                                            placeholder="100,000" required
+                                            placeholder="100,000" required readonly
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -147,7 +147,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                        <select name="item_id[]" id="item_id" class="form-control item_id" required>
                                             <option value="">Select Item</option>
                                             {% for item in items %}
                                             <option value="{{item.id}}">{{item.description}}</option>
@@ -165,14 +165,14 @@
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Unit Price</label>
-                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" placeholder="10" required
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" placeholder="10" required readonly
                                         onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Amount</label>
-                                        <input type="text" class="form-control item_total_amount" name="amount[]" placeholder="100,000" required
+                                        <input type="text" class="form-control item_total_amount" name="amount[]" placeholder="100,000" required readonly
                                         onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -221,9 +221,21 @@
         $("#total_amount").val(total_amount);
     }
 
-    // $(document).on('keyup', '#commission', function () {
-    //     commission = $(this).val();
-    //     console.log(commission);
-    // });
+    $(document).on('change', '.item_id', function () {
+        elem = $(this);
+        item_id = elem.val();
+        $.ajax({
+            url: "{% url 'getItemDetails' %}",
+            type: 'post',
+            data: ({ item_id: item_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    elem.parents('.content_parent').find('.item_unit_price').val(response.itemDetails['unit_price'])
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    });
 </script>
 {% endblock %}
