@@ -81,7 +81,7 @@
                                             {{invoice.vehicle_number.upper}}
                                         </td>
                                         <td>
-                                            <a href="{% url 'invoicePayment' invoice.id %}"
+                                            <a href="{% url 'pendingInvoicePayment' invoice.id %}"
                                                 class="btn btn-primary btn-sm">
                                                 Payment </a>
                                             <a target="new" href="{% url 'printInvoice' invoice.id %}"

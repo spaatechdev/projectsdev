@@ -2227,7 +2227,14 @@ def pendingInvoiceList(request):
 def pendingInvoicePayment(request, invoice_id):
     invoiceHeader = models.InvoiceHeader.objects.prefetch_related(
         'invoicedetails_set', 'invoiceterms_set').get(pk=invoice_id)
+    paymentMethods = models.PaymentMethods.objects.filter(deleted=0)
+    invoicePayments = models.InvoicePayments.objects.filter(customer_id=invoiceHeader.customer_id).exclude(status=3)
+    due_payment = 0
+    for invoicePayment in invoicePayments:
+        due_payment += (invoicePayment.invoice_amount - invoicePayment.paid_amount)
     context = {
-        'invoiceHeader': invoiceHeader
+        'invoiceHeader': invoiceHeader,
+        'paymentMethods': paymentMethods,
+        'due_payment': due_payment,
     }
     return render(request, 'pendingInvoice/payment.html', context)
