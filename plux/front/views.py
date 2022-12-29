@@ -99,6 +99,43 @@ def getTransactionType(request):
         })
 
 
+def getInvoiceType(request):
+    if request.method == "POST":
+        context = {}
+        customer_id = request.POST['customer_id']
+        customer = models.Customer.objects.get(pk=customer_id)
+        if customer.state.name.lower() == env("CLIENT_STATE").lower():
+            stores = models.StoreMaster.objects.filter(deleted=0)
+            terms = models.StandardTermMaster.objects.filter(deleted=0)
+            sales_orders = list(models.SalesOrderHeader.objects.filter(
+                customer_id=customer_id, deleted=0).exclude(status__in=[3]).values('id', 'sales_order_no'))
+            context.update({'stores': stores, 'terms': terms,
+                           'sales_orders': sales_orders})
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'invoiceType': render_to_string('invoiceType/stateSame.html', context)
+            })
+        else:
+            stores = models.StoreMaster.objects.filter(deleted=0)
+            terms = models.StandardTermMaster.objects.filter(deleted=0)
+            sales_orders = list(models.SalesOrderHeader.objects.filter(
+                customer_id=customer_id, deleted=0).exclude(status__in=[3]).values('id', 'sales_order_no'))
+            context.update({'stores': stores, 'terms': terms,
+                           'sales_orders': sales_orders})
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'invoiceType': render_to_string('invoiceType/stateDifferent.html', context)
+            })
+    else:
+        return JsonResponse({
+            'code': 514,
+            'status': "ERROR",
+            'message': "There should be ajax method."
+        })
+
+
 @login_required
 def getExceptStores(request):
     if request.method == "POST":
@@ -1151,7 +1188,8 @@ def itemAdd(request):
     itemCategories = models.ItemCtegory.objects.filter(deleted=0)
     plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
     uoms = models.UomMaster.objects.filter(deleted=0)
-    context.update({'itemCategories': itemCategories, 'plyDimensions': plyDimensions, 'uoms': uoms})
+    context.update({'itemCategories': itemCategories,
+                   'plyDimensions': plyDimensions, 'uoms': uoms})
     if request.method == "POST":
         item = models.ItemMaster()
         item.description = request.POST['description']
@@ -1164,7 +1202,8 @@ def itemAdd(request):
         item.save()
         attribute_details = []
         for index, elem in enumerate(request.POST.getlist('attribute_name[]')):
-            attribute_details.append(models.ItemAttributes(item_id=item.id, attribute_name=request.POST.getlist('attribute_name[]')[index], attribute_value=request.POST.getlist('attribute_value[]')[index]))
+            attribute_details.append(models.ItemAttributes(item_id=item.id, attribute_name=request.POST.getlist(
+                'attribute_name[]')[index], attribute_value=request.POST.getlist('attribute_value[]')[index]))
         models.ItemAttributes.objects.bulk_create(attribute_details)
         messages.success(request, 'Item Created Successfully.')
         return redirect('itemList')
@@ -1174,7 +1213,8 @@ def itemAdd(request):
 @login_required
 def itemEdit(request, id):
     context = {}
-    item = models.ItemMaster.objects.prefetch_related('itemattributes_set').get(pk=id)
+    item = models.ItemMaster.objects.prefetch_related(
+        'itemattributes_set').get(pk=id)
     itemCategories = models.ItemCtegory.objects.filter(deleted=0)
     plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
     uoms = models.UomMaster.objects.filter(deleted=0)
@@ -1193,7 +1233,8 @@ def itemEdit(request, id):
         models.ItemAttributes.objects.filter(item_id=item.id).delete()
         attribute_details = []
         for index, elem in enumerate(request.POST.getlist('attribute_name[]')):
-            attribute_details.append(models.ItemAttributes(item_id=item.id, attribute_name=request.POST.getlist('attribute_name[]')[index], attribute_value=request.POST.getlist('attribute_value[]')[index]))
+            attribute_details.append(models.ItemAttributes(item_id=item.id, attribute_name=request.POST.getlist(
+                'attribute_name[]')[index], attribute_value=request.POST.getlist('attribute_value[]')[index]))
         models.ItemAttributes.objects.bulk_create(attribute_details)
         messages.success(request, 'Item Updated Successfully.')
         return redirect('itemList')
@@ -2036,12 +2077,15 @@ def invoiceAdd(request):
     terms = models.StandardTermMaster.objects.filter(deleted=0)
     context.update({'customers': customers, 'stores': stores, 'terms': terms})
     if request.method == "POST":
+        print(request.POST)
         total_item_price = 0
         total_gst_price = 0
         for index, item in enumerate(request.POST.getlist('item_total_price[]')):
             total_item_price += Decimal(item)
-            total_gst_price += Decimal(
-                request.POST.getlist('item_gst_price[]')[index])
+            if 'item_gst_price[]' in request.POST.keys():
+                total_gst_price += Decimal(request.POST.getlist('item_gst_price[]')[index])
+            else:
+                total_gst_price += Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])
         invoice_count = models.InvoiceHeader.objects.filter(deleted=0).count()
         invoice_number = "IN-" + str(invoice_count + 1).zfill(8)
         invoiceHeader = models.InvoiceHeader()
@@ -2056,16 +2100,16 @@ def invoiceAdd(request):
         invoiceHeader.save()
         order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
-            order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist(
-                'item_total_price[]')[index], invoice_item_gst_value=request.POST.getlist('item_gst_price[]')[index], invoice_header_id=invoiceHeader.id))
+            if 'item_gst_price[]' in request.POST.keys():
+                order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist('item_total_price[]')[index], invoice_item_gst_value=request.POST.getlist('item_gst_price[]')[index], invoice_header_id=invoiceHeader.id))
+            else:
+                order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist('item_total_price[]')[index], invoice_item_gst_value=(Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])), invoice_header_id=invoiceHeader.id))
         models.InvoiceDetails.objects.bulk_create(order_details)
         terms_list = []
         for index, item in enumerate(request.POST.getlist('terms[]')):
-            terms_list.append(models.InvoiceTerms(term_id=request.POST.getlist(
-                'terms[]')[index], invoice_header_id=invoiceHeader.id))
+            terms_list.append(models.InvoiceTerms(term_id=request.POST.getlist('terms[]')[index], invoice_header_id=invoiceHeader.id))
         models.InvoiceTerms.objects.bulk_create(terms_list)
-        transaction_count = models.StoreTransactionHeader.objects.filter(
-            deleted=0).count()
+        transaction_count = models.StoreTransactionHeader.objects.filter(deleted=0).count()
         transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
         storeTransaction = models.StoreTransactionHeader()
         storeTransaction.transaction_number = transaction_number
@@ -2079,10 +2123,11 @@ def invoiceAdd(request):
         storeTransaction.save()
         transaction_order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
-            transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], unit_price=request.POST.getlist('unit_price[]')[
-                                             index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=request.POST.getlist('item_gst_price[]')[index], gst_percentage=request.POST.getlist('gst_percentage[]')[index], store_transaction_header_id=storeTransaction.id))
-            storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist(
-                'item_id[]')[index], store_id=request.POST['store']).first()
+            if 'item_gst_price[]' in request.POST.keys():
+                transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], unit_price=request.POST.getlist('unit_price[]')[index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=request.POST.getlist('item_gst_price[]')[index], gst_percentage=request.POST.getlist('gst_percentage[]')[index], store_transaction_header_id=storeTransaction.id))
+            else:
+                transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], unit_price=request.POST.getlist('unit_price[]')[index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=(Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])), gst_percentage=(Decimal(request.POST.getlist('cgst_percentage[]')[index]) + Decimal(request.POST.getlist('sgst_percentage[]')[index])), store_transaction_header_id=storeTransaction.id))
+            storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist('item_id[]')[index], store_id=request.POST['store']).first()
             if storeItem is None:
                 storeItem = models.StoreItemMaster()
                 storeItem.opening_qty = Decimal(
@@ -2100,9 +2145,8 @@ def invoiceAdd(request):
                 storeItem.closing_qty -= Decimal(
                     request.POST.getlist('quantity[]')[index])
                 storeItem.save()
-        models.StoreTransactionDetails.objects.bulk_create(
-            transaction_order_details)
-        if request.POST['sales_order_header_id'] != "":
+        models.StoreTransactionDetails.objects.bulk_create(transaction_order_details)
+        if 'sales_order_header_id' in request.POST.keys() and request.POST['sales_order_header_id'] != "":
             for index, item in enumerate(request.POST.getlist('sales_details_id[]')):
                 salesOrderItem = models.SalesOrderDetails.objects.get(
                     pk=request.POST.getlist('sales_details_id[]')[index])
@@ -2137,6 +2181,14 @@ def invoiceDetailsList(request, header_id):
 
 @login_required
 def printInvoice(request, header_id):
+    client_details = {
+        'client_name': env("CLIENT_NAME"),
+        'client_address': env("CLIENT_ADDRESS"),
+        'client_address_2': env("CLIENT_ADDRESS_2"),
+        'client_pin': env("CLIENT_PIN"),
+        'client_mobile': env("CLIENT_MOBILE"),
+        'client_email': env("CLIENT_EMAIL"),
+    }
     page = request.GET.get('page', 1)
     invoiceOrder = models.InvoiceHeader.objects.prefetch_related(
         'invoicedetails_set', 'invoiceterms_set').get(pk=header_id)
@@ -2146,5 +2198,6 @@ def printInvoice(request, header_id):
     for invoicePayment in invoicePayments:
         due_payment += (invoicePayment.invoice_amount -
                         invoicePayment.paid_amount)
-    context = {'invoiceOrder': invoiceOrder, 'due_payment': due_payment}
+    context = {'invoiceOrder': invoiceOrder,
+               'due_payment': due_payment, 'client_details': client_details}
     return render(request, 'invoice/printInvoice.html', context)

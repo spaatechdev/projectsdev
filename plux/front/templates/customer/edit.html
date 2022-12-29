@@ -31,7 +31,7 @@
                                     <div class="form-group">
                                         <label for="gst_no">GST Number</label>
                                         <input type="text" class="form-control" name="gst_no" id="gst_no"
-                                            placeholder="GST Number" value="{{customer.gst_no}}">
+                                            placeholder="GST Number" value="{% if customer.gst_no is not None %}{{customer.gst_no }} {% endif %}">
                                     </div>
                                 </div>
                             </div>
