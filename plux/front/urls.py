@@ -113,6 +113,9 @@ urlpatterns = [
     path('invoiceAdd', views.invoiceAdd, name='invoiceAdd'),
     path('invoiceDetailsList/<int:header_id>', views.invoiceDetailsList, name='invoiceDetailsList'),
     path('printInvoice/<int:header_id>', views.printInvoice, name='printInvoice'),
+    
+    path('pendingInvoiceList', views.pendingInvoiceList, name='pendingInvoiceList'),
+    path('pendingInvoicePayment/<int:invoice_id>', views.pendingInvoicePayment, name='pendingInvoicePayment'),
 
     path('getVendorPurchaseOrders', csrf_exempt(views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
     path('getPurchaseOrderDetails', csrf_exempt(views.getPurchaseOrderDetails), name='getPurchaseOrderDetails'),
