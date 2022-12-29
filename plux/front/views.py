@@ -99,6 +99,43 @@ def getTransactionType(request):
         })
 
 
+def getInvoiceType(request):
+    if request.method == "POST":
+        context = {}
+        customer_id = request.POST['customer_id']
+        customer = models.Customer.objects.get(pk=customer_id)
+        if customer.state.name.lower() == env("CLIENT_STATE").lower():
+            stores = models.StoreMaster.objects.filter(deleted=0)
+            terms = models.StandardTermMaster.objects.filter(deleted=0)
+            sales_orders = list(models.SalesOrderHeader.objects.filter(
+                customer_id=customer_id, deleted=0).exclude(status__in=[3]).values('id', 'sales_order_no'))
+            context.update({'stores': stores, 'terms': terms,
+                           'sales_orders': sales_orders})
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'invoiceType': render_to_string('invoiceType/stateSame.html', context)
+            })
+        else:
+            stores = models.StoreMaster.objects.filter(deleted=0)
+            terms = models.StandardTermMaster.objects.filter(deleted=0)
+            sales_orders = list(models.SalesOrderHeader.objects.filter(
+                customer_id=customer_id, deleted=0).exclude(status__in=[3]).values('id', 'sales_order_no'))
+            context.update({'stores': stores, 'terms': terms,
+                           'sales_orders': sales_orders})
+            return JsonResponse({
+                'code': 200,
+                'status': "SUCCESS",
+                'invoiceType': render_to_string('invoiceType/stateDifferent.html', context)
+            })
+    else:
+        return JsonResponse({
+            'code': 514,
+            'status': "ERROR",
+            'message': "There should be ajax method."
+        })
+
+
 @login_required
 def getExceptStores(request):
     if request.method == "POST":
@@ -126,7 +163,8 @@ def getItemsDetailsByStore(request):
     if request.method == "POST":
         store_from_id = request.POST['store_from_id']
         store_item = request.POST['store_item']
-        storeItem = list(models.StoreItemMaster.objects.filter(store_id=store_from_id, item_id=store_item).values('id', 'on_hand_qty', 'item__unit_price', 'item__gst_percentage'))[0]
+        storeItem = list(models.StoreItemMaster.objects.filter(store_id=store_from_id, item_id=store_item).values(
+            'id', 'on_hand_qty', 'item__unit_price', 'item__gst_percentage'))[0]
         return JsonResponse({
             'code': 200,
             'status': 'SUCCESS',
@@ -158,7 +196,7 @@ def getExceptedStoreItems(request):
         })
     else:
         return JsonResponse({
-            'code': 508,
+            'code': 511,
             'status': "ERROR",
             'message': "There should be ajax method."
         })
@@ -183,7 +221,26 @@ def getTransferDetails(request):
         })
     else:
         return JsonResponse({
-            'code': 508,
+            'code': 512,
+            'status': "ERROR",
+            'message': "There should be ajax method."
+        })
+
+
+@login_required
+def getItemDetails(request):
+    if request.method == "POST":
+        item_id = request.POST['item_id']
+        itemDetails = list(models.ItemMaster.objects.filter(
+            id=item_id).values('id', 'description', 'unit_price'))[0]
+        return JsonResponse({
+            'code': 200,
+            'status': 'SUCCESS',
+            'itemDetails': itemDetails
+        })
+    else:
+        return JsonResponse({
+            'code': 513,
             'status': "ERROR",
             'message': "There should be ajax method."
         })
@@ -427,6 +484,127 @@ def customerImport(request):
 @login_required
 def downloadCustomerExcel(request):
     file_path = (MEDIA_ROOT + "excels/downloadable/" + "customers.csv")
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(
+                # fh.read(), content_type="application/vnd.ms-excel")
+                fh.read(), content_type="text/csv")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                os.path.basename(file_path)
+            return response
+
+
+@login_required
+def salespersonList(request):
+    page = request.GET.get('page', 1)
+    salespersons = models.SalesPerson.objects.filter(deleted=0)
+    paginator = Paginator(salespersons, env("PER_PAGE_DATA"))
+    salespersons = paginator.page(page)
+    context = {'salespersons': salespersons}
+    return render(request, 'salesperson/list.html', context)
+
+
+@login_required
+def salespersonAdd(request):
+    context = {}
+    countries = models.Countries.objects.filter(id=101)
+    context.update({'countries': countries})
+    if request.method == "POST":
+        salesperson = models.SalesPerson()
+        salesperson.salesperson_name = request.POST['salesperson_name']
+        salesperson.address_1 = request.POST['address_1']
+        salesperson.address_2 = request.POST['address_2']
+        salesperson.pin = request.POST['pin']
+        salesperson.gst_no = request.POST['gst_no']
+        salesperson.contact_no = request.POST['contact_no']
+        salesperson.contact_name = request.POST['contact_name']
+        salesperson.contact_email = request.POST['contact_email']
+        salesperson.country_id = request.POST['country']
+        salesperson.state_id = request.POST['state']
+        salesperson.city_id = request.POST['city']
+        salesperson.save()
+        messages.success(request, 'Salesperson Created Successfully.')
+        return redirect('salespersonList')
+    return render(request, 'salesperson/add.html', context)
+
+
+@login_required
+def salespersonEdit(request, id):
+    context = {}
+    countries = models.Countries.objects.filter(id=101)
+    salesperson = models.SalesPerson.objects.get(pk=id)
+    context.update({'countries': countries, 'salesperson': salesperson})
+    if request.method == "POST":
+        salesperson = models.SalesPerson.objects.get(pk=request.POST['id'])
+        salesperson.salesperson_name = request.POST['salesperson_name']
+        salesperson.address_1 = request.POST['address_1']
+        salesperson.address_2 = request.POST['address_2']
+        salesperson.pin = request.POST['pin']
+        salesperson.gst_no = request.POST['gst_no']
+        salesperson.contact_no = request.POST['contact_no']
+        salesperson.contact_name = request.POST['contact_name']
+        salesperson.contact_email = request.POST['contact_email']
+        salesperson.country_id = request.POST['country']
+        salesperson.state_id = request.POST['state']
+        salesperson.city_id = request.POST['city']
+        salesperson.save()
+        messages.success(request, 'Salesperson Updated Successfully.')
+        return redirect('salespersonList')
+    return render(request, 'salesperson/edit.html', context)
+
+
+@login_required
+def salespersonDelete(request, id):
+    salesperson = models.SalesPerson.objects.get(pk=id)
+    salesperson.deleted = 1
+    salesperson.save()
+    return redirect('salespersonList')
+
+
+@login_required
+def salespersonImport(request):
+    context = {}
+    if request.method == "POST":
+        salesperson_list = []
+        if request.FILES.get('excel', None):
+            file = request.FILES['excel']
+            tmpname = str(datetime.now().microsecond) + \
+                os.path.splitext(str(file))[1]
+            fs = FileSystemStorage(
+                MEDIA_ROOT + "excels/salespersons/", MEDIA_ROOT + "/excels/salespersons/")
+            fs.save(tmpname, file)
+            file_name = "excels/salespersons/" + tmpname
+
+            with open(MEDIA_ROOT + file_name, newline='', mode='r', encoding='ISO-8859-1') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if not row['Salesperson Name']:
+                        break
+                    country_obj = models.Countries.objects.filter(
+                        name=row['Country']).first()
+                    state_obj = models.States.objects.filter(
+                        name=row['State']).first()
+                    city_obj = models.Cities.objects.filter(
+                        name=row['City']).first()
+                    country_id = country_obj.id if country_obj is not None else None
+                    state_id = state_obj.id if state_obj is not None else None
+                    city_id = city_obj.id if city_obj is not None else None
+                    salesperson_email_qs = models.SalesPerson.objects.filter(
+                        contact_email=row['Contact Email'])
+                    if (not salesperson_email_qs.exists()):
+                        salesperson_list.append(models.SalesPerson(salesperson_name=row['Salesperson Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
+                            'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                models.SalesPerson.objects.bulk_create(salesperson_list)
+                csvfile.close()
+                os.remove(MEDIA_ROOT + file_name)
+            messages.success(request, 'Salespersons Created Successfully.')
+            return redirect('salespersonList')
+    return render(request, 'salesperson/import.html', context)
+
+
+@login_required
+def downloadSalespersonExcel(request):
+    file_path = (MEDIA_ROOT + "excels/downloadable/" + "salespersons.csv")
     if os.path.exists(file_path):
         with open(file_path, 'rb') as fh:
             response = HttpResponse(
@@ -1022,6 +1200,11 @@ def itemAdd(request):
         item.ply_dimension_id = request.POST['ply_dimension_id']
         item.uom_id = request.POST['uom_id']
         item.save()
+        attribute_details = []
+        for index, elem in enumerate(request.POST.getlist('attribute_name[]')):
+            attribute_details.append(models.ItemAttributes(item_id=item.id, attribute_name=request.POST.getlist(
+                'attribute_name[]')[index], attribute_value=request.POST.getlist('attribute_value[]')[index]))
+        models.ItemAttributes.objects.bulk_create(attribute_details)
         messages.success(request, 'Item Created Successfully.')
         return redirect('itemList')
     return render(request, 'item/add.html', context)
@@ -1030,7 +1213,8 @@ def itemAdd(request):
 @login_required
 def itemEdit(request, id):
     context = {}
-    item = models.ItemMaster.objects.get(pk=id)
+    item = models.ItemMaster.objects.prefetch_related(
+        'itemattributes_set').get(pk=id)
     itemCategories = models.ItemCtegory.objects.filter(deleted=0)
     plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
     uoms = models.UomMaster.objects.filter(deleted=0)
@@ -1046,6 +1230,12 @@ def itemEdit(request, id):
         item.ply_dimension_id = request.POST['ply_dimension_id']
         item.uom_id = request.POST['uom_id']
         item.save()
+        models.ItemAttributes.objects.filter(item_id=item.id).delete()
+        attribute_details = []
+        for index, elem in enumerate(request.POST.getlist('attribute_name[]')):
+            attribute_details.append(models.ItemAttributes(item_id=item.id, attribute_name=request.POST.getlist(
+                'attribute_name[]')[index], attribute_value=request.POST.getlist('attribute_value[]')[index]))
+        models.ItemAttributes.objects.bulk_create(attribute_details)
         messages.success(request, 'Item Updated Successfully.')
         return redirect('itemList')
     return render(request, 'item/edit.html', context)
@@ -1091,7 +1281,7 @@ def itemImport(request):
                         uom_obj = models.UomMaster()
                         uom_obj.description = row['UOM']
                         uom_obj.save()
-                    item_list.append(models.ItemMaster(description=row['Description'], item_category_id=item_category_obj.id, ply_dimension_id=ply_dimension_obj.id,
+                    item_list.append(models.ItemMaster(description=row['Description'], item_category_id=item_category_obj.id, ply_dimension_id=ply_dimension_obj.id if ply_dimension_obj is not None else None,
                                      uom_id=uom_obj.id, unit_price=row['Unit Price'], hsn_code=row['HSN Code'], gst_percentage=row['GST %']))
                 models.ItemMaster.objects.bulk_create(item_list)
                 csvfile.close()
@@ -1314,6 +1504,100 @@ def purchaseOrderDetailsList(request, header_id):
 
 
 @login_required
+def salesOrderList(request):
+    page = request.GET.get('page', 1)
+    salesOrders = models.SalesOrderHeader.objects.filter(deleted=0)
+    paginator = Paginator(salesOrders, env("PER_PAGE_DATA"))
+    salesOrders = paginator.page(page)
+    context = {'salesOrders': salesOrders}
+    return render(request, 'salesOrder/list.html', context)
+
+
+@login_required
+def salesOrderAdd(request):
+    context = {}
+    salespersons = models.SalesPerson.objects.filter(deleted=0)
+    customers = models.Customer.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    context.update({'salespersons': salespersons,
+                   'items': items, 'customers': customers})
+    if request.method == "POST":
+        sales_order_count = models.SalesOrderHeader.objects.filter(
+            deleted=0).count()
+        sales_order_no = "SO-" + str(sales_order_count + 1).zfill(8)
+        salesOrder = models.SalesOrderHeader()
+        # salesOrder.ammend_no = request.POST['ammend_no']
+        salesOrder.sales_order_no = sales_order_no
+        salesOrder.sales_order_date = request.POST['sales_order_date']
+        salesOrder.notes = request.POST['notes']
+        salesOrder.total_amount = request.POST['total_amount']
+        salesOrder.commission = request.POST['commission']
+        salesOrder.sales_person_id = request.POST['salesperson_id']
+        salesOrder.customer_id = request.POST['customer_id']
+        salesOrder.save()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.SalesOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], sales_order_header_id=salesOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.SalesOrderDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Sales Order Created Successfully.')
+        return redirect('salesOrderList')
+    return render(request, 'salesOrder/add.html', context)
+
+
+@login_required
+def salesOrderEdit(request, id):
+    context = {}
+    salesOrder = models.SalesOrderHeader.objects.prefetch_related(
+        'salesorderdetails_set').get(pk=id)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    salespersons = models.SalesPerson.objects.filter(deleted=0)
+    customers = models.Customer.objects.filter(deleted=0)
+    context.update({'salesOrder': salesOrder, 'items': items,
+                   'salespersons': salespersons, 'customers': customers})
+    if request.method == "POST":
+        salesOrder = models.SalesOrderHeader.objects.get(
+            pk=request.POST['id'])
+        # salesOrder.ammend_no = request.POST['ammend_no']
+        salesOrder.sales_order_date = request.POST['sales_order_date']
+        salesOrder.notes = request.POST['notes']
+        salesOrder.total_amount = request.POST['total_amount']
+        salesOrder.sales_person_id = request.POST['salesperson_id']
+        salesOrder.commission = request.POST['commission']
+        salesOrder.customer_id = request.POST['customer_id']
+        salesOrder.save()
+        models.SalesOrderDetails.objects.filter(
+            sales_order_header_id=salesOrder.id).delete()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('item_id[]')):
+            order_details.append(models.SalesOrderDetails(quantity=request.POST.getlist('quantity[]')[index], unit_price=request.POST.getlist('unit_price[]')[
+                                 index], amount=request.POST.getlist('amount[]')[index], sales_order_header_id=salesOrder.id, item_id=request.POST.getlist('item_id[]')[index]))
+        models.SalesOrderDetails.objects.bulk_create(order_details)
+        messages.success(request, 'Sales Order Updated Successfully.')
+        return redirect('salesOrderList')
+    return render(request, 'salesOrder/edit.html', context)
+
+
+@login_required
+def salesOrderDelete(request, id):
+    salesOrder = models.SalesOrderHeader.objects.get(pk=id)
+    salesOrder.deleted = 1
+    salesOrder.save()
+    models.SalesOrderDetails.objects.filter(
+        sales_order_header_id=salesOrder.id).update(deleted=1)
+    return redirect('salesOrderList')
+
+
+@login_required
+def salesOrderDetailsList(request, header_id):
+    page = request.GET.get('page', 1)
+    salesHeader = models.SalesOrderHeader.objects.prefetch_related(
+        'salesorderdetails_set').get(pk=header_id)
+    context = {'salesHeader': salesHeader}
+    return render(request, 'salesOrder/orderDetailsList.html', context)
+
+
+@login_required
 def storeTransactionList(request):
     page = request.GET.get('page', 1)
     storeTransactions = models.StoreTransactionHeader.objects.filter(deleted=0)
@@ -1483,10 +1767,12 @@ def storeTransactionAdd(request):
             physicalStockHeader.save()
             physical_stock_details = []
             for index, item in enumerate(request.POST.getlist('item_id[]')):
-                storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist('item_id[]')[index], store_id=request.POST['store']).first()
+                storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist(
+                    'item_id[]')[index], store_id=request.POST['store']).first()
                 physical_stock_details.append(models.PhysicalStockDetails(item_id=request.POST.getlist('item_id[]')[
                                               index], quantity=storeItem.opening_qty, original_quantity=request.POST.getlist('quantity[]')[index], physical_stock_header_id=physicalStockHeader.id))
-            models.PhysicalStockDetails.objects.bulk_create(physical_stock_details)
+            models.PhysicalStockDetails.objects.bulk_create(
+                physical_stock_details)
 
             transaction_count = models.StoreTransactionHeader.objects.filter(
                 deleted=0).count()
@@ -1606,10 +1892,12 @@ def storeTransactionDelete(request, id):
 @login_required
 def storeTransactionDetailsList(request, header_id):
     page = request.GET.get('page', 1)
-    storeTransactionHeader = models.StoreTransactionHeader.objects.prefetch_related('storetransactiondetails_set').get(pk=header_id)
+    storeTransactionHeader = models.StoreTransactionHeader.objects.prefetch_related(
+        'storetransactiondetails_set').get(pk=header_id)
     for storeTransactionHeaderDetail in storeTransactionHeader.storetransactiondetails_set.all():
         if (storeTransactionHeaderDetail.type_id == 6):
-            physicalStockDetails = models.PhysicalStockDetails.objects.filter(item_id=storeTransactionHeaderDetail.item_id, physical_stock_header_id=storeTransactionHeaderDetail.store_transaction_header.physical_stock_header_id).first()
+            physicalStockDetails = models.PhysicalStockDetails.objects.filter(
+                item_id=storeTransactionHeaderDetail.item_id, physical_stock_header_id=storeTransactionHeaderDetail.store_transaction_header.physical_stock_header_id).first()
             storeTransactionHeaderDetail.actual_quantity = physicalStockDetails.quantity
     context = {'storeTransactionHeader': storeTransactionHeader}
     return render(request, 'storeTransaction/orderDetailsList.html', context)
@@ -1635,6 +1923,25 @@ def getVendorPurchaseOrders(request):
 
 
 @login_required
+def getCustomerSalesOrders(request):
+    if request.method == "POST":
+        customer_id = request.POST['customer_id']
+        sales_orders = list(models.SalesOrderHeader.objects.filter(
+            customer_id=customer_id, deleted=0).exclude(status__in=[3]).values('id', 'sales_order_no'))
+        return JsonResponse({
+            'code': 200,
+            'status': 'SUCCESS',
+            'data': sales_orders,
+        })
+    else:
+        return JsonResponse({
+            'code': 509,
+            'status': 'ERROR',
+            'message': 'There should be post method.'
+        })
+
+
+@login_required
 def getPurchaseOrderDetails(request):
     if request.method == "POST":
         purchase_order_header_id = request.POST['purchase_order_header_id']
@@ -1653,6 +1960,35 @@ def getPurchaseOrderDetails(request):
     else:
         return JsonResponse({
             'code': 504,
+            'status': 'ERROR',
+            'message': 'There should be post method.'
+        })
+
+
+@login_required
+def getSalesOrderDetails(request):
+    if request.method == "POST":
+        store_id = request.POST['store_id']
+        sales_order_header_id = request.POST['sales_order_header_id']
+        sales_order_details = list(models.SalesOrderDetails.objects.filter(
+            sales_order_header_id=sales_order_header_id).values('id', 'quantity', 'delivered_quantity', 'unit_price', 'amount', 'item_id', 'item__gst_percentage'))
+        items = list(models.ItemMaster.objects.filter(
+            deleted=0).values('id', 'description'))
+        sales_order_details = list(models.SalesOrderDetails.objects.filter(
+            sales_order_header_id=sales_order_header_id).values('id', 'quantity', 'delivered_quantity', 'unit_price', 'amount', 'item_id', 'item__gst_percentage'))
+        for sales_order in sales_order_details:
+            store_item = models.StoreItemMaster.objects.filter(
+                store_id=store_id, item_id=sales_order['item_id']).first()
+            sales_order['store_quantity'] = 0 if store_item is None else store_item.on_hand_qty
+        return JsonResponse({
+            'code': 200,
+            'status': 'SUCCESS',
+            'data': sales_order_details,
+            'items': items,
+        })
+    else:
+        return JsonResponse({
+            'code': 510,
             'status': 'ERROR',
             'message': 'There should be post method.'
         })
@@ -1734,24 +2070,22 @@ def invoiceList(request):
 
 
 @login_required
-def invoiceDetailsList(request, header_id):
-    page = request.GET.get('page', 1)
-    invoiceOrder = models.InvoiceHeader.objects.prefetch_related('invoicedetails_set').get(pk=header_id)
-    context = {'invoiceOrder': invoiceOrder}
-    return render(request, 'invoice/orderDetailsList.html', context)
-
-@login_required
 def invoiceAdd(request):
     context = {}
     customers = models.Customer.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    context.update({'customers': customers, 'stores': stores})
+    terms = models.StandardTermMaster.objects.filter(deleted=0)
+    context.update({'customers': customers, 'stores': stores, 'terms': terms})
     if request.method == "POST":
+        print(request.POST)
         total_item_price = 0
         total_gst_price = 0
         for index, item in enumerate(request.POST.getlist('item_total_price[]')):
             total_item_price += Decimal(item)
-            total_gst_price += Decimal(request.POST.getlist('item_gst_price[]')[index])
+            if 'item_gst_price[]' in request.POST.keys():
+                total_gst_price += Decimal(request.POST.getlist('item_gst_price[]')[index])
+            else:
+                total_gst_price += Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])
         invoice_count = models.InvoiceHeader.objects.filter(deleted=0).count()
         invoice_number = "IN-" + str(invoice_count + 1).zfill(8)
         invoiceHeader = models.InvoiceHeader()
@@ -1760,13 +2094,21 @@ def invoiceAdd(request):
         invoiceHeader.invoice_date = datetime.now()
         invoiceHeader.invoice_total = total_item_price
         invoiceHeader.invoice_gst_total = total_gst_price
+        invoiceHeader.carrying_cost = request.POST['carrying_cost']
         invoiceHeader.customer_id = request.POST['customer_id']
-        invoiceHeader.store_id	 = request.POST['store']
+        invoiceHeader.store_id = request.POST['store']
         invoiceHeader.save()
         order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
-            order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist('item_total_price[]')[index], invoice_item_gst_value=request.POST.getlist('item_gst_price[]')[index], invoice_header_id=invoiceHeader.id))
+            if 'item_gst_price[]' in request.POST.keys():
+                order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist('item_total_price[]')[index], invoice_item_gst_value=request.POST.getlist('item_gst_price[]')[index], invoice_header_id=invoiceHeader.id))
+            else:
+                order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist('item_total_price[]')[index], invoice_item_gst_value=(Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])), invoice_header_id=invoiceHeader.id))
         models.InvoiceDetails.objects.bulk_create(order_details)
+        terms_list = []
+        for index, item in enumerate(request.POST.getlist('terms[]')):
+            terms_list.append(models.InvoiceTerms(term_id=request.POST.getlist('terms[]')[index], invoice_header_id=invoiceHeader.id))
+        models.InvoiceTerms.objects.bulk_create(terms_list)
         transaction_count = models.StoreTransactionHeader.objects.filter(deleted=0).count()
         transaction_number = "TR-" + str(transaction_count + 1).zfill(8)
         storeTransaction = models.StoreTransactionHeader()
@@ -1781,21 +2123,81 @@ def invoiceAdd(request):
         storeTransaction.save()
         transaction_order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
-            transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], unit_price=request.POST.getlist('unit_price[]')[index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=request.POST.getlist('item_gst_price[]')[index], gst_percentage=request.POST.getlist('gst_percentage[]')[index], store_transaction_header_id=storeTransaction.id))
+            if 'item_gst_price[]' in request.POST.keys():
+                transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], unit_price=request.POST.getlist('unit_price[]')[index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=request.POST.getlist('item_gst_price[]')[index], gst_percentage=request.POST.getlist('gst_percentage[]')[index], store_transaction_header_id=storeTransaction.id))
+            else:
+                transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], unit_price=request.POST.getlist('unit_price[]')[index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=(Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])), gst_percentage=(Decimal(request.POST.getlist('cgst_percentage[]')[index]) + Decimal(request.POST.getlist('sgst_percentage[]')[index])), store_transaction_header_id=storeTransaction.id))
             storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist('item_id[]')[index], store_id=request.POST['store']).first()
             if storeItem is None:
                 storeItem = models.StoreItemMaster()
-                storeItem.opening_qty = Decimal(request.POST.getlist('quantity[]')[index])
-                storeItem.on_hand_qty = Decimal(request.POST.getlist('quantity[]')[index])
-                storeItem.closing_qty = Decimal(request.POST.getlist('quantity[]')[index])
+                storeItem.opening_qty = Decimal(
+                    request.POST.getlist('quantity[]')[index])
+                storeItem.on_hand_qty = Decimal(
+                    request.POST.getlist('quantity[]')[index])
+                storeItem.closing_qty = Decimal(
+                    request.POST.getlist('quantity[]')[index])
                 storeItem.item_id = request.POST.getlist('item_id[]')[index]
                 storeItem.store_id = request.POST['store']
                 storeItem.save()
             else:
-                storeItem.on_hand_qty -= Decimal(request.POST.getlist('quantity[]')[index])
-                storeItem.closing_qty -= Decimal(request.POST.getlist('quantity[]')[index])
+                storeItem.on_hand_qty -= Decimal(
+                    request.POST.getlist('quantity[]')[index])
+                storeItem.closing_qty -= Decimal(
+                    request.POST.getlist('quantity[]')[index])
                 storeItem.save()
         models.StoreTransactionDetails.objects.bulk_create(transaction_order_details)
+        if 'sales_order_header_id' in request.POST.keys() and request.POST['sales_order_header_id'] != "":
+            for index, item in enumerate(request.POST.getlist('sales_details_id[]')):
+                salesOrderItem = models.SalesOrderDetails.objects.get(
+                    pk=request.POST.getlist('sales_details_id[]')[index])
+                salesOrderItem.delivered_quantity += Decimal(
+                    request.POST.getlist('quantity[]')[index])
+                salesOrderItem.save()
+            salesHeader = models.SalesOrderHeader.objects.prefetch_related(
+                'salesorderdetails_set').get(pk=request.POST['sales_order_header_id'])
+            flag = True
+            for salesOrderDetail in salesHeader.salesorderdetails_set.all():
+                if Decimal(salesOrderDetail.quantity) > Decimal(salesOrderDetail.delivered_quantity):
+                    flag = False
+                    break
+            if flag == True:
+                salesHeader.status = 3
+            else:
+                salesHeader.status = 2
+            salesHeader.save()
         messages.success(request, 'Invoice Created Successfully.')
         return redirect('invoiceList')
     return render(request, 'invoice/add.html', context)
+
+
+@login_required
+def invoiceDetailsList(request, header_id):
+    page = request.GET.get('page', 1)
+    invoiceOrder = models.InvoiceHeader.objects.prefetch_related(
+        'invoicedetails_set').get(pk=header_id)
+    context = {'invoiceOrder': invoiceOrder}
+    return render(request, 'invoice/orderDetailsList.html', context)
+
+
+@login_required
+def printInvoice(request, header_id):
+    client_details = {
+        'client_name': env("CLIENT_NAME"),
+        'client_address': env("CLIENT_ADDRESS"),
+        'client_address_2': env("CLIENT_ADDRESS_2"),
+        'client_pin': env("CLIENT_PIN"),
+        'client_mobile': env("CLIENT_MOBILE"),
+        'client_email': env("CLIENT_EMAIL"),
+    }
+    page = request.GET.get('page', 1)
+    invoiceOrder = models.InvoiceHeader.objects.prefetch_related(
+        'invoicedetails_set', 'invoiceterms_set').get(pk=header_id)
+    invoicePayments = models.InvoicePayments.objects.filter(
+        customer_id=invoiceOrder.customer_id).exclude(status=3)
+    due_payment = 0
+    for invoicePayment in invoicePayments:
+        due_payment += (invoicePayment.invoice_amount -
+                        invoicePayment.paid_amount)
+    context = {'invoiceOrder': invoiceOrder,
+               'due_payment': due_payment, 'client_details': client_details}
+    return render(request, 'invoice/printInvoice.html', context)

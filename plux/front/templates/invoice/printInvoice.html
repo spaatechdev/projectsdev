@@ -1,0 +1,210 @@
+{% load static %}
+{% load mathfilters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <title>Invoice</title>
+  <style>
+    .clearfix:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    @media print {
+      @page {
+        margin-left: 0.5in;
+        margin-right: 0.5in;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+
+<body style="position: relative; width: 25cm; height: 29.7cm; margin: 0 auto; color: #555555;
+  background-color: #FFFFFF; font-family: Arial, sans-serif; font-size: 14px; font-family: SourceSansPro;">
+  <header style=" padding: 10px 0; margin-bottom: 20px;
+    border-bottom: 1px solid #AAAAAA;" class="clearfix">
+    <div style="float: left; margin-top: 8px;">
+      <img src="{% static 'invoice/cpc.png' %}">
+    </div>
+    <div style="float: right; text-align: right;">
+      <h2 style="font-size: 1.4em; font-weight: normal; margin: 0;">{{client_details.client_name}}</h2>
+      <div>{{client_details.client_address}} - {{client_details.client_pin}},<br />
+        {{client_details.client_address_2}}</div>
+      <div>{{client_details.client_mobile}}</div>
+      <div><a style="color: #0087C3; text-decoration: none;">{{client_details.client_email}}</a></div>
+    </div>
+  </header>
+
+  <main>
+    <div style="content: ""; display: table; clear: both;">
+      <div style="padding-left: 6px; border-left: 6px solid #0087C3;
+        float: left;">
+        <div style="color: #777777;">INVOICE TO:</div>
+        <h2 style="font-size: 1.4em; font-weight: normal; margin: 0;">{{invoiceOrder.customer.customer_name}}</h2>
+        {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
+        <div class="date">GSTIN No: {{invoiceOrder.customer.gst_no}}</div>
+        {% endif %}
+        <div>{{invoiceOrder.customer.address_1}}<br />
+          {{invoiceOrder.customer.address_2}}, {{invoiceOrder.customer.city.name}}, {{invoiceOrder.customer.state.name}}
+          {{invoiceOrder.customer.pin}}.
+        </div>
+        <div style="color: #0087C3; text-decoration: none;"><a>{{invoiceOrder.customer.contact_email}}</a>
+        </div>
+      </div>
+      <div style="float: right; text-align: right; padding-right: 6px;">
+        <div>INVOICE NO: {{invoiceOrder.invoice_number}}</div>
+        <div class="date">INVOICE DATE: {{invoiceOrder.invoice_date}}</div>
+        <div>STORE: {{invoiceOrder.store.name}}</div>
+      </div>
+    </div>
+    <table border="1" cellspacing="0" cellpadding="0" style="width: 100%; border-collapse: collapse;
+    border-spacing: 0; margin-bottom: 20px;">
+      <thead>
+        <tr style="background-color: #57B223; color: #FFFFFF;">
+          <th>SL No:</th>
+          <th>Product</th>
+          <th>Dimension</th>
+          <th>Sq. Ft.</th>
+          <th>Qty</th>
+          <th>Price/Unite</th>
+          <th>TOTAL</th>
+          {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
+          {% if invoiceOrder.customer.state_id != 41 %}
+          <th>IGST</th>
+          <th>IGST Price</th>
+          {% else %}
+          <th>CGST</th>
+          <th>CGST Price</th>
+          <th>SGST</th>
+          <th>SGST Price</th>
+          {% endif %}
+          {% endif %}
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for invoicedetail in invoiceOrder.invoicedetails_set.all %}
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td>{{invoicedetail.item.description}}</td>
+          <td>{{invoicedetail.item.ply_dimension.description}}</td>
+          <td>{{invoicedetail.item.ply_dimension.square_ft|floatformat:"0"}}</td>
+          <td style="background-color: #DDDDDD;">{{invoicedetail.quantity|floatformat:"0"}}</td>
+          <td>{{invoicedetail.item.unit_price}}</td>
+          <td>{{invoicedetail.invoice_item_value}}</td>
+          {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
+          {% if invoiceOrder.customer.state_id != 41 %}
+          <td>{{invoicedetail.item.gst_percentage}}%</td>
+          <td>{{invoicedetail.invoice_item_gst_value}}</td>
+          {% else %}
+          <td>{{invoicedetail.item.gst_percentage|div:2}}%</td>
+          <td>{{invoicedetail.invoice_item_gst_value|div:2}}</td>
+          <td>{{invoicedetail.item.gst_percentage|div:2}}%</td>
+          <td>{{invoicedetail.invoice_item_gst_value|div:2}}</td>
+          {% endif %}
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+
+      <!-- <tfoot>
+        <tr>
+          <td colspan="6"></td>
+          <td colspan="2" style="background-color: #57B223; color: #FFFFFF; text-align: center;">SUBTOTAL</td>
+          <td style="background-color: #DDDDDD; text-align: center;">{{invoiceOrder.invoice_total}}</td>
+        </tr>
+        {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
+        {% if invoiceOrder.customer.state_id != 41 %}
+        <tr>
+          <td colspan="6"></td>
+          <td colspan="2" style="text-align: center;">IGST</td>
+          <td style="background-color: #DDDDDD; text-align: center;">{{invoiceOrder.invoice_gst_total}}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6"></td>
+          <td colspan="2" style="text-align: center;">CGST</td>
+          <td style="background-color: #DDDDDD; text-align: center;">{{invoiceOrder.invoice_gst_total|div:2}}</td>
+        </tr>
+        <tr>
+          <td colspan="6"></td>
+          <td colspan="2" style="text-align: center;">SGST</td>
+          <td style="background-color: #DDDDDD; text-align: center;">{{invoiceOrder.invoice_gst_total|div:2}}</td>
+        </tr>
+        {% endif %}
+        {% endif %}
+        <tr>
+          <td colspan="6"></td>
+          <td colspan="2" style="text-align: center">PREVIOUS DUE</td>
+          <td style="background-color: #DDDDDD; text-align: center;">{{due_payment}}</td>
+        </tr>
+        <tr>
+          <td colspan="6"></td>
+          <td colspan="2" style="text-align: center">CARRYING COST</td>
+          <td style="background-color: #DDDDDD; text-align: center;">{{invoiceOrder.carrying_cost}}</td>
+        </tr>
+        <tr style="background-color: #57B223; color: #FFFFFF;">
+          <td colspan="6"></td>
+          <td colspan="2" style="text-align: center">GRAND TOTAL</td>
+          {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
+          <td style="text-align: center;">{{invoiceOrder.invoice_total|add:invoiceOrder.invoice_gst_total|add:invoiceOrder.carrying_cost|add:due_payment}}</td>
+          {% else %}
+          <td style="text-align: center;">{{invoiceOrder.invoice_total|add:invoiceOrder.carrying_cost|add:due_payment}}</td>
+          {% endif %}
+        </tr>
+      </tfoot> -->
+    </table>
+    <div style="float: right;">
+      <span>SUBTOTAL:</span> {{invoiceOrder.invoice_total}}
+      <br />
+      {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
+      {% if invoiceOrder.customer.state_id != 41 %}
+      <span>IGST:</span> {{invoiceOrder.invoice_gst_total}}
+      <br />
+      {% else %}
+      <span>CGST:</span> {{invoiceOrder.invoice_gst_total|div:2}}
+      <br />
+      <span>SGST:</span> {{invoiceOrder.invoice_gst_total|div:2}}
+      <br />
+      {% endif %}
+      {% endif %}
+      <span>PREVIOUS DUE:</span> {{due_payment}}
+      <br />
+      <span>CARRYING COST:</span> {{invoiceOrder.carrying_cost}}
+      <br />
+      {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
+      <span><strong>GRAND TOTAL:</strong></span>
+      <strong>{{invoiceOrder.invoice_total|add:invoiceOrder.invoice_gst_total|add:invoiceOrder.carrying_cost|add:due_payment}}</strong>
+      {% else %}
+      <span><strong>GRAND TOTAL:</strong></span>
+      <strong>{{invoiceOrder.invoice_total|add:invoiceOrder.carrying_cost|add:due_payment}}</strong>
+      {% endif %}
+    </div>
+    <div style="font-size: 2em; margin-bottom: 50px;">Thank you!</div>
+    <div style="padding-left: 6px; border-left: 6px solid #0087C3;  ">
+      <div>Terms:</div>
+      {% for invoiceterm in invoiceOrder.invoiceterms_set.all %}
+      <div style="font-size: 1.2em;">{{invoiceterm.term.description}}</div>
+      {% endfor %}
+    </div>
+  </main>
+  <footer style="color: #777777; width: 100%; height: 30px;  position: absolute;
+    bottom: 0; border-top: 1px solid #AAAAAA; padding: 8px 0; text-align: center;">
+    Invoice was created on a computer and is valid without the signature and seal.
+  </footer>
+</body>
+
+<script>
+  $(document).ready(function () {
+    window.print();
+  });
+</script>
+
+</html>

@@ -9,29 +9,28 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Edit Customer</h4>
+                            <h4 class="card-title">Add Sales Person</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'customerList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                            <a href="{% url 'salespersonList' %}" class="btn btn-primary btn-sm float-end">Back</a>
                         </div>
                     </div>
                     <div class="row">
-                        <form class="forms-sample" action="{% url 'customerEdit' customer.id %}" method="post">
+                        <form class="forms-sample" action="{% url 'salespersonAdd' %}" method="post">
                             {% csrf_token %}
-                            <input type="hidden" name="id" value="{{customer.id}}">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="customer_name">Customer Name</label>
-                                        <input type="text" class="form-control" name="customer_name" id="customer_name"
-                                            placeholder="Customer Name" value="{{customer.customer_name}}" required>
+                                        <label for="salesperson_name">Salesperson Name</label>
+                                        <input type="text" class="form-control" name="salesperson_name" id="salesperson_name"
+                                            placeholder="Salesperson Name" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="gst_no">GST Number</label>
                                         <input type="text" class="form-control" name="gst_no" id="gst_no"
-                                            placeholder="GST Number" value="{% if customer.gst_no is not None %}{{customer.gst_no }} {% endif %}">
+                                            placeholder="GST Number">
                                     </div>
                                 </div>
                             </div>
@@ -40,14 +39,14 @@
                                     <div class="form-group">
                                         <label for="address_1">Address 1</label>
                                         <textarea name="address_1" class="form-control" id="address_1" rows="5"
-                                            placeholder="Address 1" required>{{customer.address_1}}</textarea>
+                                            placeholder="Address 1" required></textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="address_2">Address 2</label>
                                         <textarea name="address_2" class="form-control" id="address_2" rows="5"
-                                            placeholder="Address 2">{{customer.address_2}}</textarea>
+                                            placeholder="Address 2"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -56,7 +55,7 @@
                                     <div class="form-group">
                                         <label for="contact_name">Contact Name</label>
                                         <input type="text" class="form-control" id="contact_name" name="contact_name"
-                                            placeholder="John Doe" value="{{customer.contact_name}}">
+                                            placeholder="John Doe">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -65,7 +64,7 @@
                                         <input type="text" class="form-control" id="contact_no" name="contact_no"
                                             placeholder="99******49"
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                            maxlength="10" value="{{customer.contact_no}}">
+                                            maxlength="10">
                                     </div>
                                 </div>
                             </div>
@@ -74,7 +73,7 @@
                                     <div class="form-group">
                                         <label for="contact_email">Contact Email</label>
                                         <input type="email" class="form-control" id="contact_email" name="contact_email"
-                                            placeholder="john@example.com" value="{{customer.contact_email}}">
+                                            placeholder="john@example.com">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -82,7 +81,7 @@
                                         <label for="pin">PIN</label>
                                         <input type="text" class="form-control" maxlength="6" id="pin" name="pin"
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                            placeholder="700001" value="{{customer.pin}}">
+                                            placeholder="700001">
                                     </div>
                                 </div>
                             </div>
@@ -93,8 +92,7 @@
                                         <select class="form-control" id="country" name="country">
                                             <option value="">Select Country</option>
                                             {% for country in countries %}
-                                            <option value="{{country.id}}" {% if country.id == customer.country_id %}
-                                                selected {% endif %}>{{country.name}}</option>
+                                            <option value="{{country.id}}">{{country.name}}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -103,7 +101,7 @@
                                     <div class="form-group">
                                         <label for="state">State</label>
                                         <select class="form-control" id="state" name="state">
-                                            <option value="{{customer.state_id}}">{{customer.state.name}}</option>
+                                            <option value="">Select Country</option>
                                         </select>
                                     </div>
                                 </div>
@@ -111,7 +109,7 @@
                                     <div class="form-group">
                                         <label for="city">City</label>
                                         <select class="form-control" id="city" name="city">
-                                            <option value="{{customer.city_id}}">{{customer.city.name}}</option>
+                                            <option value="">Select State</option>
                                         </select>
                                     </div>
                                 </div>
@@ -129,8 +127,6 @@
 
 {% block js %}
 <script>
-    var customer_state = "{{customer.state_id}}";
-    var customer_city = "{{customer.city_id}}";
     $(document).on('change', '#country', function () {
         let country_id = $(this).val();
         $.ajax({

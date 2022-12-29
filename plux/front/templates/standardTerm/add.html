@@ -20,8 +20,8 @@
                             {% csrf_token %}
                             <div class="form-group">
                                 <label for="description">description</label>
-                                <input type="text" class="form-control" name="description" id="description"
-                                    placeholder="description" required>
+                                <textarea name="description" id="description" rows="5" placeholder="Description"
+                                    class="form-control" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary me-2">Submit</button>
                             <button type="reset" class="btn btn-light">Reset</button>

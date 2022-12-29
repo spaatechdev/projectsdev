@@ -21,6 +21,13 @@ urlpatterns = [
     path('customerDelete/<int:id>', views.customerDelete, name='customerDelete'),
     path('customerImport', views.customerImport, name='customerImport'),
     path('downloadCustomerExcel', views.downloadCustomerExcel, name='downloadCustomerExcel'),
+
+    path('salespersonList', views.salespersonList, name='salespersonList'),
+    path('salespersonAdd', views.salespersonAdd, name='salespersonAdd'),
+    path('salespersonEdit/<int:id>', views.salespersonEdit, name='salespersonEdit'),
+    path('salespersonDelete/<int:id>', views.salespersonDelete, name='salespersonDelete'),
+    path('salespersonImport', views.salespersonImport, name='salespersonImport'),
+    path('downloadSalespersonExcel', views.downloadSalespersonExcel, name='downloadSalespersonExcel'),
     
     path('uomList', views.uomList, name='uomList'),
     path('uomAdd', views.uomAdd, name='uomAdd'),
@@ -81,6 +88,13 @@ urlpatterns = [
     path('purchaseOrderDelete/<int:id>', views.purchaseOrderDelete, name='purchaseOrderDelete'),
     path('purchaseOrderDetailsList/<int:header_id>', views.purchaseOrderDetailsList, name='purchaseOrderDetailsList'),
 
+
+    path('salesOrderList', views.salesOrderList, name='salesOrderList'),
+    path('salesOrderAdd', views.salesOrderAdd, name='salesOrderAdd'),
+    path('salesOrderEdit/<int:id>', views.salesOrderEdit, name='salesOrderEdit'),
+    path('salesOrderDelete/<int:id>', views.salesOrderDelete, name='salesOrderDelete'),
+    path('salesOrderDetailsList/<int:header_id>', views.salesOrderDetailsList, name='salesOrderDetailsList'),
+
     path('standardTermList', views.standardTermList, name='standardTermList'),
     path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
     path('standardTermEdit/<int:id>', views.standardTermEdit, name='standardTermEdit'),
@@ -98,14 +112,19 @@ urlpatterns = [
     path('invoiceList', views.invoiceList, name='invoiceList'),
     path('invoiceAdd', views.invoiceAdd, name='invoiceAdd'),
     path('invoiceDetailsList/<int:header_id>', views.invoiceDetailsList, name='invoiceDetailsList'),
+    path('printInvoice/<int:header_id>', views.printInvoice, name='printInvoice'),
 
     path('getVendorPurchaseOrders', csrf_exempt(views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
     path('getPurchaseOrderDetails', csrf_exempt(views.getPurchaseOrderDetails), name='getPurchaseOrderDetails'),
     path('getTransactionType', csrf_exempt(views.getTransactionType), name='getTransactionType'),
+    path('getInvoiceType', csrf_exempt(views.getInvoiceType), name='getInvoiceType'),
     path('getExceptStores', csrf_exempt(views.getExceptStores), name='getExceptStores'),
     path('getItemsDetailsByStore', csrf_exempt(views.getItemsDetailsByStore), name='getItemsDetailsByStore'),
     path('getExceptedStoreItems', csrf_exempt(views.getExceptedStoreItems), name='getExceptedStoreItems'),
     path('getTransferDetails', csrf_exempt(views.getTransferDetails), name='getTransferDetails'),
+    path('getCustomerSalesOrders', csrf_exempt(views.getCustomerSalesOrders), name='getCustomerSalesOrders'),
+    path('getSalesOrderDetails', csrf_exempt(views.getSalesOrderDetails), name='getSalesOrderDetails'),
+    path('getItemDetails', csrf_exempt(views.getItemDetails), name='getItemDetails'),
     
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),
