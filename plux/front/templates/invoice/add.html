@@ -18,6 +18,7 @@
                     <div class="row">
                         <form class="forms-sample" action="{% url 'invoiceAdd' %}" method="post">
                             {% csrf_token %}
+                            <input type="hidden" id="invoice_type" name="invoice_type" value="{{invoice_type}}">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -58,10 +59,11 @@
 <script>
     $(document).on('change', '#customer_id', function () {
         customer_id = $(this).val();
+        invoice_type = $("#invoice_type").val();
         $.ajax({
             url: "{% url 'getInvoiceType' %}",
             type: 'post',
-            data: ({ customer_id: customer_id, csrfmiddlewaretoken: '{{csrf_token}}' }),
+            data: ({ customer_id: customer_id, invoice_type: invoice_type, csrfmiddlewaretoken: '{{csrf_token}}' }),
             success: function (response) {
                 if (response.code == 200) {
                     $(".invoice_type_content").html(response.invoiceType)

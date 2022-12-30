@@ -13,7 +13,16 @@
                             <h4 class="card-title">Invoices</h4>
                         </div>
                         <div class="col-md-6">
-                            <a href="{% url 'invoiceAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
+                            <div class="dropdown float-end">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Add Invoice
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a class="dropdown-item" href="{% url 'invoiceAdd' 'gst' %}">GST Invoice</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'invoiceAdd' 'nonGst' %}">Non-GST Invoice</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -91,7 +100,7 @@
                                         </td>
                                         <td>
                                             {{invoice.total_amount}}
-                                        </td>                                        
+                                        </td>
                                         <td>
                                             {{invoice.vehicle_number.upper}}
                                         </td>
