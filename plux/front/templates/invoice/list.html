@@ -43,7 +43,13 @@
                                             Invoice GST Total
                                         </th>
                                         <th>
-                                            Total without GST
+                                            Carrying Cost
+                                        </th>
+                                        <th>
+                                            Due Amount
+                                        </th>
+                                        <th>
+                                            Total Amount
                                         </th>
                                         <th>
                                             Vehicle Number
@@ -78,8 +84,14 @@
                                             {{invoice.invoice_gst_total}}
                                         </td>
                                         <td>
-                                            {{invoice.invoice_total|sub:invoice.invoice_gst_total}}
+                                            {{invoice.carrying_cost}}
                                         </td>
+                                        <td>
+                                            {{invoice.due_amount}}
+                                        </td>
+                                        <td>
+                                            {{invoice.total_amount}}
+                                        </td>                                        
                                         <td>
                                             {{invoice.vehicle_number.upper}}
                                         </td>

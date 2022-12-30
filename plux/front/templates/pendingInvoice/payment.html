@@ -30,11 +30,13 @@
                                     {{invoiceHeader.customer.contact_email}}
                                 </div>
                             </div>
+                            <input type="hidden" name="invoice_header_id" value="{{invoiceHeader.id}}">
+                            <input type="hidden" name="customer_id" value="{{invoiceHeader.customer.id}}">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="payment_method">Payment Method</label>
-                                        <select class="form-control" id="payment_method" name="payment_method">
+                                        <select class="form-control" id="payment_method" name="payment_method" required>
                                             <option value="">Select Payment Method</option>
                                             {% for paymentMethod in paymentMethods %}
                                             <option value="{{paymentMethod.id}}">{{paymentMethod.name}}</option>
@@ -45,53 +47,53 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="reference_number">Reference Number(Transaction Number)</label>
-                                        <input type="text" class="form-control" id="reference_number"
+                                        <input type="text" class="form-control" id="reference_number" required
                                             name="reference_number" placeholder="TXN-000001">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="invoice_amount">Invoice Amount</label>
-                                        <input type="text" class="form-control" id="invoice_amount"
+                                        <input type="text" class="form-control" id="invoice_amount" required
                                             name="invoice_amount" value="{{invoiceHeader.invoice_total}}" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="gst_price">GST Price</label>
                                         <input type="text" class="form-control" id="gst_price" name="gst_price"
-                                            value="{{invoiceHeader.invoice_gst_total}}" readonly>
+                                            value="{{invoiceHeader.invoice_gst_total}}" readonly required>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="due_amount">Due Amount</label>
-                                        <input type="text" class="form-control" id="due_amount" name="due_amount"
-                                            value="{{due_amount}}" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="carrying_cost">Carrying Cost</label>
                                         <input type="text" class="form-control" id="carrying_cost" name="carrying_cost"
-                                            value="{{invoiceHeader.carrying_cost}}" readonly>
+                                            value="{{invoiceHeader.carrying_cost}}" readonly required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="due_amount">Due Amount</label>
+                                        <input type="text" class="form-control" id="due_amount" name="due_amount"
+                                            value="{{due_payment}}" readonly required>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="invoice_amount">Invoice Amount</label>
+                                        <label for="total_amount">Total Amount</label>
                                         {% if invoiceHeader.customer.gst_no is not None and invoiceHeader.customer.gst_no != "" %}
-                                        <input type="text" class="form-control" id="invoice_amount"
-                                            name="invoice_amount"
+                                        <input type="text" class="form-control" id="total_amount"
+                                            name="total_amount" required
                                             value="{{invoiceHeader.invoice_total|add:invoiceHeader.carrying_cost|add:due_payment|add:invoiceHeader.invoice_gst_total}}"
                                             readonly>
                                         {% else %}
-                                        <input type="text" class="form-control" id="invoice_amount"
-                                            name="invoice_amount"
+                                        <input type="text" class="form-control" id="total_amount"
+                                            name="total_amount" required
                                             value="{{invoiceHeader.invoice_total|add:invoiceHeader.carrying_cost|add:due_payment}}"
                                             readonly>
                                         {% endif %}
@@ -100,9 +102,18 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="paid_amount">Payment Receive</label>
+                                        {% if invoiceHeader.customer.gst_no is not None and invoiceHeader.customer.gst_no != "" %}
                                         <input type="text" class="form-control" id="paid_amount" name="paid_amount"
-                                            placeholder="10,000"
+                                            placeholder="10,000" required
+                                            value="{{invoiceHeader.invoice_total|add:invoiceHeader.carrying_cost|add:due_payment|add:invoiceHeader.invoice_gst_total}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        {% else %}
+                                        <input type="text" class="form-control" id="paid_amount" name="paid_amount"
+                                            placeholder="10,000" required
+                                            value="{{invoiceOrder.invoice_total|add:invoiceOrder.carrying_cost|add:due_payment}}"
+                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        {% endif %}
+
                                     </div>
                                 </div>
                             </div>
