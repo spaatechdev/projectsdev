@@ -63,7 +63,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="form-group">
                 <label>Quantity</label>
                 <input type="text" class="form-control item_quantity" name="quantity[]" required min="1"
@@ -77,39 +77,15 @@
                 <input type="text" class="form-control item_unit_price" name="unit_price[]" readonly>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="form-group">
                 <label>Total Price</label>
                 <input type="text" class="form-control item_total_price" name="item_total_price[]" readonly>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>CGST %</label>
-                <input type="text" class="form-control item_cgst_percentage" name="cgst_percentage[]" readonly>
-            </div>
-        </div>
         <div class="col-md-2">
             <div class="form-group">
-                <label>CGST Price</label>
-                <input type="text" class="form-control item_cgst_price" name="item_cgst_price[]" readonly>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label>SGST %</label>
-                <input type="text" class="form-control item_sgst_percentage" name="sgst_percentage[]" readonly>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <label>SGST Price</label>
-                <input type="text" class="form-control item_sgst_price" name="item_sgst_price[]" readonly>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <button type="button" class="btn btn-sm btn-info mt-4 add_invoice_item_same">Add
+                <button type="button" class="btn btn-sm btn-info mt-4 add_invoice_item">Add
                     More Item</button>
             </div>
         </div>
@@ -141,8 +117,8 @@
     $('.selectpicker').select2({
         placeholder: 'Select Terms'
     });
-    
-    $(document).on('click', '.add_invoice_item_same', function () {
+
+    $(document).on('click', '.add_invoice_item', function () {
         if (item_count == 0) {
             alert("Please Choose Store First");
             return true;
@@ -157,7 +133,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Quantity</label>
                                             <input type="text" class="form-control item_quantity" name="quantity[]"
@@ -171,39 +147,15 @@
                                             <input type="text" class="form-control item_unit_price" name="unit_price[]" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Total Price</label>
                                             <input type="text" class="form-control item_total_price" name="item_total_price[]" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label>CGST %</label>
-                                            <input type="text" class="form-control item_cgst_percentage" name="cgst_percentage[]" readonly>
-                                        </div>
-                                    </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label>CGST Price</label>
-                                            <input type="text" class="form-control item_cgst_price" name="item_cgst_price[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label>SGST %</label>
-                                            <input type="text" class="form-control item_sgst_percentage" name="sgst_percentage[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>SGST Price</label>
-                                            <input type="text" class="form-control item_sgst_price" name="item_sgst_price[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item_same">Remove</button>
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
                                         </div>
                                     </div>
                                 </div>`);
@@ -213,7 +165,7 @@
         }
     });
 
-    $(document).on('click', '.remove_invoice_item_same', function () {
+    $(document).on('click', '.remove_invoice_item', function () {
         if ($(this).parents().find('.content_parent').length > 1) {
             $(this).parents().closest('.content_parent').remove();
         } else {
@@ -225,6 +177,7 @@
     $(document).on('change', '#store', function () {
         $("#sales_order_header_id").val("");
         showItemsByStore();
+        calculateTotalAmount();
     });
 
     function showItemsByStore() {
@@ -262,15 +215,10 @@
             success: function (response) {
                 if (response.code == 200) {
                     item_toal_price = (response.storeItems.on_hand_qty * response.storeItems.item__unit_price);
-                    gst_price = item_toal_price * (response.storeItems.item__gst_percentage / 100)
                     elem.parents('.content_parent').find('.item_quantity').attr('max', parseFloat(response.storeItems.on_hand_qty))
                     elem.parents('.content_parent').find('.item_quantity').val(parseFloat(response.storeItems.on_hand_qty))
                     elem.parents('.content_parent').find('.item_unit_price').val(parseFloat(response.storeItems.item__unit_price))
-                    elem.parents('.content_parent').find('.item_cgst_percentage').val(parseFloat(response.storeItems.item__gst_percentage) / 2)
-                    elem.parents('.content_parent').find('.item_sgst_percentage').val(parseFloat(response.storeItems.item__gst_percentage) / 2)
                     elem.parents('.content_parent').find('.item_total_price').val(parseFloat(item_toal_price.toFixed(2)))
-                    elem.parents('.content_parent').find('.item_cgst_price').val(parseFloat((gst_price / 2).toFixed(2)))
-                    elem.parents('.content_parent').find('.item_sgst_price').val(parseFloat((gst_price / 2).toFixed(2)))
                 } else {
                     alert(response.message);
                 }
@@ -306,7 +254,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Quantity</label>
                                             <input type="text" class="form-control item_quantity" name="quantity[]"
@@ -321,44 +269,16 @@
                                                 readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Total Price</label>
                                             <input type="text" class="form-control item_total_price"
                                                 name="item_total_price[]" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label>CGST %</label>
-                                            <input type="text" class="form-control item_cgst_percentage"
-                                                name="cgst_percentage[]" readonly>
-                                        </div>
-                                    </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label>CGST Price</label>
-                                            <input type="text" class="form-control item_cgst_price"
-                                                name="item_cgst_price[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label>SGST %</label>
-                                            <input type="text" class="form-control item_sgst_percentage"
-                                                name="sgst_percentage[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>SGST Price</label>
-                                            <input type="text" class="form-control item_sgst_price"
-                                                name="item_sgst_price[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <button type="button" class="btn btn-sm btn-info mt-4 add_invoice_item_same">Add
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_invoice_item">Add
                                                 More Item</button>
                                         </div>
                                     </div>
@@ -403,7 +323,7 @@
                                         <input type="hidden" name="item_id[]" value="${response.data[index].item_id}">
                                         <input type="hidden" name="sales_details_id[]" value="${response.data[index].id}">
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Quantity</label>
                                             <input type="text" class="form-control item_quantity" name="quantity[]" max="${response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity}"
@@ -417,43 +337,19 @@
                                             <input type="text" value="${response.data[index].unit_price}" class="form-control item_unit_price" name="unit_price[]" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Total Price</label>
                                             <input type="text" class="form-control item_total_price" value="${(response.data[index].unit_price * (response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity)).toFixed(2)}" name="item_total_price[]" readonly>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label>CGST %</label>
-                                            <input type="text" value="${(response.data[index].item__gst_percentage / 2)}" class="form-control item_cgst_percentage" name="cgst_percentage[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>CGST Price</label>
-                                            <input type="text" class="form-control item_cgst_price" value="${((response.data[index].unit_price * (response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity)) * ((response.data[index].item__gst_percentage / 2) / 100)).toFixed(2)}" name="item_cgst_price[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label>SGST %</label>
-                                            <input type="text" value="${(response.data[index].item__gst_percentage / 2)}" class="form-control item_sgst_percentage" name="sgst_percentage[]" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>SGST Price</label>
-                                            <input type="text" class="form-control item_sgst_price" value="${((response.data[index].unit_price * (response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity)) * ((response.data[index].item__gst_percentage / 2) / 100)).toFixed(2)}" name="item_sgst_price[]" readonly>
-                                        </div>
-                                    </div>
                                     ${index == 0 ? `<div class="col-md-2">
                                         <div class="form-group">
-                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item_same">Remove</button>
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
                                         </div>
                                     </div>`: `<div class="col-md-2">
                                         <div class="form-group">
-                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item_same">Remove</button>
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
                                         </div>
                                     </div>`}
                                 </div>`;
@@ -473,15 +369,9 @@
         elem = $(this);
         item_quantity = elem.val();
         unit_price = elem.parents('.content_parent').find('.item_unit_price').val();
-        cgst_percentage = elem.parents('.content_parent').find('.item_cgst_percentage').val();
-        sgst_percentage = elem.parents('.content_parent').find('.item_sgst_percentage').val();
 
         toal_price = (item_quantity * unit_price);
-        cgst = toal_price * (cgst_percentage / 100)
-        sgst = toal_price * (sgst_percentage / 100)
         elem.parents('.content_parent').find('.item_total_price').val(toal_price.toFixed(2));
-        elem.parents('.content_parent').find('.item_cgst_price').val(cgst.toFixed(2));
-        elem.parents('.content_parent').find('.item_sgst_price').val(sgst.toFixed(2));
         calculateTotalAmount();
     });
 
@@ -494,16 +384,6 @@
         due_amount = parseFloat($("#due_amount").val());
         carrying_cost = $("#carrying_cost").val() != "" ? parseFloat($("#carrying_cost").val()) : 0;
         $('.item_total_price').each(function () {
-            if ($(this).val() != "") {
-                total_amount += parseFloat($(this).val());
-            }
-        });
-        $('.item_cgst_price').each(function () {
-            if ($(this).val() != "") {
-                total_amount += parseFloat($(this).val());
-            }
-        });
-        $('.item_sgst_price').each(function () {
             if ($(this).val() != "") {
                 total_amount += parseFloat($(this).val());
             }
