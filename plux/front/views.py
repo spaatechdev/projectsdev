@@ -103,8 +103,9 @@ def getInvoiceType(request):
     if request.method == "POST":
         context = {}
         customer_id = request.POST['customer_id']
+        invoice_type = request.POST['invoice_type']
         customer = models.Customer.objects.get(pk=customer_id)
-        if customer.gst_no is None:
+        if invoice_type != "gst":
             stores = models.StoreMaster.objects.filter(deleted=0)
             terms = models.StandardTermMaster.objects.filter(deleted=0)
             sales_orders = list(models.SalesOrderHeader.objects.filter(
@@ -133,9 +134,9 @@ def getInvoiceType(request):
                 due_amount = 0
                 for invoicePayment in invoicePayments:
                     due_amount += (invoicePayment.total_amount -
-                                invoicePayment.paid_amount)
+                                   invoicePayment.paid_amount)
                 context.update({'stores': stores, 'terms': terms,
-                            'sales_orders': sales_orders, 'due_amount': due_amount})
+                                'sales_orders': sales_orders, 'due_amount': due_amount})
                 return JsonResponse({
                     'code': 200,
                     'status': "SUCCESS",
@@ -150,8 +151,10 @@ def getInvoiceType(request):
                     customer_id=customer.id).exclude(status=3)
                 due_amount = 0
                 for invoicePayment in invoicePayments:
-                    due_amount += (invoicePayment.total_amount - invoicePayment.paid_amount)
-                context.update({'stores': stores, 'terms': terms, 'sales_orders': sales_orders, 'due_amount': due_amount})
+                    due_amount += (invoicePayment.total_amount -
+                                   invoicePayment.paid_amount)
+                context.update({'stores': stores, 'terms': terms,
+                               'sales_orders': sales_orders, 'due_amount': due_amount})
                 return JsonResponse({
                     'code': 200,
                     'status': "SUCCESS",
@@ -2099,12 +2102,14 @@ def invoiceList(request):
 
 
 @login_required
-def invoiceAdd(request):
+def invoiceAdd(request, invoice_type=None):
     context = {}
-    customers = models.Customer.objects.filter(deleted=0)
+    if invoice_type == 'gst':
+        customers = models.Customer.objects.filter(deleted=0).exclude(gst_no__isnull=True).exclude(gst_no__exact='')
+    else:
+        customers = models.Customer.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    terms = models.StandardTermMaster.objects.filter(deleted=0)
-    context.update({'customers': customers, 'stores': stores, 'terms': terms})
+    context.update({'customers': customers, 'stores': stores, 'invoice_type': invoice_type})
     if request.method == "POST":
         total_item_price = 0
         total_gst_price = 0
@@ -2114,7 +2119,8 @@ def invoiceAdd(request):
                 total_gst_price += Decimal(
                     request.POST.getlist('item_gst_price[]')[index])
             elif 'item_cgst_price[]' in request.POST.keys():
-                total_gst_price += Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])
+                total_gst_price += Decimal(request.POST.getlist('item_cgst_price[]')[
+                                           index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])
             else:
                 total_gst_price += 0
         invoice_count = models.InvoiceHeader.objects.filter(deleted=0).count()
@@ -2140,7 +2146,8 @@ def invoiceAdd(request):
                 order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist('item_total_price[]')[
                                      index], invoice_item_gst_value=(Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])), invoice_header_id=invoiceHeader.id))
             else:
-                order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist('item_total_price[]')[index], invoice_item_gst_value=0, invoice_header_id=invoiceHeader.id))
+                order_details.append(models.InvoiceDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=item, invoice_item_value=request.POST.getlist(
+                    'item_total_price[]')[index], invoice_item_gst_value=0, invoice_header_id=invoiceHeader.id))
         models.InvoiceDetails.objects.bulk_create(order_details)
         terms_list = []
         for index, item in enumerate(request.POST.getlist('terms[]')):
@@ -2169,7 +2176,8 @@ def invoiceAdd(request):
                 transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], unit_price=request.POST.getlist('unit_price[]')[index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=(
                     Decimal(request.POST.getlist('item_cgst_price[]')[index]) + Decimal(request.POST.getlist('item_sgst_price[]')[index])), gst_percentage=(Decimal(request.POST.getlist('cgst_percentage[]')[index]) + Decimal(request.POST.getlist('sgst_percentage[]')[index])), store_transaction_header_id=storeTransaction.id))
             else:
-                transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], unit_price=request.POST.getlist('unit_price[]')[index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=0, gst_percentage=0, store_transaction_header_id=storeTransaction.id))
+                transaction_order_details.append(models.StoreTransactionDetails(type_id=7, quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[
+                                                 index], unit_price=request.POST.getlist('unit_price[]')[index], amount=request.POST.getlist('item_total_price[]')[index], gst_price=0, gst_percentage=0, store_transaction_header_id=storeTransaction.id))
             storeItem = models.StoreItemMaster.objects.filter(item_id=request.POST.getlist(
                 'item_id[]')[index], store_id=request.POST['store']).first()
             if storeItem is None:

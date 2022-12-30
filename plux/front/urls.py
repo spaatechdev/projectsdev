@@ -110,6 +110,7 @@ urlpatterns = [
     path('onTransitOrderDetailsList/<int:header_id>', views.onTransitOrderDetailsList, name='onTransitOrderDetailsList'),
 
     path('invoiceList', views.invoiceList, name='invoiceList'),
+    path('invoiceAdd/<str:invoice_type>', views.invoiceAdd, name='invoiceAdd'),
     path('invoiceAdd', views.invoiceAdd, name='invoiceAdd'),
     path('invoiceDetailsList/<int:header_id>', views.invoiceDetailsList, name='invoiceDetailsList'),
     path('printInvoice/<int:header_id>', views.printInvoice, name='printInvoice'),
