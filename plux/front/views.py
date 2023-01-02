@@ -312,6 +312,7 @@ def forgot(request):
             index = math.floor(random.random() * 10)
             otp += str(digits[index])
         request.session['OTP'] = otp
+        request.session['FORGOT_EMAIL'] = request.POST['email']
         subject = 'OTP for Password Reset'
         message = otp
         email_from = settings.EMAIL_HOST_USER
@@ -339,6 +340,10 @@ def enter_otp(request):
 def password_reset(request):
     if request.method == "POST":
         if (request.POST['password'] == request.POST['confirmpassword']):
+            user = models.User.objects.get(email=request.session['FORGOT_EMAIL'])
+            user.pswd_token = request.POST['password']
+            user.password = make_password(request.POST['password'])
+            user.save()
             messages.success(request, "Passwords matched!!")
             return redirect('signin')
         else:
