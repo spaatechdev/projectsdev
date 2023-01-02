@@ -316,7 +316,7 @@ def forgot(request):
         message = otp
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [request.POST['email']]
-        # send_mail(subject, message, email_from, recipient_list)
+        send_mail(subject, message, email_from, recipient_list)
         return redirect('enter_otp')
     return render(request, "forgot_password.html")
 

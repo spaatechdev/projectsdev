@@ -39,7 +39,7 @@
                 </div>
                 <div class="col-md-10 mx-auto col-lg-5">
                     <form class="p-4 p-md-5 border rounded-3 bg-light" id="register_form" method="POST"
-                        action="{% url 'signup' %}">
+                        action="{% url 'enter_otp' %}">
                         {% csrf_token %}
                         {% if messages %}
                         {% for message in messages %}
