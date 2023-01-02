@@ -344,6 +344,10 @@ def password_reset(request):
             user.pswd_token = request.POST['password']
             user.password = make_password(request.POST['password'])
             user.save()
+            try:
+                del request.session
+            except:
+                pass
             messages.success(request, "Passwords matched!!")
             return redirect('signin')
         else:
