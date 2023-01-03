@@ -13,6 +13,8 @@ urlpatterns = [
     path('enter_otp/',views.enter_otp,name='enter_otp'),
     path('password_reset/',views.password_reset,name='password_reset'),
 
+    path('changePassword/',views.changePassword,name='changePassword'),
+
 
 
     path('customerList', views.customerList, name='customerList'),

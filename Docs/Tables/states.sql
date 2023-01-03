@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 13, 2022 at 02:50 PM
+-- Generation Time: Jan 03, 2023 at 12:04 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -77,7 +77,6 @@ INSERT INTO `states` (`id`, `name`, `country_id`) VALUES
 (37, 'Tripura', 101),
 (38, 'TEST', 101),
 (39, 'UP-1', 101),
-(40, 'xxxxxx', 101),
 (41, 'West Bengal', 101),
 (42, 'UP-2', 101);
 

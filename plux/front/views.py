@@ -9,7 +9,7 @@ from django.contrib import messages
 from front.backends import AuthBackend
 from . import models
 from datetime import datetime
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
@@ -27,6 +27,31 @@ env = environ.Env()
 environ.Env.read_env()
 
 # Create your views here.
+
+
+def changePassword(request):
+    if request.method == "POST":
+        email = request.POST['email']
+        password = request.POST['password']
+        newpassword = request.POST['newpassword']
+        renewpassword = request.POST['renewpassword']
+        user = models.User.objects.filter(email=email).first()
+        if user is None:
+            messages.error(request, 'User not found by this email.')
+            return redirect('myProfile')
+        if newpassword == renewpassword:
+            if check_password(password, user.password) == True:
+                user.pswd_token = newpassword
+                user.password = make_password(newpassword)
+                user.save()
+                messages.success(request, 'Passord Updated.')
+                return redirect('myProfile')
+            else:
+                messages.error(request, 'Wrong Password Provided.')
+                return redirect('myProfile')
+        else:
+            messages.error(request, 'Passwords do not match.')
+            return redirect('myProfile')
 
 
 def index(request):
@@ -348,7 +373,8 @@ def enter_otp(request):
 def password_reset(request):
     if request.method == "POST":
         if (request.POST['password'] == request.POST['confirmpassword']):
-            user = models.User.objects.get(email=request.session['FORGOT_EMAIL'])
+            user = models.User.objects.get(
+                email=request.session['FORGOT_EMAIL'])
             user.pswd_token = request.POST['password']
             user.password = make_password(request.POST['password'])
             user.save()
@@ -2122,11 +2148,13 @@ def invoiceList(request):
 def invoiceAdd(request, invoice_type=None):
     context = {}
     if invoice_type == 'gst':
-        customers = models.Customer.objects.filter(deleted=0).exclude(gst_no__isnull=True).exclude(gst_no__exact='')
+        customers = models.Customer.objects.filter(deleted=0).exclude(
+            gst_no__isnull=True).exclude(gst_no__exact='')
     else:
         customers = models.Customer.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    context.update({'customers': customers, 'stores': stores, 'invoice_type': invoice_type})
+    context.update({'customers': customers, 'stores': stores,
+                   'invoice_type': invoice_type})
     if request.method == "POST":
         total_item_price = 0
         total_gst_price = 0
