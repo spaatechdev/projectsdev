@@ -125,7 +125,6 @@ class SalesPerson(models.Model):
         Cities, related_name='CitySalesperson', on_delete=models.CASCADE, blank=True, null=True)
     pin = models.CharField(max_length=6, validators=[
                            RegexValidator('^[0-9]{6}$', _('Invalid Pin Number'))])
-    gst_no = models.CharField(max_length=16, blank=True, null=True)
     contact_no = models.CharField(max_length=40, blank=True, null=True)
     contact_name = models.CharField(max_length=40, blank=True, null=True)
     contact_email = models.CharField(max_length=100, blank=True, null=True)
