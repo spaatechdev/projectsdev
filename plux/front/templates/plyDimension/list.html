@@ -2,7 +2,16 @@
 {% load static %}
 
 {% block content %}
-<div class="content-wrapper">
+<div class="pagetitle">
+    <h1>Ply Dimension List</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item">Ply Dimension List</li>
+        </ol>
+    </nav>
+</div>
+<section class="section">
     <div class="row">
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
@@ -11,16 +20,16 @@
                         <div class="col-md-6">
                             <h4 class="card-title">Ply Dimensions</h4>
                         </div>
-                        <div class="col-md-3">
-                            <a href="{% url 'plyDimensionAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="{% url 'plyDimensionImport' %}" class="btn btn-primary btn-sm float-end">Import</a>
+                        <div class="col-md-6 mt-3">
+                            <div class="float-end">
+                                <a href="{% url 'plyDimensionAdd' %}" class="btn btn-primary btn-sm">Add</a>
+                                <a href="{% url 'plyDimensionImport' %}" class="btn btn-primary btn-sm">Import</a>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="table-responsive">
-                            <table class="table table-striped" id="dataTable">
+                            <table class="table table-striped datatable">
                                 <thead>
                                     <tr>
                                         <th>
@@ -88,7 +97,7 @@
                             </table>
                         </div>
                     </div>
-                    {% if plyDimensions.has_other_pages %}
+                    <!-- {% if plyDimensions.has_other_pages %}
                     <div class="float-end">
                         <ul class="pagination">
                             {% if plyDimensions.has_previous %}
@@ -110,27 +119,13 @@
                             {% endif %}
                         </ul>
                     </div>
-                    {% endif %}
+                    {% endif %} -->
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
 
 {% block js %}
-<script>
-    $(document).ready(function () {
-        $('#dataTable').dataTable({
-            "paginate": true,
-            "sort": true,
-            "language": {
-                "emptyTable": "No Data Is Available."
-            },
-            "order": [
-                [0, "desc"]
-            ],
-        });
-    });
-</script>
 {% endblock %}

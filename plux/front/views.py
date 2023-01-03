@@ -306,18 +306,27 @@ def signin(request):
 
 def forgot(request):
     if request.method == "POST":
-        digits = [i for i in range(0, 10)]
-        otp = ""
-        for i in range(6):
-            index = math.floor(random.random() * 10)
-            otp += str(digits[index])
-        request.session['OTP'] = otp
-        subject = 'OTP for Password Reset'
-        message = otp
-        email_from = settings.EMAIL_HOST_USER
-        recipient_list = [request.POST['email']]
-        send_mail(subject, message, email_from, recipient_list)
-        return redirect('enter_otp')
+        email = request.POST['email']
+        user = models.User.objects.filter(email=email).first()
+        if user is not None:
+            digits = [i for i in range(0, 10)]
+            otp = ""
+            for i in range(6):
+                index = math.floor(random.random() * 10)
+                otp += str(digits[index])
+            request.session['OTP'] = otp
+            request.session['FORGOT_EMAIL'] = email
+            subject = 'OTP for Password Reset'
+            message = otp
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [request.POST['email']]
+            print(request.session['OTP'])
+            print(request.session['FORGOT_EMAIL'])
+            # send_mail(subject, message, email_from, recipient_list)
+            return redirect('enter_otp')
+        else:
+            messages.error(request, 'User not found by this email.')
+            return redirect('forgot')
     return render(request, "forgot_password.html")
 
 
@@ -339,7 +348,15 @@ def enter_otp(request):
 def password_reset(request):
     if request.method == "POST":
         if (request.POST['password'] == request.POST['confirmpassword']):
-            messages.success(request, "Passwords matched!!")
+            user = models.User.objects.get(email=request.session['FORGOT_EMAIL'])
+            user.pswd_token = request.POST['password']
+            user.password = make_password(request.POST['password'])
+            user.save()
+            try:
+                del request.session
+            except:
+                pass
+            messages.success(request, "Password updated!!")
             return redirect('signin')
         else:
             messages.error(request, "Passwords do not match")
@@ -409,8 +426,8 @@ def myProfile(request):
 def customerList(request):
     page = request.GET.get('page', 1)
     customers = models.Customer.objects.filter(deleted=0)
-    paginator = Paginator(customers, env("PER_PAGE_DATA"))
-    customers = paginator.page(page)
+    # paginator = Paginator(customers, env("PER_PAGE_DATA"))
+    # customers = paginator.page(page)
     context = {'customers': customers}
     return render(request, 'customer/list.html', context)
 
@@ -530,8 +547,8 @@ def downloadCustomerExcel(request):
 def salespersonList(request):
     page = request.GET.get('page', 1)
     salespersons = models.SalesPerson.objects.filter(deleted=0)
-    paginator = Paginator(salespersons, env("PER_PAGE_DATA"))
-    salespersons = paginator.page(page)
+    # paginator = Paginator(salespersons, env("PER_PAGE_DATA"))
+    # salespersons = paginator.page(page)
     context = {'salespersons': salespersons}
     return render(request, 'salesperson/list.html', context)
 
@@ -651,8 +668,8 @@ def downloadSalespersonExcel(request):
 def userList(request):
     page = request.GET.get('page', 1)
     users = models.User.objects.all()
-    paginator = Paginator(users, env("PER_PAGE_DATA"))
-    users = paginator.page(page)
+    # paginator = Paginator(users, env("PER_PAGE_DATA"))
+    # users = paginator.page(page)
     context = {'users': users}
     return render(request, 'user/list.html', context)
 
@@ -661,8 +678,8 @@ def userList(request):
 def vendorList(request):
     page = request.GET.get('page', 1)
     vendors = models.VendorMaster.objects.filter(deleted=0)
-    paginator = Paginator(vendors, env("PER_PAGE_DATA"))
-    vendors = paginator.page(page)
+    # paginator = Paginator(vendors, env("PER_PAGE_DATA"))
+    # vendors = paginator.page(page)
     context = {'vendors': vendors}
     return render(request, 'vendor/list.html', context)
 
@@ -782,8 +799,8 @@ def downloadVendorExcel(request):
 def storeList(request):
     page = request.GET.get('page', 1)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    paginator = Paginator(stores, env("PER_PAGE_DATA"))
-    stores = paginator.page(page)
+    # paginator = Paginator(stores, env("PER_PAGE_DATA"))
+    # stores = paginator.page(page)
     context = {'stores': stores}
     return render(request, 'store/list.html', context)
 
@@ -941,8 +958,8 @@ def getCitiesByState(request):
 def uomList(request):
     page = request.GET.get('page', 1)
     uoms = models.UomMaster.objects.filter(deleted=0)
-    paginator = Paginator(uoms, env("PER_PAGE_DATA"))
-    uoms = paginator.page(page)
+    # paginator = Paginator(uoms, env("PER_PAGE_DATA"))
+    # uoms = paginator.page(page)
     context = {'uoms': uoms}
     return render(request, 'uom/list.html', context)
 
@@ -1024,8 +1041,8 @@ def downloadUomExcel(request):
 def itemCategoryList(request):
     page = request.GET.get('page', 1)
     itemCategories = models.ItemCtegory.objects.filter(deleted=0)
-    paginator = Paginator(itemCategories, env("PER_PAGE_DATA"))
-    itemCategories = paginator.page(page)
+    # paginator = Paginator(itemCategories, env("PER_PAGE_DATA"))
+    # itemCategories = paginator.page(page)
     context = {'itemCategories': itemCategories}
     return render(request, 'itemCategory/list.html', context)
 
@@ -1107,8 +1124,8 @@ def downloaditemCategoryExcel(request):
 def plyDimensionList(request):
     page = request.GET.get('page', 1)
     plyDimensions = models.PlyDimensionMaster.objects.filter(deleted=0)
-    paginator = Paginator(plyDimensions, env("PER_PAGE_DATA"))
-    plyDimensions = paginator.page(page)
+    # paginator = Paginator(plyDimensions, env("PER_PAGE_DATA"))
+    # plyDimensions = paginator.page(page)
     context = {'plyDimensions': plyDimensions}
     return render(request, 'plyDimension/list.html', context)
 
@@ -1208,8 +1225,8 @@ def downloadplyDimensionExcel(request):
 def itemList(request):
     page = request.GET.get('page', 1)
     items = models.ItemMaster.objects.filter(deleted=0)
-    paginator = Paginator(items, env("PER_PAGE_DATA"))
-    items = paginator.page(page)
+    # paginator = Paginator(items, env("PER_PAGE_DATA"))
+    # items = paginator.page(page)
     context = {'items': items}
     return render(request, 'item/list.html', context)
 
@@ -1340,8 +1357,8 @@ def downloadItemExcel(request):
 def storeItemList(request):
     page = request.GET.get('page', 1)
     storeItems = models.StoreItemMaster.objects.filter(deleted=0)
-    paginator = Paginator(storeItems, env("PER_PAGE_DATA"))
-    storeItems = paginator.page(page)
+    # paginator = Paginator(storeItems, env("PER_PAGE_DATA"))
+    # storeItems = paginator.page(page)
     context = {'storeItems': storeItems}
     return render(request, 'storeItem/list.html', context)
 
@@ -1452,8 +1469,8 @@ def downloadstoreItemExcel(request):
 def purchaseOrderList(request):
     page = request.GET.get('page', 1)
     purchaseOrders = models.PurchaseOrderHeader.objects.filter(deleted=0)
-    paginator = Paginator(purchaseOrders, env("PER_PAGE_DATA"))
-    purchaseOrders = paginator.page(page)
+    # paginator = Paginator(purchaseOrders, env("PER_PAGE_DATA"))
+    # purchaseOrders = paginator.page(page)
     context = {'purchaseOrders': purchaseOrders}
     return render(request, 'purchaseOrder/list.html', context)
 
@@ -1539,8 +1556,8 @@ def purchaseOrderDetailsList(request, header_id):
 def salesOrderList(request):
     page = request.GET.get('page', 1)
     salesOrders = models.SalesOrderHeader.objects.filter(deleted=0)
-    paginator = Paginator(salesOrders, env("PER_PAGE_DATA"))
-    salesOrders = paginator.page(page)
+    # paginator = Paginator(salesOrders, env("PER_PAGE_DATA"))
+    # salesOrders = paginator.page(page)
     context = {'salesOrders': salesOrders}
     return render(request, 'salesOrder/list.html', context)
 
@@ -1633,8 +1650,8 @@ def salesOrderDetailsList(request, header_id):
 def storeTransactionList(request):
     page = request.GET.get('page', 1)
     storeTransactions = models.StoreTransactionHeader.objects.filter(deleted=0)
-    paginator = Paginator(storeTransactions, env("PER_PAGE_DATA"))
-    storeTransactions = paginator.page(page)
+    # paginator = Paginator(storeTransactions, env("PER_PAGE_DATA"))
+    # storeTransactions = paginator.page(page)
     context = {'storeTransactions': storeTransactions}
     return render(request, 'storeTransaction/list.html', context)
 
@@ -2030,8 +2047,8 @@ def getSalesOrderDetails(request):
 def standardTermList(request):
     page = request.GET.get('page', 1)
     standardTerms = models.StandardTermMaster.objects.filter(deleted=0)
-    paginator = Paginator(standardTerms, env("PER_PAGE_DATA"))
-    standardTerms = paginator.page(page)
+    # paginator = Paginator(standardTerms, env("PER_PAGE_DATA"))
+    # standardTerms = paginator.page(page)
     context = {'standardTerms': standardTerms}
     return render(request, 'standardTerm/list.html', context)
 
@@ -2076,8 +2093,8 @@ def onTransitOrderList(request):
     page = request.GET.get('page', 1)
     onTransitOrders = models.OnTransitHeader.objects.filter(
         deleted=0).exclude(status=3)
-    paginator = Paginator(onTransitOrders, env("PER_PAGE_DATA"))
-    onTransitOrders = paginator.page(page)
+    # paginator = Paginator(onTransitOrders, env("PER_PAGE_DATA"))
+    # onTransitOrders = paginator.page(page)
     context = {'onTransitOrders': onTransitOrders}
     return render(request, 'onTransitOrder/list.html', context)
 
@@ -2095,8 +2112,8 @@ def onTransitOrderDetailsList(request, header_id):
 def invoiceList(request):
     page = request.GET.get('page', 1)
     invoices = models.InvoiceHeader.objects.filter(deleted=0)
-    paginator = Paginator(invoices, env("PER_PAGE_DATA"))
-    invoices = paginator.page(page)
+    # paginator = Paginator(invoices, env("PER_PAGE_DATA"))
+    # invoices = paginator.page(page)
     context = {'invoices': invoices}
     return render(request, 'invoice/list.html', context)
 
@@ -2260,8 +2277,8 @@ def printInvoice(request, header_id):
 def pendingInvoiceList(request):
     page = request.GET.get('page', 1)
     invoices = models.InvoiceHeader.objects.filter(deleted=0).exclude(status=3)
-    paginator = Paginator(invoices, env("PER_PAGE_DATA"))
-    invoices = paginator.page(page)
+    # paginator = Paginator(invoices, env("PER_PAGE_DATA"))
+    # invoices = paginator.page(page)
     context = {'invoices': invoices}
     return render(request, 'pendingInvoice/list.html', context)
 
