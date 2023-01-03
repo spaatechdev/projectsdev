@@ -90,7 +90,7 @@ DATABASES = {
     # }
 
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': env("DATABASE_ENGINE"),
         'NAME': env("DATABASE_NAME"),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
