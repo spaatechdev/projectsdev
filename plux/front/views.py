@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from front.backends import AuthBackend
 from . import models
+from django.db.models import Count
 from datetime import datetime
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import JsonResponse
@@ -439,6 +440,12 @@ def signout(request):
 @login_required
 def dashboard(request):
     context = {}
+    top_5_selling_items = models.InvoiceDetails.objects.values('item_id').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
+    top_5_item_ids = []
+    for i in top_5_selling_items:
+        top_5_item_ids.append(i['item_id'])
+    top_5_items = models.ItemMaster.objects.filter(id__in=top_5_item_ids)
+    context.update({'top_5_items': top_5_items})
     return render(request, 'dashboard.html', context)
 
 
