@@ -16,6 +16,7 @@ from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 import environ
 import os
+import json
 from plux.settings import MEDIA_ROOT
 from plux import settings
 from django.core.files.storage import FileSystemStorage
@@ -437,15 +438,20 @@ def signout(request):
     return redirect('signin')
 
 
+def top5Selling(request):
+    top_5_selling_items = models.InvoiceDetails.objects.values('item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
+    top_5_items = []
+    for elem in top_5_selling_items:
+        single_row = {}
+        single_row['name'] = elem['item__description']
+        single_row['y'] = elem['item_count']
+        top_5_items.append(single_row)
+    return JsonResponse({'top_5_items': top_5_items})
+
+
 @login_required
 def dashboard(request):
     context = {}
-    top_5_selling_items = models.InvoiceDetails.objects.values('item_id').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
-    top_5_item_ids = []
-    for i in top_5_selling_items:
-        top_5_item_ids.append(i['item_id'])
-    top_5_items = models.ItemMaster.objects.filter(id__in=top_5_item_ids)
-    context.update({'top_5_items': top_5_items})
     return render(request, 'dashboard.html', context)
 
 
