@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from front.backends import AuthBackend
 from . import models
+from django.db.models import Count
 from datetime import datetime
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import JsonResponse
@@ -15,6 +16,7 @@ from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 import environ
 import os
+import json
 from plux.settings import MEDIA_ROOT
 from plux import settings
 from django.core.files.storage import FileSystemStorage
@@ -436,6 +438,17 @@ def signout(request):
     return redirect('signin')
 
 
+def top5Selling(request):
+    top_5_selling_items = models.InvoiceDetails.objects.values('item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
+    top_5_items = []
+    for elem in top_5_selling_items:
+        single_row = {}
+        single_row['name'] = elem['item__description']
+        single_row['y'] = elem['item_count']
+        top_5_items.append(single_row)
+    return JsonResponse({'top_5_items': top_5_items})
+
+
 @login_required
 def dashboard(request):
     context = {}
@@ -590,7 +603,6 @@ def salespersonAdd(request):
         salesperson.address_1 = request.POST['address_1']
         salesperson.address_2 = request.POST['address_2']
         salesperson.pin = request.POST['pin']
-        salesperson.gst_no = request.POST['gst_no']
         salesperson.contact_no = request.POST['contact_no']
         salesperson.contact_name = request.POST['contact_name']
         salesperson.contact_email = request.POST['contact_email']
@@ -615,7 +627,6 @@ def salespersonEdit(request, id):
         salesperson.address_1 = request.POST['address_1']
         salesperson.address_2 = request.POST['address_2']
         salesperson.pin = request.POST['pin']
-        salesperson.gst_no = request.POST['gst_no']
         salesperson.contact_no = request.POST['contact_no']
         salesperson.contact_name = request.POST['contact_name']
         salesperson.contact_email = request.POST['contact_email']
@@ -667,8 +678,7 @@ def salespersonImport(request):
                     salesperson_email_qs = models.SalesPerson.objects.filter(
                         contact_email=row['Contact Email'])
                     if (not salesperson_email_qs.exists()):
-                        salesperson_list.append(models.SalesPerson(salesperson_name=row['Salesperson Name'], address_1=row['Address 1'], address_2=row['Address 2'], gst_no=row['GST Number'], contact_no=row[
-                            'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                        salesperson_list.append(models.SalesPerson(salesperson_name=row['Salesperson Name'], address_1=row['Address 1'], address_2=row['Address 2'], contact_no=row['Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
                 models.SalesPerson.objects.bulk_create(salesperson_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
