@@ -1,0 +1,393 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="with_sales_order">With/Without Sales Order</label>
+            <select name="with_sales_order" id="with_sales_order" required class="form-control">
+                {% if sales_orders|length > 0 %}
+                <option value="1" {% if sales_orders|length > 0 %} selected {% endif %}>With Sales Order</option>
+                {% endif %}
+                <option value="0" {% if sales_orders|length <= 0 %} selected {% endif %}>Without Sales Order</option>
+            </select>
+        </div>
+    </div>
+    {% if sales_orders|length > 0 %}
+    <div class="col-md-6">
+        <div class="form-group sales_order_type_content">
+            <label for="sales_order_header_id">Sales Order Reference</label>
+            <select name="sales_order_header_id" id="sales_order_header_id" required class="form-control">
+                <option value="">Select Sales Order</option>
+                {% for sales_order in sales_orders %}
+                <option value="{{sales_order.id}}">{{sales_order.sales_order_no}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="vehicle_number">Vehicle Number</label>
+            <input type="text" name="vehicle_number" id="vehicle_number" required style="text-transform: uppercase"
+                class="form-control">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="terms">Terms</label>
+            <select name="terms[]" id="terms" class="selectpicker form-control" required multiple="multiple"
+                data-live-search="true">
+                {% for term in terms %}
+                <option value="{{term.id}}">{{term.description}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="carrying_cost">Carrying Cost</label>
+            <input type="text" name="carrying_cost" id="carrying_cost" class="form-control" required
+                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+        </div>
+    </div>
+</div>
+<div class="sales_order_details">
+    <div class="row content_parent">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Item</label>
+                <select name="item_id[]" class="form-control invoice_store_item" required>
+                    <option value="">Select Item</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="text" class="form-control item_quantity" name="quantity[]" required min="1"
+                    onkeyup="checkMaxMin(this)"
+                    onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Unit Price</label>
+                <input type="text" class="form-control item_unit_price" name="unit_price[]" readonly>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>Total Price</label>
+                <input type="text" class="form-control item_total_price" name="item_total_price[]" readonly>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <button type="button" class="btn btn-sm btn-info mt-4 add_invoice_item">Add
+                    More Item</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="add_more_content">
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="due_amount">Due Amount</label>
+            <input type="text" name="due_amount" class="form-control" id="due_amount" required
+                placeholder="Due Amount" readonly value="{{due_amount}}"
+                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="total_amount">Total Amount</label>
+            <input type="text" name="total_amount" class="form-control" id="total_amount" required
+                placeholder="Total Amount" readonly value="{{due_amount}}"
+                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+        </div>
+    </div>
+</div>
+<script>
+    var item_count = 0;
+    
+    $('.selectpicker').select2({
+        placeholder: 'Select Terms'
+    });
+
+    $(document).on('click', '.add_invoice_item', function () {
+        if (item_count == 0) {
+            alert("Please Choose Store First");
+            return true;
+        }
+        if ($('.content_parent').length < item_count) {
+            $('.add_more_content').append(`<div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control invoice_store_item" required>
+                                                <option value="">Select Item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                required min="1" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" class="form-control item_unit_price" name="unit_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Total Price</label>
+                                            <input type="text" class="form-control item_total_price" name="item_total_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>`);
+            showItemsByStore();
+        } else {
+            alert("Store Items Limit Reached");
+        }
+    });
+
+    $(document).on('click', '.remove_invoice_item', function () {
+        if ($(this).parents().find('.content_parent').length > 1) {
+            $(this).parents().closest('.content_parent').remove();
+        } else {
+            alert("You must submit one of the items in an Invoice Order.")
+        }
+        calculateTotalAmount();
+    });
+
+    $(document).on('change', '#store', function () {
+        $("#sales_order_header_id").val("");
+        showItemsByStore();
+        calculateTotalAmount();
+    });
+
+    function showItemsByStore() {
+        let store_from_id = $('#store').val();
+        $.ajax({
+            url: "{% url 'getExceptStores' %}",
+            type: 'post',
+            data: ({ store_from_id: store_from_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    item_count = response.storeItems.length;
+                    var store_item_text = `<option value="">Select Item</option>`;
+                    for (let index = 0; index < response.storeItems.length; index++) {
+                        store_item_text += `<option value="${response.storeItems[index].item_id}">${response.storeItems[index].item__description}</option>`;
+                    }
+                    $(".invoice_store_item").html(store_item_text);
+                    if (item_count == 0) {
+                        $('.add_more_content').html(``);
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    }
+
+    $(document).on('change', '.invoice_store_item', function () {
+        elem = $(this);
+        store_from_id = $("#store").val();
+        store_item = $(this).val();
+        $.ajax({
+            url: "{% url 'getItemsDetailsByStore' %}",
+            type: 'post',
+            data: ({ store_from_id: store_from_id, store_item: store_item }),
+            success: function (response) {
+                if (response.code == 200) {
+                    item_toal_price = (response.storeItems.on_hand_qty * response.storeItems.item__unit_price);
+                    elem.parents('.content_parent').find('.item_quantity').attr('max', parseFloat(response.storeItems.on_hand_qty))
+                    elem.parents('.content_parent').find('.item_quantity').val(parseFloat(response.storeItems.on_hand_qty))
+                    elem.parents('.content_parent').find('.item_unit_price').val(parseFloat(response.storeItems.item__unit_price))
+                    elem.parents('.content_parent').find('.item_total_price').val(parseFloat(item_toal_price.toFixed(2)))
+                } else {
+                    alert(response.message);
+                }
+                calculateTotalAmount();
+            },
+        });
+    });
+
+    function checkMaxMin(element) {
+        if (parseFloat($(element).attr('max')) < parseFloat($(element).val())) {
+            $(element).val($(element).attr('max'));
+        }
+        if (parseFloat($(element).attr('min')) > parseFloat($(element).val())) {
+            $(element).val($(element).attr('min'));
+        }
+        calculateTotalAmount();
+    }
+
+    $(document).on('change', '#with_sales_order', function () {
+        sales_order_type = $(this).val();
+        if (parseFloat(sales_order_type) == 1) {
+            $('.sales_order_type_content').show();
+            $('#sales_order_header_id').attr('required', 'required');
+        } else {
+            $('.sales_order_type_content').hide();
+            $('#sales_order_header_id').removeAttr('required');
+            sales_details = `<div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control invoice_store_item" required>
+                                                <option value="">Select Item</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                required min="1" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" class="form-control item_unit_price" name="unit_price[]"
+                                                readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Total Price</label>
+                                            <input type="text" class="form-control item_total_price"
+                                                name="item_total_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_invoice_item">Add
+                                                More Item</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+            $(".sales_order_details").html(sales_details);
+        }
+        calculateTotalAmount();
+    });
+
+    $(document).on('change', '#sales_order_header_id', function () {
+        let store_id = $("#store").val();
+        if (store_id == undefined || store_id == "") {
+            alert("Please Choose Store First");
+            $(this).val("");
+            return true;
+        }
+        let sales_order_header_id = $(this).val();
+        if (sales_order_header_id != "") {
+            $("#with_sales_order").val(1);
+        }
+        $.ajax({
+            url: "{% url 'getSalesOrderDetails' %}",
+            type: 'post',
+            data: ({ sales_order_header_id: sales_order_header_id, store_id: store_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    var sales_details = ``;
+                    for (let index = 0; index < response.data.length; index++) {
+                        if ((response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity) > 0) {
+                            if (response.data[index].store_quantity < (response.data[index].quantity - response.data[index].delivered_quantity)) {
+                                sales_details += `<span class="text-danger">This Sales Order requires ${parseFloat(response.data[index].quantity - response.data[index].delivered_quantity)} quantity but this store has only ${parseFloat(response.data[index].store_quantity)} quantity</span>`
+                            }
+                            sales_details += `<div class="row content_parent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control invoice_store_item" required disabled>
+                                                <option value="">Select Item</option>
+                                                ${response.items.map((item) => `<option ${item.id == response.data[index].item_id ? "selected" : ""} value="${item.id}">${item.description}</option>`)}
+                                            </select>
+                                        </div>
+                                        <input type="hidden" name="item_id[]" value="${response.data[index].item_id}">
+                                        <input type="hidden" name="sales_details_id[]" value="${response.data[index].id}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]" max="${response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity}"
+                                                required value="${response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity}" min="1" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Unit Price</label>
+                                            <input type="text" value="${response.data[index].unit_price}" class="form-control item_unit_price" name="unit_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Total Price</label>
+                                            <input type="text" class="form-control item_total_price" value="${(response.data[index].unit_price * (response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity)).toFixed(2)}" name="item_total_price[]" readonly>
+                                        </div>
+                                    </div>
+                                    ${index == 0 ? `<div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
+                                        </div>
+                                    </div>`: `<div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_invoice_item">Remove</button>
+                                        </div>
+                                    </div>`}
+                                </div>`;
+                        }
+                    }
+                    $(".sales_order_details").html(sales_details);
+                    $(".add_more_content").html(``);
+                } else {
+                    alert(response.message);
+                }
+                calculateTotalAmount();
+            },
+        });
+    });
+
+    $(document).on('keyup', '.item_quantity', function () {
+        elem = $(this);
+        item_quantity = elem.val();
+        unit_price = elem.parents('.content_parent').find('.item_unit_price').val();
+
+        toal_price = (item_quantity * unit_price);
+        elem.parents('.content_parent').find('.item_total_price').val(toal_price.toFixed(2));
+        calculateTotalAmount();
+    });
+
+    $(document).on('keyup', '#carrying_cost', function () {
+        calculateTotalAmount();
+    })
+
+    function calculateTotalAmount() {
+        total_amount = 0;
+        due_amount = parseFloat($("#due_amount").val());
+        carrying_cost = $("#carrying_cost").val() != "" ? parseFloat($("#carrying_cost").val()) : 0;
+        $('.item_total_price').each(function () {
+            if ($(this).val() != "") {
+                total_amount += parseFloat($(this).val());
+            }
+        });
+        $("#total_amount").val((total_amount + due_amount + carrying_cost).toFixed(2));
+    }
+</script>

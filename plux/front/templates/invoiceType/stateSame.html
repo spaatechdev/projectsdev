@@ -117,7 +117,24 @@
 </div>
 <div class="add_more_content">
 </div>
-
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="due_amount">Due Amount</label>
+            <input type="text" name="due_amount" class="form-control" id="due_amount" required
+                placeholder="Due Amount" readonly value="{{due_amount}}"
+                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="total_amount">Total Amount</label>
+            <input type="text" name="total_amount" class="form-control" id="total_amount" required
+                placeholder="Total Amount" readonly value="{{due_amount}}"
+                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+        </div>
+    </div>
+</div>
 <script>
     var item_count = 0;
     
@@ -199,10 +216,10 @@
     $(document).on('click', '.remove_invoice_item_same', function () {
         if ($(this).parents().find('.content_parent').length > 1) {
             $(this).parents().closest('.content_parent').remove();
-            calculateTotalAmount();
         } else {
             alert("You must submit one of the items in an Invoice Order.")
         }
+        calculateTotalAmount();
     });
 
     $(document).on('change', '#store', function () {
@@ -246,33 +263,35 @@
                 if (response.code == 200) {
                     item_toal_price = (response.storeItems.on_hand_qty * response.storeItems.item__unit_price);
                     gst_price = item_toal_price * (response.storeItems.item__gst_percentage / 100)
-                    elem.parents('.content_parent').find('.item_quantity').attr('max', parseInt(response.storeItems.on_hand_qty))
-                    elem.parents('.content_parent').find('.item_quantity').val(parseInt(response.storeItems.on_hand_qty))
-                    elem.parents('.content_parent').find('.item_unit_price').val(parseInt(response.storeItems.item__unit_price))
-                    elem.parents('.content_parent').find('.item_cgst_percentage').val(parseInt(response.storeItems.item__gst_percentage) / 2)
-                    elem.parents('.content_parent').find('.item_sgst_percentage').val(parseInt(response.storeItems.item__gst_percentage) / 2)
-                    elem.parents('.content_parent').find('.item_total_price').val(parseInt(item_toal_price.toFixed(2)))
-                    elem.parents('.content_parent').find('.item_cgst_price').val(parseInt((gst_price / 2).toFixed(2)))
-                    elem.parents('.content_parent').find('.item_sgst_price').val(parseInt((gst_price / 2).toFixed(2)))
+                    elem.parents('.content_parent').find('.item_quantity').attr('max', parseFloat(response.storeItems.on_hand_qty))
+                    elem.parents('.content_parent').find('.item_quantity').val(parseFloat(response.storeItems.on_hand_qty))
+                    elem.parents('.content_parent').find('.item_unit_price').val(parseFloat(response.storeItems.item__unit_price))
+                    elem.parents('.content_parent').find('.item_cgst_percentage').val(parseFloat(response.storeItems.item__gst_percentage) / 2)
+                    elem.parents('.content_parent').find('.item_sgst_percentage').val(parseFloat(response.storeItems.item__gst_percentage) / 2)
+                    elem.parents('.content_parent').find('.item_total_price').val(parseFloat(item_toal_price.toFixed(2)))
+                    elem.parents('.content_parent').find('.item_cgst_price').val(parseFloat((gst_price / 2).toFixed(2)))
+                    elem.parents('.content_parent').find('.item_sgst_price').val(parseFloat((gst_price / 2).toFixed(2)))
                 } else {
                     alert(response.message);
                 }
+                calculateTotalAmount();
             },
         });
     });
 
     function checkMaxMin(element) {
-        if (parseInt($(element).attr('max')) < parseInt($(element).val())) {
+        if (parseFloat($(element).attr('max')) < parseFloat($(element).val())) {
             $(element).val($(element).attr('max'));
         }
-        if (parseInt($(element).attr('min')) > parseInt($(element).val())) {
+        if (parseFloat($(element).attr('min')) > parseFloat($(element).val())) {
             $(element).val($(element).attr('min'));
         }
+        calculateTotalAmount();
     }
 
     $(document).on('change', '#with_sales_order', function () {
         sales_order_type = $(this).val();
-        if (parseInt(sales_order_type) == 1) {
+        if (parseFloat(sales_order_type) == 1) {
             $('.sales_order_type_content').show();
             $('#sales_order_header_id').attr('required', 'required');
         } else {
@@ -346,6 +365,7 @@
                                 </div>`;
             $(".sales_order_details").html(sales_details);
         }
+        calculateTotalAmount();
     });
 
     $(document).on('change', '#sales_order_header_id', function () {
@@ -369,7 +389,7 @@
                     for (let index = 0; index < response.data.length; index++) {
                         if ((response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity) > 0) {
                             if (response.data[index].store_quantity < (response.data[index].quantity - response.data[index].delivered_quantity)) {
-                                sales_details += `<span class="text-danger">This Sales Order requires ${parseInt(response.data[index].quantity - response.data[index].delivered_quantity)} quantity but this store has only ${parseInt(response.data[index].store_quantity)} quantity</span>`
+                                sales_details += `<span class="text-danger">This Sales Order requires ${parseFloat(response.data[index].quantity - response.data[index].delivered_quantity)} quantity but this store has only ${parseFloat(response.data[index].store_quantity)} quantity</span>`
                             }
                             sales_details += `<div class="row content_parent">
                                     <div class="col-md-3">
@@ -444,6 +464,7 @@
                 } else {
                     alert(response.message);
                 }
+                calculateTotalAmount();
             },
         });
     });
@@ -461,5 +482,32 @@
         elem.parents('.content_parent').find('.item_total_price').val(toal_price.toFixed(2));
         elem.parents('.content_parent').find('.item_cgst_price').val(cgst.toFixed(2));
         elem.parents('.content_parent').find('.item_sgst_price').val(sgst.toFixed(2));
+        calculateTotalAmount();
     });
+
+    $(document).on('keyup', '#carrying_cost', function () {
+        calculateTotalAmount();
+    })
+
+    function calculateTotalAmount() {
+        total_amount = 0;
+        due_amount = parseFloat($("#due_amount").val());
+        carrying_cost = $("#carrying_cost").val() != "" ? parseFloat($("#carrying_cost").val()) : 0;
+        $('.item_total_price').each(function () {
+            if ($(this).val() != "") {
+                total_amount += parseFloat($(this).val());
+            }
+        });
+        $('.item_cgst_price').each(function () {
+            if ($(this).val() != "") {
+                total_amount += parseFloat($(this).val());
+            }
+        });
+        $('.item_sgst_price').each(function () {
+            if ($(this).val() != "") {
+                total_amount += parseFloat($(this).val());
+            }
+        });
+        $("#total_amount").val((total_amount + due_amount + carrying_cost).toFixed(2));
+    }
 </script>

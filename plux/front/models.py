@@ -125,7 +125,6 @@ class SalesPerson(models.Model):
         Cities, related_name='CitySalesperson', on_delete=models.CASCADE, blank=True, null=True)
     pin = models.CharField(max_length=6, validators=[
                            RegexValidator('^[0-9]{6}$', _('Invalid Pin Number'))])
-    gst_no = models.CharField(max_length=16, blank=True, null=True)
     contact_no = models.CharField(max_length=40, blank=True, null=True)
     contact_name = models.CharField(max_length=40, blank=True, null=True)
     contact_email = models.CharField(max_length=100, blank=True, null=True)
@@ -206,8 +205,10 @@ class ItemMaster(models.Model):
         db_table = 'item_master'
         verbose_name_plural = 'item_master'
 
+
 class ItemAttributes(models.Model):
-    item = models.ForeignKey(ItemMaster, on_delete=models.CASCADE, blank=True, null=True)
+    item = models.ForeignKey(
+        ItemMaster, on_delete=models.CASCADE, blank=True, null=True)
     attribute_name = models.CharField(max_length=30, blank=True, null=True)
     attribute_value = models.TextField(blank=True, null=True)
 
@@ -377,10 +378,13 @@ class SalesOrderHeader(models.Model):
     sales_order_date = models.DateField(blank=True, null=True)
     sales_person = models.ForeignKey(
         SalesPerson, on_delete=models.CASCADE, blank=True, null=True)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    commission = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    commission = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
     status = models.IntegerField(default=1)
     deleted = models.BooleanField(default=0)
 
@@ -513,9 +517,18 @@ class InvoiceHeader(models.Model):
     invoice_number = models.CharField(max_length=15, blank=True, null=True)
     vehicle_number = models.CharField(max_length=15, blank=True, null=True)
     invoice_date = models.DateField(blank=True, null=True)
-    invoice_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    invoice_gst_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    carrying_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    invoice_total = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    invoice_gst_total = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    carrying_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    due_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    paid_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
     status = models.SmallIntegerField(default=1)
     deleted = models.BooleanField(default=0)
 
@@ -557,7 +570,7 @@ class InvoiceTerms(models.Model):
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
-        return self.invoice_header.invoice_number + " " +  self.term.description
+        return self.invoice_header.invoice_number + " " + self.term.description
 
     class Meta:
         managed = True
@@ -565,11 +578,39 @@ class InvoiceTerms(models.Model):
         verbose_name_plural = 'invoice_terms'
 
 
+class PaymentMethods(models.Model):
+    name = models.CharField(max_length=100, blank=True, null=True)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        managed = True
+        db_table = 'payment_methods'
+        verbose_name_plural = 'payment_methods'
+
+
 class InvoicePayments(models.Model):
-    invoice_header = models.ForeignKey(InvoiceHeader, on_delete=models.CASCADE, blank=True, null=True)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, blank=True, null=True)
-    invoice_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    invoice_header = models.ForeignKey(
+        InvoiceHeader, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
+    invoice_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    gst_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    carrying_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    due_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    total_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    paid_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    payment_method = models.ForeignKey(
+        PaymentMethods, on_delete=models.CASCADE, blank=True, null=True)
+    reference_number = models.CharField(max_length=100, blank=True, null=True)
     status = models.SmallIntegerField(default=1)
 
     def __str__(self):

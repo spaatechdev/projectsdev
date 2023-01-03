@@ -9,11 +9,11 @@ urlpatterns = [
     path('dashboard', views.dashboard, name='dashboard'),
     path('myProfile', views.myProfile, name='myProfile'),
     path('userList', views.userList, name='userList'),
-    path('forgot/', views.forgot, name='forgot'),
-    path('enter_otp/',views.enter_otp,name='enter_otp'),
-    path('password_reset/',views.password_reset,name='password_reset'),
+    path('forgot', views.forgot, name='forgot'),
+    path('enter_otp',views.enter_otp,name='enter_otp'),
+    path('password_reset',views.password_reset,name='password_reset'),
 
-
+    path('changePassword',views.changePassword,name='changePassword'),
 
     path('customerList', views.customerList, name='customerList'),
     path('customerAdd', views.customerAdd, name='customerAdd'),
@@ -110,10 +110,15 @@ urlpatterns = [
     path('onTransitOrderDetailsList/<int:header_id>', views.onTransitOrderDetailsList, name='onTransitOrderDetailsList'),
 
     path('invoiceList', views.invoiceList, name='invoiceList'),
+    path('invoiceAdd/<str:invoice_type>', views.invoiceAdd, name='invoiceAdd'),
     path('invoiceAdd', views.invoiceAdd, name='invoiceAdd'),
     path('invoiceDetailsList/<int:header_id>', views.invoiceDetailsList, name='invoiceDetailsList'),
     path('printInvoice/<int:header_id>', views.printInvoice, name='printInvoice'),
+    
+    path('pendingInvoiceList', views.pendingInvoiceList, name='pendingInvoiceList'),
+    path('pendingInvoicePayment/<int:invoice_id>', views.pendingInvoicePayment, name='pendingInvoicePayment'),
 
+    path('top5Selling',csrf_exempt(views.top5Selling),name='top5Selling'),
     path('getVendorPurchaseOrders', csrf_exempt(views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
     path('getPurchaseOrderDetails', csrf_exempt(views.getPurchaseOrderDetails), name='getPurchaseOrderDetails'),
     path('getTransactionType', csrf_exempt(views.getTransactionType), name='getTransactionType'),

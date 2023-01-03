@@ -2,19 +2,35 @@
 {% load static %}
 
 {% block content %}
-<div class="content-wrapper">
+<div class="pagetitle">
+    <h1>On-Transit Orders</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item">On-Transit Orders</li>
+        </ol>
+    </nav>
+</div>
+<section class="section">
+    {% if messages %}
+    {% for message in messages %}
+    {% if forloop.counter == 1 %}
+    <div class="{{ message.tags }}" style="height: 30px;">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
     <div class="row">
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">On-Transits Orders</h4>
+                            <h4 class="card-title">On-Transit Orders</h4>
                         </div>
                     </div>
                     <div class="row">
                         <div class="table-responsive">
-                            <table class="table table-striped" id="dataTable">
+                            <table class="table table-striped datatable">
                                 <thead>
                                     <tr>
                                         <th>
@@ -66,7 +82,7 @@
                             </table>
                         </div>
                     </div>
-                    {% if onTransitOrders.has_other_pages %}
+                    <!-- {% if onTransitOrders.has_other_pages %}
                     <div class="float-end">
                         <ul class="pagination">
                             {% if onTransitOrders.has_previous %}
@@ -88,27 +104,13 @@
                             {% endif %}
                         </ul>
                     </div>
-                    {% endif %}
+                    {% endif %} -->
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
 
 {% block js %}
-<script>
-    $(document).ready(function () {
-        $('#dataTable').dataTable({
-            "paginate": true,
-            "sort": true,
-            "language": {
-                "emptyTable": "No Data Is Available."
-            },
-            "order": [
-                [0, "desc"]
-            ],
-        });
-    });
-</script>
 {% endblock %}

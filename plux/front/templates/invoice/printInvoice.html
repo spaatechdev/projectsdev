@@ -179,13 +179,8 @@
       <br />
       <span>CARRYING COST:</span> {{invoiceOrder.carrying_cost}}
       <br />
-      {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
       <span><strong>GRAND TOTAL:</strong></span>
-      <strong>{{invoiceOrder.invoice_total|add:invoiceOrder.invoice_gst_total|add:invoiceOrder.carrying_cost|add:due_payment}}</strong>
-      {% else %}
-      <span><strong>GRAND TOTAL:</strong></span>
-      <strong>{{invoiceOrder.invoice_total|add:invoiceOrder.carrying_cost|add:due_payment}}</strong>
-      {% endif %}
+      <strong>{{invoiceOrder.total_amount}}</strong>
     </div>
     <div style="font-size: 2em; margin-bottom: 50px;">Thank you!</div>
     <div style="padding-left: 6px; border-left: 6px solid #0087C3;  ">

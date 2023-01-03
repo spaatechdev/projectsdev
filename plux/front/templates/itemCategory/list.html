@@ -2,7 +2,23 @@
 {% load static %}
 
 {% block content %}
-<div class="content-wrapper">
+<div class="pagetitle">
+    <h1>Item Category List</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item">Item Category List</li>
+        </ol>
+    </nav>
+</div>
+<section class="section">
+    {% if messages %}
+    {% for message in messages %}
+    {% if forloop.counter == 1 %}
+    <div class="{{ message.tags }}" style="height: 30px;">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
     <div class="row">
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
@@ -11,16 +27,16 @@
                         <div class="col-md-6">
                             <h4 class="card-title">Item Categories</h4>
                         </div>
-                        <div class="col-md-3">
-                            <a href="{% url 'itemCategoryAdd' %}" class="btn btn-primary btn-sm float-end">Add</a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="{% url 'itemCategoryImport' %}" class="btn btn-primary btn-sm float-end">Import</a>
+                        <div class="col-md-6 mt-3">
+                            <div class="float-end">
+                                <a href="{% url 'itemCategoryAdd' %}" class="btn btn-primary btn-sm">Add</a>
+                                <a href="{% url 'itemCategoryImport' %}" class="btn btn-primary btn-sm">Import</a>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="table-responsive">
-                            <table class="table table-striped" id="dataTable">
+                            <table class="table table-striped datatable">
                                 <thead>
                                     <tr>
                                         <th>
@@ -58,7 +74,7 @@
                             </table>
                         </div>
                     </div>
-                    {% if itemCategories.has_other_pages %}
+                    <!-- {% if itemCategories.has_other_pages %}
                     <div class="float-end">
                         <ul class="pagination">
                             {% if itemCategories.has_previous %}
@@ -80,12 +96,12 @@
                             {% endif %}
                         </ul>
                     </div>
-                    {% endif %}
+                    {% endif %} -->
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
 
 {% block js %}

@@ -1,52 +1,128 @@
-<nav class="sidebar sidebar-offcanvas" id="sidebar">
-  <ul class="nav">
+<aside id="sidebar" class="sidebar" style="background-color: #EDEDED;">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'dashboard' %}">
-        <i class="mdi mdi-grid-large menu-icon"></i>
-        <span class="menu-title">Dashboard</span>
+      <a class="nav-link " href="{% url 'dashboard' %}">
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
       </a>
     </li>
-    <li class="nav-item nav-category">Master Data</li>
+    <!-- End Dashboard Nav -->
+
     <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-        <i class="menu-icon mdi mdi-floor-plan"></i>
-        <span class="menu-title">Master Data</span>
-        <i class="menu-arrow"></i>
+      <a class="nav-link collapsed" data-bs-target="#master-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-menu-button-wide"></i><span>Master Data</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
-      <div class="collapse" id="ui-basic">
-        <ul class="nav flex-column sub-menu">
-          {% if request.user.is_superuser == 1 %}
-          <li class="nav-item"> <a class="nav-link" href="{% url 'userList' %}">Users</a></li>
-          {% endif %}
-          <li class="nav-item"> <a class="nav-link" href="{% url 'customerList' %}">Customers</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'salespersonList' %}">Sales Person</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'vendorList' %}">Vendors</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'storeList' %}">Stores</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'uomList' %}">UOM</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'itemCategoryList' %}">Item Category</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'plyDimensionList' %}">Ply Dimension</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'itemList' %}">Item</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'storeItemList' %}">Store Item</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'standardTermList' %}">Stanadard Term Master</a></li>
-        </ul>
-      </div>
+      <ul id="master-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        {% if request.user.is_superuser == 1 %}
+        <li>
+          <a href="{% url 'userList' %}">
+            <i class="bi bi-circle"></i><span>Users</span>
+          </a>
+        </li>
+        {% endif %}
+        <li>
+          <a href="{% url 'customerList' %}">
+            <i class="bi bi-circle"></i><span>Customers</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'salespersonList' %}">
+            <i class="bi bi-circle"></i><span>Sales Persons</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'vendorList' %}">
+            <i class="bi bi-circle"></i><span>Vendors</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'storeList' %}">
+            <i class="bi bi-circle"></i><span>Stores</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'uomList' %}">
+            <i class="bi bi-circle"></i><span>UOM</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'itemCategoryList' %}">
+            <i class="bi bi-circle"></i><span>Item Category</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'plyDimensionList' %}">
+            <i class="bi bi-circle"></i><span>Ply Dimension</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'itemList' %}">
+            <i class="bi bi-circle"></i><span>Item</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'storeItemList' %}">
+            <i class="bi bi-circle"></i><span>Store Items</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'standardTermList' %}">
+            <i class="bi bi-circle"></i><span>Stanadard Term Master</span>
+          </a>
+        </li>
+      </ul>
     </li>
-    <li class="nav-item nav-category">Transactions</li>
+    <!-- End Components Nav -->
+
     <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
-        <i class="menu-icon mdi mdi-table"></i>
-        <span class="menu-title">Transactions</span>
-        <i class="menu-arrow"></i>
+      <a class="nav-link collapsed" data-bs-target="#storeTransaction-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-journal-text"></i><span>Store Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
-      <div class="collapse" id="charts">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="{% url 'purchaseOrderList' %}">Purchase Order</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'salesOrderList' %}">Sales Order</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'onTransitOrderList' %}">Pending Transit</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'storeTransactionList' %}">Store Transaction</a></li>
-          <li class="nav-item"> <a class="nav-link" href="{% url 'invoiceList' %}">InvoiceList</a></li>
-        </ul>
-      </div>
+      <ul id="storeTransaction-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'purchaseOrderList' %}">
+            <i class="bi bi-circle"></i><span>Purchase Orders</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'storeTransactionList' %}">
+            <i class="bi bi-circle"></i><span>Store Transactions</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'onTransitOrderList' %}">
+            <i class="bi bi-circle"></i><span>Pending Transits</span>
+          </a>
+        </li>
+      </ul>
     </li>
+    <!-- End Store Transaction Nav -->
+
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#salesTransaction-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-file-earmark"></i><span>Sales Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="salesTransaction-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav"> 
+        <li>
+          <a href="{% url 'salesOrderList' %}">
+            <i class="bi bi-circle"></i><span>Sales Orders</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'invoiceList' %}">
+            <i class="bi bi-circle"></i><span>Invoice List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'pendingInvoiceList' %}">
+            <i class="bi bi-circle"></i><span>Pending Invoices</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!-- End Sales Transaction Nav -->
   </ul>
-</nav>
+</aside>
