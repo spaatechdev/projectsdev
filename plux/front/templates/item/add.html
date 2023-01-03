@@ -2,7 +2,17 @@
 {% load static %}
 
 {% block content %}
-<div class="content-wrapper">
+<div class="pagetitle">
+    <h1>Add Item</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'itemList' %}">Item List</a></li>
+            <li class="breadcrumb-item">Add Item</li>
+        </ol>
+    </nav>
+</div>
+<section class="section">
     <div class="row">
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
@@ -11,8 +21,10 @@
                         <div class="col-md-6">
                             <h4 class="card-title">Add Item</h4>
                         </div>
-                        <div class="col-md-6">
-                            <a href="{% url 'itemList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        <div class="col-md-6 mt-3">
+                            <div class="float-end">
+                                <a href="{% url 'itemList' %}" class="btn btn-primary btn-sm">Back</a>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -88,7 +100,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                Want to Add any Attribute like color, size etc?
+                                <p> Want to Add any Attribute like color, size etc?</p>
                                 <div class="col-md-2">
                                     <button type="button" class="btn btn-sm btn-info add_attribute">Add
                                         Attribute</button>
@@ -96,15 +108,17 @@
                             </div>
                             <div class="extra_attributes">
                             </div>
-                            <button type="submit" class="btn btn-primary me-2">Submit</button>
-                            <button type="reset" class="btn btn-light">Reset</button>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-success me-2">Submit</button>
+                                <button type="reset" class="btn btn-light">Reset</button>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
 
 {% block js %}

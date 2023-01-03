@@ -1,92 +1,137 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>PLUX</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="{% static 'vendors/feather/feather.css' %}">
-    <link rel="stylesheet" href="{% static 'vendors/mdi/css/materialdesignicons.min.css' %}">
-    <link rel="stylesheet" href="{% static 'vendors/ti-icons/css/themify-icons.css' %}">
-    <link rel="stylesheet" href="{% static 'vendors/typicons/typicons.css' %}">
-    <link rel="stylesheet" href="{% static 'vendors/simple-line-icons/css/simple-line-icons.css' %}">
-    <link rel="stylesheet" href="{% static 'vendors/css/vendor.bundle.base.css' %}">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="{% static 'vendors/datatables.net-bs4/dataTables.bootstrap4.css '%}">
-    <link rel="stylesheet" href="{% static 'js/select.dataTables.min.css '%}">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <link rel="stylesheet" href="{% static 'css/vertical-layout-light/style.css '%}">
-    <!-- endinject -->
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Login to PLUX</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
     <link rel="shortcut icon" href="{% static 'images/logo/favicon.png '%}" />
+    <link href="{% static 'images/logo/favicon.png '%}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/quill/quill.snow.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <!-- Extra css -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
 </head>
 
-<body style="background-color: #0d0b01;">
-    <div class="container-fluid">
-        <div class="container col-xl-10 col-xxl-8 px-4">
-            <div class="row align-items-center g-lg-5 py-5">
-                <div class="col-lg-7 text-center text-lg-start">
-                    <img src="{% static 'images/logo/plux-login-logo.png' %}" alt="" />
+<body style="background-color: #19192E;">
+
+    <main>
+        <div class="container">
+
+            <section
+                class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-7 col-md-7">
+                            <img src="{% static 'images/logo/plux-login-logo.png' %}" alt="" />
+                        </div>
+                        <div class="col-lg-5 col-md-5 d-flex flex-column align-items-center justify-content-center">
+                            <div class="card mb-3" style="background-color: #d9d9d9;">
+
+                                <div class="card-body">
+                                    {% if messages %}
+                                    {% for message in messages %}
+                                    {% if forloop.counter == 1 %}
+                                    <div class="{{ message.tags }}" style="height: 30px; text-align: center;">{{ message }}</div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                    <div class="pt-4 pb-2">
+                                        <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                                        <p class="text-center small">Enter your email & password to login</p>
+                                    </div>
+
+                                    <form class="row g-3 needs-validation" method="POST" action="{% url 'signin' %}">
+                                        {% csrf_token %}
+                                        <div class="col-12">
+                                            <label for="yourUsername" class="form-label">Email address</label>
+                                            <div class="input-group has-validation">
+                                                <span class="input-group-text" id="inputGroupPrepend">@</span>
+                                                <input type="email" name="email" class="form-control" id="yourUsername"
+                                                    required>
+                                                <div class="invalid-feedback">Please enter your email address.</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label for="yourPassword" class="form-label">Password</label>
+                                            <input type="password" name="password" class="form-control"
+                                                id="yourPassword" required>
+                                            <div class="invalid-feedback">Please enter your password!</div>
+                                        </div>
+
+                                        <div class="col-12 row">
+                                            <div class="col-6 mt-4">
+                                                <button class="btn btn-primary" type="submit">Signin</button>
+                                            </div>
+                                            <div class="col-6 mt-4">
+                                                <a href="{% url 'forgot' %}" class="auth-link">Forgot password?</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <p class="small mb-0">Don't have account? <a
+                                                    href="{% url 'signup' %}">Create an account</a></p>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+
+                            <div class="credits text-white">
+                                Developed by <a style="color: #5F861F;" href="https://spaatech.net/">SPAATech Solutions
+                                    India Pvt. Ltd.</a>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-10 mx-auto col-lg-5">
-                    <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST" action="{% url 'signin' %}">
-                        {% csrf_token %}
-                        {% if messages %}
-                        {% for message in messages %}
-                        {% if forloop.counter == 1 %}
-                        <div class="{{ message.tags }}" style="height: 30px;">{{ message }}</div>
-                        {% endif %}
-                        {% endfor %}
-                        {% endif %}
-                        <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingInput" name="email"
-                                placeholder="name@example.com">
-                            <label for="floatingInput">Email address</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" class="form-control" name="password" id="floatingPassword"
-                                placeholder="Password">
-                            <label for="floatingPassword">Password</label>
-                        </div>
-                        <button class="w-100 btn btn-lg btn-success" type="submit">Sign In</button>
-                        <div class="my-2 d-flex justify-content-between align-items-center">
-                            <a href="/forgot" class="auth-link" >Forgot password?</a>
-                        </div>
-                        <hr class="my-4">
-                        <small class="text-muted">By clicking <a href="{% url 'signup' %}">Sign up</a>, you agree to the
-                            terms of use.</small>
-                    </form>
-                </div>
-            </div>
+
+            </section>
+
         </div>
-    </div>
-    <!-- container-scroller -->
+    </main>
+    <!-- End #main -->
 
-    <!-- plugins:js -->
-    <script src="{% static 'vendors/js/vendor.bundle.base.js' %}"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <script src="{% static 'vendors/chart.js/Chart.min.js' %}"></script>
-    <script src="{% static 'vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
-    <script src="{% static 'vendors/progressbar.js/progressbar.min.js' %}"></script>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
 
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="{% static 'js/off-canvas.js' %}"></script>
-    <script src="{% static 'js/hoverable-collapse.js' %}"></script>
-    <script src="{% static 'js/template.js' %}"></script>
-    <script src="{% static 'js/settings.js' %}"></script>
-    <script src="{% static 'js/todolist.js' %}"></script>
-    <!-- endinject -->
-    <!-- Custom js for this page-->
-    <script src="{% static 'js/jquery.cookie.js" type="text/javascript' %}"></script>
-    <script src="{% static 'js/dashboard.js' %}"></script>
-    <script src="{% static 'js/Chart.roundedBarCharts.js' %}"></script>
-    <!-- End custom js for this page-->
+    <!-- Vendor JS Files -->
+    <script src="{% static 'vendor/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/chart.js/chart.umd.js' %}"></script>
+    <script src="{% static 'vendor/echarts/echarts.min.js' %}"></script>
+    <script src="{% static 'vendor/quill/quill.min.js' %}"></script>
+    <script src="{% static 'vendor/simple-datatables/simple-datatables.js' %}"></script>
+    <script src="{% static 'vendor/tinymce/tinymce.min.js' %}"></script>
+    <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
+
+    <!-- Template Main JS File -->
+    <script src="{% static 'js/main.js' %}"></script>
+
 </body>
 
 </html>

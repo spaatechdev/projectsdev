@@ -2,17 +2,29 @@
 {% load static %}
 
 {% block content %}
-<div class="content-wrapper">
+<div class="pagetitle">
+    <h1>Import Sales Person</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'salespersonList' %}">Sales Person List</a></li>
+            <li class="breadcrumb-item">Import Sales Person</li>
+        </ol>
+    </nav>
+</div>
+<section class="section">
     <div class="row">
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Import Excel</h4>
+                            <h4 class="card-title">Import Sales Person</h4>
                         </div>
-                        <div class="col-md-6">
-                            <a href="{% url 'salespersonList' %}" class="btn btn-primary btn-sm float-end">Back</a>
+                        <div class="col-md-6 mt-3">
+                            <div class="float-end">
+                                <a href="{% url 'salespersonList' %}" class="btn btn-primary btn-sm">Back</a>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -38,7 +50,7 @@
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
 
 {% block js %}
