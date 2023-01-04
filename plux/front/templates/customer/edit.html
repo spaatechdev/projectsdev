@@ -123,7 +123,11 @@
                                     <div class="form-group">
                                         <label for="state">State</label>
                                         <select class="form-control" id="state" name="state">
-                                            <option value="{{customer.state_id}}">{{customer.state.name}}</option>
+                                            <option value="">Select State</option>
+                                            {% for state in states %}
+                                            <option value="{{state.id}}" {% if state.id == customer.state_id %}
+                                                selected {% endif %}>{{state.name}}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                 </div>
@@ -131,7 +135,11 @@
                                     <div class="form-group">
                                         <label for="city">City</label>
                                         <select class="form-control" id="city" name="city">
-                                            <option value="{{customer.city_id}}">{{customer.city.name}}</option>
+                                            <option value="">Select City</option>
+                                            {% for city in cities %}
+                                            <option value="{{city.id}}" {% if city.id == customer.city_id %}
+                                                selected {% endif %}>{{city.name}}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                 </div>

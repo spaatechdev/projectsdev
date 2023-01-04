@@ -543,9 +543,11 @@ def customerAdd(request):
 @login_required
 def customerEdit(request, id):
     context = {}
-    countries = models.Countries.objects.filter(id=101)
     customer = models.Customer.objects.get(pk=id)
-    context.update({'countries': countries, 'customer': customer})
+    countries = models.Countries.objects.filter(id=customer.country_id)
+    states = models.States.objects.filter(country_id=customer.country_id)
+    cities = models.Cities.objects.filter(state_id=customer.state_id)
+    context.update({'customer': customer, 'countries': countries, 'states': states, 'cities': cities})
     if request.method == "POST":
         customer = models.Customer.objects.get(pk=request.POST['id'])
         customer.customer_name = request.POST['customer_name']
@@ -663,9 +665,11 @@ def salespersonAdd(request):
 @login_required
 def salespersonEdit(request, id):
     context = {}
-    countries = models.Countries.objects.filter(id=101)
     salesperson = models.SalesPerson.objects.get(pk=id)
-    context.update({'countries': countries, 'salesperson': salesperson})
+    countries = models.Countries.objects.filter(id=salesperson.country_id)
+    states = models.States.objects.filter(country_id=salesperson.country_id)
+    cities = models.Cities.objects.filter(state_id=salesperson.state_id)
+    context.update({'salesperson': salesperson, 'countries': countries, 'states': states, 'cities': cities})
     if request.method == "POST":
         salesperson = models.SalesPerson.objects.get(pk=request.POST['id'])
         salesperson.salesperson_name = request.POST['salesperson_name']
@@ -793,9 +797,11 @@ def vendorAdd(request):
 @login_required
 def vendorEdit(request, id):
     context = {}
-    countries = models.Countries.objects.filter(id=101)
     vendor = models.VendorMaster.objects.get(pk=id)
-    context.update({'countries': countries, 'vendor': vendor})
+    countries = models.Countries.objects.filter(id=vendor.country.id)
+    states = models.States.objects.filter(country_id=vendor.country_id)
+    cities = models.Cities.objects.filter(state_id=vendor.state_id)
+    context.update({'vendor': vendor, 'countries': countries, 'states': states, 'cities': cities})
     if request.method == "POST":
         vendor = models.VendorMaster.objects.get(pk=request.POST['id'])
         vendor.name = request.POST['name']
