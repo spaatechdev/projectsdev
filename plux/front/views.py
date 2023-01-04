@@ -332,6 +332,7 @@ def signin(request):
 
 
 def forgot(request):
+    context={}
     if request.method == "POST":
         email = request.POST['email']
         user = models.User.objects.filter(email=email).first()
@@ -354,7 +355,7 @@ def forgot(request):
         else:
             messages.error(request, 'User not found by this email.')
             return redirect('forgot')
-    return render(request, "forgot_password.html")
+    return render(request, "forgot_password.html", context)
 
 
 # class enter_otp(View):
@@ -362,6 +363,7 @@ def forgot(request):
 #         return render(request, "enter_otp.html")
 
 def enter_otp(request):
+    context={}
     if request.method == "POST":
         if (request.POST['verify_otp'] == request.session['OTP']):
             messages.success(request, "OTP verified!!")
@@ -369,10 +371,11 @@ def enter_otp(request):
         else:
             messages.error(request, "OTP is not correct")
             return redirect('enter_otp')
-    return render(request, "enter_otp.html")
+    return render(request, "enter_otp.html", context)
 
 
 def password_reset(request):
+    context={}
     if request.method == "POST":
         if (request.POST['password'] == request.POST['confirmpassword']):
             user = models.User.objects.get(
@@ -389,7 +392,7 @@ def password_reset(request):
         else:
             messages.error(request, "Passwords do not match")
             return redirect('password_reset')
-    return render(request, "password_reset.html")
+    return render(request, "password_reset.html", context)
 
 
 def signup(request):
@@ -439,7 +442,8 @@ def signout(request):
 
 
 def top5Selling(request):
-    top_5_selling_items = models.InvoiceDetails.objects.values('item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
+    top_5_selling_items = models.InvoiceDetails.objects.values(
+        'item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
     top_5_items = []
     for elem in top_5_selling_items:
         single_row = {}
@@ -678,7 +682,8 @@ def salespersonImport(request):
                     salesperson_email_qs = models.SalesPerson.objects.filter(
                         contact_email=row['Contact Email'])
                     if (not salesperson_email_qs.exists()):
-                        salesperson_list.append(models.SalesPerson(salesperson_name=row['Salesperson Name'], address_1=row['Address 1'], address_2=row['Address 2'], contact_no=row['Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
+                        salesperson_list.append(models.SalesPerson(salesperson_name=row['Salesperson Name'], address_1=row['Address 1'], address_2=row['Address 2'], contact_no=row[
+                                                'Contact Number'], contact_name=row['Contact Name'], contact_email=row['Contact Email'], pin=row['Pin'], country_id=country_id, state_id=state_id, city_id=city_id))
                 models.SalesPerson.objects.bulk_create(salesperson_list)
                 csvfile.close()
                 os.remove(MEDIA_ROOT + file_name)
