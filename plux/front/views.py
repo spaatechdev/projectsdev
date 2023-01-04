@@ -442,23 +442,6 @@ def signout(request):
 
 
 def top5(request):
-    top_items = models.InvoiceDetails.objects.values(
-        'item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
-    top_5_items = []
-    for elem in top_items:
-        single_item_row = {}
-        single_item_row['name'] = elem['item__description']
-        single_item_row['y'] = elem['item_count']
-        top_5_items.append(single_item_row)
-
-    top_customers = models.InvoiceHeader.objects.values('customer_id', 'customer__customer_name', 'customer__contact_email').annotate(customer_amount=Sum('total_amount')).order_by('-customer_amount')[:5]
-    top_5_customers = []
-    for elem in top_customers:
-        single_customer_row = {}
-        single_customer_row['name'] = elem['customer__customer_name']
-        single_customer_row['y'] = float(elem['customer_amount'])
-        top_5_customers.append(single_customer_row)
-
     top_sales_persons = models.SalesOrderHeader.objects.values('sales_person_id', 'sales_person__salesperson_name', 'sales_person__contact_email').annotate(sales_person_amount=Sum('total_amount')).order_by('-sales_person_amount')[:5]
     top_5_sales_person = []
     for item in top_sales_persons:
@@ -484,7 +467,31 @@ def top5(request):
     top_5_salesman = {}
     top_5_salesman['categories'] = result
     top_5_salesman['series'] = top_5_sales_person
-    return JsonResponse({'top_5_items': top_5_items, 'top_5_customers': top_5_customers, 'top_5_salesman': top_5_salesman})
+
+    top_customers = models.InvoiceHeader.objects.values('customer_id', 'customer__customer_name', 'customer__contact_email').annotate(customer_amount=Sum('total_amount')).order_by('-customer_amount')[:5]
+    top_5_customers = []
+    for elem in top_customers:
+        single_customer_row = {}
+        single_customer_row['name'] = elem['customer__customer_name']
+        single_customer_row['y'] = float(elem['customer_amount'])
+        top_5_customers.append(single_customer_row)
+
+    sales_report = []
+    for month in result:
+        sales_value = models.SalesOrderHeader.objects.filter(sales_order_date__year=datetime.strptime(month, '%b %Y').strftime("%Y"), sales_order_date__month=datetime.strptime(month, '%b %Y').strftime("%m")).aggregate(Sum('total_amount'))
+        sales_report.append(float(sales_value['total_amount__sum']) if sales_value['total_amount__sum'] is not None else 0)
+    sales_by_month = {}
+    sales_by_month['categories'] = result
+    sales_by_month['series'] = sales_report
+
+    top_items = models.InvoiceDetails.objects.values('item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
+    top_5_items = []
+    for elem in top_items:
+        single_item_row = {}
+        single_item_row['name'] = elem['item__description']
+        single_item_row['y'] = elem['item_count']
+        top_5_items.append(single_item_row)
+    return JsonResponse({'top_5_items': top_5_items, 'top_5_customers': top_5_customers, 'top_5_salesman': top_5_salesman, 'sales_by_month': sales_by_month})
 
 
 @login_required

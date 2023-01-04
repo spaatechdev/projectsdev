@@ -236,6 +236,33 @@
                             <!-- <h5 class="card-title">Sales <span></span></h5> -->
 
                             <figure class="highcharts-figure">
+                                <div id="topMonthSalesContainer"></div>
+                            </figure>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card">
+
+                        <!-- <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#">Today</a></li>
+                                <li><a class="dropdown-item" href="#">This Month</a></li>
+                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                            </ul>
+                        </div> -->
+
+                        <div class="card-body">
+                            <!-- <h5 class="card-title">Sales <span></span></h5> -->
+
+                            <figure class="highcharts-figure">
                                 <div id="topSalesPersonContainer"></div>
                             </figure>
 
@@ -471,20 +498,54 @@
             type: 'post',
             data: ({}),
             success: function (response) {
+                showTopMonthSales(response.sales_by_month)
                 showTopSalesMan(response.top_5_salesman)
                 showTopCustomer(response.top_5_customers)
                 showTopSelling(response.top_5_items)
             },
         });
     });
+    function showTopMonthSales(data) {
+        Highcharts.chart('topMonthSalesContainer', {
+            title: {
+                text: 'Monthly Sales for last 12 months'
+            },
+            credits: {
+                enabled: false
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: data.categories
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Total Sale'
+                }
+            },
+            series: [{
+                type: 'line',
+                name: 'Total Sale',
+                colorByPoint: true,
+                data: data.series,
+                showInLegend: false
+            }]
+        });
+    }
+
+
     function showTopSalesMan(data) {
-        console.log(data);
         Highcharts.chart('topSalesPersonContainer', {
             chart: {
                 type: 'column'
             },
+            credits: {
+                enabled: false
+            },
             title: {
-                text: 'Monthly Sales Order Report'
+                text: 'Monthly Sales Order Report for last 12 months'
             },
             subtitle: {
                 text: ''
@@ -516,7 +577,7 @@
             series: data.series
         });
     }
-    
+
     function showTopCustomer(data) {
         Highcharts.chart('topCustomerContainer', {
             credits: {
