@@ -30,6 +30,11 @@ environ.Env.read_env()
 
 # Create your views here.
 
+def get_previous_month():
+    """Returns the previous month as a datetime object."""
+    return datetime.now().replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
+    ) - timedelta(days=1) 
 
 def changePassword(request):
     if request.method == "POST":
@@ -497,6 +502,14 @@ def top5(request):
 @login_required
 def dashboard(request):
     context = {}
+    sales_last_month = models.SalesOrderHeader.objects.filter(sales_order_date__year=get_previous_month().strftime("%Y"), sales_order_date__month=get_previous_month().strftime("%m")).aggregate(Sum('total_amount'))
+    sales_current_month = models.SalesOrderHeader.objects.filter(sales_order_date__year=datetime.now().strftime("%Y"), sales_order_date__month=datetime.now().strftime("%m")).aggregate(Sum('total_amount'))
+    sales_total = models.SalesOrderHeader.objects.aggregate(Sum('total_amount'))
+    context.update({
+        'sales_last_month': sales_last_month['total_amount__sum'] if sales_last_month['total_amount__sum'] is not None else 0,
+        'sales_current_month': sales_current_month['total_amount__sum'] if sales_current_month['total_amount__sum'] is not None else 0,
+        'sales_total': sales_total['total_amount__sum'] if sales_total['total_amount__sum'] is not None else 0
+    })
     return render(request, 'dashboard.html', context)
 
 
