@@ -264,7 +264,7 @@
                             <!-- <h5 class="card-title">Reports <span></span></h5> -->
 
                             <figure class="highcharts-figure">
-                                <div id="topItemContainer"></div>
+                                <div id="topCustomerContainer"></div>
                             </figure>
 
                         </div>
@@ -292,7 +292,7 @@
                             <!-- <h5 class="card-title">Reports <span></span></h5> -->
 
                             <figure class="highcharts-figure">
-                                <div id="topCustomerContainer"></div>
+                                <div id="topItemContainer"></div>
                             </figure>
 
                         </div>
@@ -471,12 +471,85 @@
             type: 'post',
             data: ({}),
             success: function (response) {
-                showTopSelling(response.top_5_items)
-                showTopCustomer(response.top_5_customers)
                 showTopSalesMan(response.top_5_salesman)
+                showTopCustomer(response.top_5_customers)
+                showTopSelling(response.top_5_items)
             },
         });
-    })
+    });
+    function showTopSalesMan(data) {
+        console.log(data);
+        Highcharts.chart('topSalesPersonContainer', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Monthly Sales Order Report'
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: data.categories,
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Total Sales Order'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b>₹{point.y:.1f}</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: data.series
+        });
+    }
+    
+    function showTopCustomer(data) {
+        Highcharts.chart('topCustomerContainer', {
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: 'Top 5 Customers by Revenue'
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: data.map(elem => elem.name)
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Total Invoice Amount'
+                }
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>₹{point.y}</b>'
+            },
+            series: [{
+                type: 'column',
+                name: 'Total Generated Amount',
+                colorByPoint: true,
+                data: data.map(elem => elem.y),
+                showInLegend: false
+            }]
+        });
+    }
+
     function showTopSelling(data) {
         Highcharts.chart('topItemContainer', {
             chart: {
@@ -518,77 +591,6 @@
                 name: 'Share',
                 data: data
             }]
-        });
-    }
-    function showTopCustomer(data) {
-        Highcharts.chart('topCustomerContainer', {
-            credits: {
-                enabled: false
-            },
-            title: {
-                text: 'Top 5 Customers by Revenue'
-            },
-            subtitle: {
-                text: ''
-            },
-            xAxis: {
-                categories: data.map(elem => elem.name)
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Total Invoice Amount'
-                }
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>₹{point.y}</b>'
-            },
-            series: [{
-                type: 'column',
-                name: 'Total Generated Amount',
-                colorByPoint: true,
-                data: data.map(elem => elem.y),
-                showInLegend: false
-            }]
-        });
-    }
-    function showTopSalesMan(data) {
-        console.log(data);
-        Highcharts.chart('topSalesPersonContainer', {
-            chart: {
-                type: 'column'
-            },
-            title: {
-                text: 'Monthly Sales Order Report'
-            },
-            subtitle: {
-                text: ''
-            },
-            xAxis: {
-                categories: data.categories,
-                crosshair: true
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Total Sales Order'
-                }
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>₹{point.y:.1f}</b></td></tr>',
-                footerFormat: '</table>',
-                shared: true,
-                useHTML: true
-            },
-            plotOptions: {
-                column: {
-                    pointPadding: 0.2,
-                    borderWidth: 0
-                }
-            },
-            series: data.series
         });
     }
 </script>
