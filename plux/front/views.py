@@ -452,6 +452,16 @@ def top5Selling(request):
         top_5_items.append(single_row)
     return JsonResponse({'top_5_items': top_5_items})
 
+def top5Salesman(request):
+    top_5_sales_persons = models.SalesOrderHeader.objects.values('sales_person_id', 'sales_person__salesperson_name', 'sales_person__contact_email').annotate(sales_person_count=Count('sales_person_id')).order_by('-sales_person_count')[:5]
+    top_5_salesman = []
+    for elem in top_5_sales_persons:
+        single_row = {}
+        single_row['name'] = elem['sales_person__salesperson_name']
+        single_row['y'] = elem['sales_person_count']
+        top_5_salesman.append(single_row)
+    return JsonResponse({'top_5_salesman': top_5_salesman})
+
 
 @login_required
 def dashboard(request):
