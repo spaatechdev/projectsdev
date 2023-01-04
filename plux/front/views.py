@@ -476,9 +476,9 @@ def top5(request):
     
     for elem in top_5_sales_person:
         for month in result:
-            amount_value = models.SalesOrderHeader.objects.filter(sales_person_id=elem['id'], sales_order_date__year=datetime.strptime(month, '%b %Y').strftime("%Y"), sales_order_date__month=datetime.strptime(month, '%b %Y').strftime("%m")).values('sales_person_id').annotate(sales_person_amount=Sum('total_amount')).first()
-            if amount_value is not None:
-                elem['data'].append(float(amount_value['sales_person_amount']))
+            amount_value = models.SalesOrderHeader.objects.filter(sales_person_id=elem['id'], sales_order_date__year=datetime.strptime(month, '%b %Y').strftime("%Y"), sales_order_date__month=datetime.strptime(month, '%b %Y').strftime("%m")).values('sales_person_id').annotate(sales_person_amount=Sum('total_amount'))
+            if len(amount_value) > 0:
+                elem['data'].append(float(amount_value[0]['sales_person_amount']))
             else:
                 elem['data'].append(0)
     top_5_salesman = {}
