@@ -575,6 +575,9 @@
     });
     function showTopMonthSales(data) {
         Highcharts.chart('topMonthSalesContainer', {
+            chart: {
+                height: 250
+            },
             title: {
                 text: 'Sales Report For Last 12 Months'
             },
@@ -607,7 +610,8 @@
     function showTopSalesMan(data) {
         Highcharts.chart('topSalesPersonContainer', {
             chart: {
-                type: 'column'
+                type: 'column',
+                height: 250
             },
             credits: {
                 enabled: false
@@ -648,11 +652,14 @@
 
     function showTopCustomer(data) {
         Highcharts.chart('topCustomerContainer', {
-            credits: {
-                enabled: false
+            chart: {
+                height: 250
             },
             title: {
                 text: 'Top 5 Customers By Revenue'
+            },
+            credits: {
+                enabled: false
             },
             subtitle: {
                 text: ''
@@ -685,7 +692,8 @@
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false,
-                type: 'pie'
+                type: 'pie',
+                height: 250
             },
             credits: {
                 enabled: false
