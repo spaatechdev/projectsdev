@@ -2405,6 +2405,7 @@ def pendingInvoicePayment(request, invoice_id):
         invoiceHeader = models.InvoiceHeader.objects.get(
             pk=request.POST['invoice_header_id'])
         invoiceHeader.paid_amount = request.POST['paid_amount']
+        invoiceHeader.status = 2
         invoiceHeader.save()
         messages.success(request, 'Payment Receipt Created Successfully.')
         return redirect('pendingInvoiceList')

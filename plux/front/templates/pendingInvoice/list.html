@@ -97,9 +97,11 @@
                                             {{invoice.vehicle_number.upper}}
                                         </td>
                                         <td>
+                                            {% if invoice.status == 1 %}
                                             <a href="{% url 'pendingInvoicePayment' invoice.id %}"
                                                 class="btn btn-primary btn-sm">
                                                 Payment </a>
+                                            {% endif %}
                                             <a target="new" href="{% url 'printInvoice' invoice.id %}"
                                                 class="btn btn-primary btn-sm">
                                                 Print </a>
