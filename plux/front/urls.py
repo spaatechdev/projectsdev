@@ -145,7 +145,7 @@ urlpatterns = [
     path('pendingInvoicePayment/<int:invoice_id>',
          views.pendingInvoicePayment, name='pendingInvoicePayment'),
 
-    path('top5Selling', csrf_exempt(views.top5Selling), name='top5Selling'),
+    path('top5', csrf_exempt(views.top5), name='top5'),
     path('getVendorPurchaseOrders', csrf_exempt(
         views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
     path('getPurchaseOrderDetails', csrf_exempt(

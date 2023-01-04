@@ -8,8 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from front.backends import AuthBackend
 from . import models
-from django.db.models import Count
-from datetime import datetime
+from django.db.models import Count, Sum
+from datetime import datetime, timedelta
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -441,26 +441,50 @@ def signout(request):
     return redirect('signin')
 
 
-def top5Selling(request):
-    top_5_selling_items = models.InvoiceDetails.objects.values(
+def top5(request):
+    top_items = models.InvoiceDetails.objects.values(
         'item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
     top_5_items = []
-    for elem in top_5_selling_items:
-        single_row = {}
-        single_row['name'] = elem['item__description']
-        single_row['y'] = elem['item_count']
-        top_5_items.append(single_row)
-    return JsonResponse({'top_5_items': top_5_items})
+    for elem in top_items:
+        single_item_row = {}
+        single_item_row['name'] = elem['item__description']
+        single_item_row['y'] = elem['item_count']
+        top_5_items.append(single_item_row)
 
-def top5Salesman(request):
-    top_5_sales_persons = models.SalesOrderHeader.objects.values('sales_person_id', 'sales_person__salesperson_name', 'sales_person__contact_email').annotate(sales_person_count=Count('sales_person_id')).order_by('-sales_person_count')[:5]
-    top_5_salesman = []
-    for elem in top_5_sales_persons:
-        single_row = {}
-        single_row['name'] = elem['sales_person__salesperson_name']
-        single_row['y'] = elem['sales_person_count']
-        top_5_salesman.append(single_row)
-    return JsonResponse({'top_5_salesman': top_5_salesman})
+    top_customers = models.InvoiceHeader.objects.values('customer_id', 'customer__customer_name', 'customer__contact_email').annotate(customer_amount=Sum('total_amount')).order_by('-customer_amount')[:5]
+    top_5_customers = []
+    for elem in top_customers:
+        single_customer_row = {}
+        single_customer_row['name'] = elem['customer__customer_name']
+        single_customer_row['y'] = float(elem['customer_amount'])
+        top_5_customers.append(single_customer_row)
+
+    top_sales_persons = models.SalesOrderHeader.objects.values('sales_person_id', 'sales_person__salesperson_name', 'sales_person__contact_email').annotate(sales_person_amount=Sum('total_amount')).order_by('-sales_person_amount')[:5]
+    top_5_sales_person = []
+    for item in top_sales_persons:
+        sales_persons = {}
+        sales_persons['name'] = item['sales_person__salesperson_name']
+        sales_persons['id'] = item['sales_person_id']
+        sales_persons['data'] = []
+        top_5_sales_person.append(sales_persons)
+
+    now = datetime.now()
+    result = [now.strftime("%b %Y")]
+    for _ in range(0, 11):
+        now = now.replace(day=1) - timedelta(days=1)
+        result.insert(0, now.strftime("%b %Y"))
+    
+    for elem in top_5_sales_person:
+        for month in result:
+            amount_value = models.SalesOrderHeader.objects.filter(sales_person_id=elem['id'], sales_order_date__year=datetime.strptime(month, '%b %Y').strftime("%Y"), sales_order_date__month=datetime.strptime(month, '%b %Y').strftime("%m")).values('sales_person_id').annotate(sales_person_amount=Sum('total_amount')).first()
+            if amount_value is not None:
+                elem['data'].append(float(amount_value['sales_person_amount']))
+            else:
+                elem['data'].append(0)
+    top_5_salesman = {}
+    top_5_salesman['categories'] = result
+    top_5_salesman['series'] = top_5_sales_person
+    return JsonResponse({'top_5_items': top_5_items, 'top_5_customers': top_5_customers, 'top_5_salesman': top_5_salesman})
 
 
 @login_required

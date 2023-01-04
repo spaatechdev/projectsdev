@@ -233,10 +233,66 @@
                         </div> -->
 
                         <div class="card-body">
-                            <h5 class="card-title">Reports <span></span></h5>
+                            <!-- <h5 class="card-title">Sales <span></span></h5> -->
 
                             <figure class="highcharts-figure">
-                                <div id="container"></div>
+                                <div id="topSalesPersonContainer"></div>
+                            </figure>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="card">
+
+                        <!-- <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#">Today</a></li>
+                                <li><a class="dropdown-item" href="#">This Month</a></li>
+                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                            </ul>
+                        </div> -->
+
+                        <div class="card-body">
+                            <!-- <h5 class="card-title">Reports <span></span></h5> -->
+
+                            <figure class="highcharts-figure">
+                                <div id="topItemContainer"></div>
+                            </figure>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="card">
+
+                        <!-- <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#">Today</a></li>
+                                <li><a class="dropdown-item" href="#">This Month</a></li>
+                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                            </ul>
+                        </div> -->
+
+                        <div class="card-body">
+                            <!-- <h5 class="card-title">Reports <span></span></h5> -->
+
+                            <figure class="highcharts-figure">
+                                <div id="topCustomerContainer"></div>
                             </figure>
 
                         </div>
@@ -399,23 +455,30 @@
 
 {% block js %}
 <script src="{% static 'highcharts/js/highcharts.js' %}"></script>
-<script src="{% static 'highcharts/js/modules/exporting.js' %}"></script>
-<script src="{% static 'highcharts/js/modules/export-data.js' %}"></script>
-<script src="{% static 'highcharts/js/modules/accessibility.js' %}"></script>
+
+<script src="{% static 'highcharts/js/highcharts-more.js' %}"></script>
+<script src="{% static 'highcharts/js/dumbbell.js' %}"></script>
+<script src="{% static 'highcharts/js/lollipop.js' %}"></script>
+
+<script src="{% static 'highcharts/js/exporting.js' %}"></script>
+<script src="{% static 'highcharts/js/export-data.js' %}"></script>
+<script src="{% static 'highcharts/js/accessibility.js' %}"></script>
 
 <script>
     $(document).ready(function () {
         $.ajax({
-            url: "{% url 'top5Selling' %}",
+            url: "{% url 'top5' %}",
             type: 'post',
             data: ({}),
             success: function (response) {
                 showTopSelling(response.top_5_items)
+                showTopCustomer(response.top_5_customers)
+                showTopSalesMan(response.top_5_salesman)
             },
         });
     })
     function showTopSelling(data) {
-        Highcharts.chart('container', {
+        Highcharts.chart('topItemContainer', {
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
@@ -428,6 +491,9 @@
             title: {
                 text: 'Top 5 Selling Items',
                 align: 'center'
+            },
+            subtitle: {
+                text: ''
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -452,6 +518,77 @@
                 name: 'Share',
                 data: data
             }]
+        });
+    }
+    function showTopCustomer(data) {
+        Highcharts.chart('topCustomerContainer', {
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: 'Top 5 Customers by Revenue'
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: data.map(elem => elem.name)
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Total Invoice Amount'
+                }
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>₹{point.y}</b>'
+            },
+            series: [{
+                type: 'column',
+                name: 'Total Generated Amount',
+                colorByPoint: true,
+                data: data.map(elem => elem.y),
+                showInLegend: false
+            }]
+        });
+    }
+    function showTopSalesMan(data) {
+        console.log(data);
+        Highcharts.chart('topSalesPersonContainer', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Monthly Sales Order Report'
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: data.categories,
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Total Sales Order'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b>₹{point.y:.1f}</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: data.series
         });
     }
 </script>
