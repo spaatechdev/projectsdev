@@ -173,6 +173,7 @@
     <div style="float: right;">
       <span>SUBTOTAL:</span> {{invoiceOrder.invoice_total}}
       <br />
+      {% if invoiceOrder.invoice_type == 1 %}
       {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
       {% if invoiceOrder.customer.state_id != 41 %}
       <span>IGST:</span> {{invoiceOrder.invoice_gst_total}}
@@ -182,6 +183,7 @@
       <br />
       <span>SGST:</span> {{invoiceOrder.invoice_gst_total|div:2}}
       <br />
+      {% endif %}
       {% endif %}
       {% endif %}
       <span>PREVIOUS DUE:</span> {{due_payment}}
