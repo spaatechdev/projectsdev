@@ -2424,3 +2424,12 @@ def pendingInvoicePayment(request, invoice_id):
         messages.success(request, 'Payment Receipt Created Successfully.')
         return redirect('pendingInvoiceList')
     return render(request, 'pendingInvoice/payment.html', context)
+
+@login_required
+def storeItemReports(request):
+    page = request.GET.get('page', 1)
+    storeItems = models.StoreItemMaster.objects.filter(deleted=0)
+    # paginator = Paginator(storeItems, env("PER_PAGE_DATA"))
+    # storeItems = paginator.page(page)
+    context = {'storeItems': storeItems}
+    return render(request, 'reports/storeItems.html', context)
