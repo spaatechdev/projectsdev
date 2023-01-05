@@ -74,6 +74,7 @@
           <th>Qty</th>
           <th>Price/Unite</th>
           <th>TOTAL</th>
+          {% if invoiceOrder.invoice_type == 1 %}
           {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
           {% if invoiceOrder.customer.state_id != 41 %}
           <th>IGST</th>
@@ -83,6 +84,7 @@
           <th>CGST Price</th>
           <th>SGST</th>
           <th>SGST Price</th>
+          {% endif %}
           {% endif %}
           {% endif %}
         </tr>
@@ -104,6 +106,7 @@
           <td style="background-color: #DDDDDD;">{{invoicedetail.quantity|floatformat:"0"}}</td>
           <td>{{invoicedetail.item.unit_price}}</td>
           <td>{{invoicedetail.invoice_item_value}}</td>
+          {% if invoiceOrder.invoice_type == 1 %}
           {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
           {% if invoiceOrder.customer.state_id != 41 %}
           <td>{{invoicedetail.item.gst_percentage}}%</td>
@@ -113,6 +116,7 @@
           <td>{{invoicedetail.invoice_item_gst_value|div:2}}</td>
           <td>{{invoicedetail.item.gst_percentage|div:2}}%</td>
           <td>{{invoicedetail.invoice_item_gst_value|div:2}}</td>
+          {% endif %}
           {% endif %}
           {% endif %}
         </tr>

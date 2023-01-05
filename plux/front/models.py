@@ -530,6 +530,7 @@ class InvoiceHeader(models.Model):
     paid_amount = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
     status = models.SmallIntegerField(default=1)
+    invoice_type = models.SmallIntegerField(default=1)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):

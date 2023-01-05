@@ -2223,13 +2223,11 @@ def invoiceList(request):
 def invoiceAdd(request, invoice_type=None):
     context = {}
     if invoice_type == 'gst':
-        customers = models.Customer.objects.filter(deleted=0).exclude(
-            gst_no__isnull=True).exclude(gst_no__exact='')
+        customers = models.Customer.objects.filter(deleted=0).exclude(gst_no__isnull=True).exclude(gst_no__exact='')
     else:
         customers = models.Customer.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    context.update({'customers': customers, 'stores': stores,
-                   'invoice_type': invoice_type})
+    context.update({'customers': customers, 'stores': stores, 'invoice_type': invoice_type})
     if request.method == "POST":
         total_item_price = 0
         total_gst_price = 0
@@ -2256,6 +2254,7 @@ def invoiceAdd(request, invoice_type=None):
         invoiceHeader.store_id = request.POST['store']
         invoiceHeader.due_amount = request.POST['due_amount']
         invoiceHeader.total_amount = request.POST['total_amount']
+        invoiceHeader.invoice_type = 1 if request.POST['invoice_type'] == "gst" else 2
         invoiceHeader.save()
         order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
