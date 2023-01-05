@@ -110,6 +110,8 @@ urlpatterns = [
          views.salesOrderDelete, name='salesOrderDelete'),
     path('salesOrderDetailsList/<int:header_id>',
          views.salesOrderDetailsList, name='salesOrderDetailsList'),
+    path('printSalesOrder/<int:header_id>',
+         views.printSalesOrder, name='printSalesOrder'),
 
     path('standardTermList', views.standardTermList, name='standardTermList'),
     path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
