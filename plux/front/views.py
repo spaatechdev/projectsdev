@@ -1761,7 +1761,7 @@ def storeTransactionList(request):
 def storeTransactionAdd(request):
     context = {}
     transactionTypes = models.TransactionType.objects.filter(
-        deleted=0).exclude(id__in=[2, 3])
+        deleted=0).exclude(id__in=[2, 3, 7])
     context.update({'transactionTypes': transactionTypes})
     if request.method == "POST":
         if int(request.POST['transaction_type_id']) == 1:
