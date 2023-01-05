@@ -90,7 +90,7 @@
         <div class="form-group">
             <label for="total_amount">Total Amount</label>
             <input type="text" name="total_amount" class="form-control" id="total_amount" required
-                placeholder="Total Amount" readonly value="0"
+                placeholder="" readonly value="0"
                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
         </div>
     </div>
@@ -350,7 +350,7 @@
                                     <div class="form-group">
                                         <label>Amount</label>
                                         <input type="text" class="form-control item_total_amount" name="amount[]" readonly
-                                            placeholder="100,000" required value="${(response.data[index].unit_price * (response.data[index].quantity - response.data[index].delivered_quantity)).toFixed(2)}"
+                                            placeholder="" required value="${(response.data[index].unit_price * (response.data[index].quantity - response.data[index].delivered_quantity)).toFixed(2)}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
