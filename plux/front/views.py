@@ -1746,27 +1746,11 @@ def salesOrderDetailsList(request, header_id):
 
 @login_required
 def printSalesOrder(request, header_id):
-    client_details = {
-        'client_name': env("CLIENT_NAME"),
-        'client_address': env("CLIENT_ADDRESS"),
-        'client_address_2': env("CLIENT_ADDRESS_2"),
-        'client_pin': env("CLIENT_PIN"),
-        'client_mobile': env("CLIENT_MOBILE"),
-        'client_email': env("CLIENT_EMAIL"),
-    }
     page = request.GET.get('page', 1)
-    invoiceOrder = models.InvoiceHeader.objects.prefetch_related(
-        'invoicedetails_set', 'invoiceterms_set').get(pk=header_id)
-    for invoiceDetail in invoiceOrder.invoicedetails_set.all():
-        invoiceDetail.item.attributes = models.ItemAttributes.objects.filter(item_id=invoiceDetail.item.id)
-    invoicePayments = models.InvoicePayments.objects.filter(
-        customer_id=invoiceOrder.customer_id).exclude(status=3)
-    due_payment = 0
-    for invoicePayment in invoicePayments:
-        due_payment += (invoicePayment.total_amount -
-                        invoicePayment.paid_amount)
-    context = {'invoiceOrder': invoiceOrder,
-               'due_payment': due_payment, 'client_details': client_details}
+    salesOrder = models.SalesOrderHeader.objects.prefetch_related('salesorderdetails_set').get(pk=header_id)
+    for salesDetail in salesOrder.salesorderdetails_set.all():
+        salesDetail.item.attributes = models.ItemAttributes.objects.filter(item_id=salesDetail.item.id)
+    context = {'salesOrder': salesOrder}
     return render(request, 'salesOrder/printSalesOrder.html', context)
 
 
