@@ -2365,6 +2365,8 @@ def printInvoice(request, header_id):
     page = request.GET.get('page', 1)
     invoiceOrder = models.InvoiceHeader.objects.prefetch_related(
         'invoicedetails_set', 'invoiceterms_set').get(pk=header_id)
+    for invoiceDetail in invoiceOrder.invoicedetails_set.all():
+        invoiceDetail.item.attributes = models.ItemAttributes.objects.filter(item_id=invoiceDetail.item.id)
     invoicePayments = models.InvoicePayments.objects.filter(
         customer_id=invoiceOrder.customer_id).exclude(status=3)
     due_payment = 0

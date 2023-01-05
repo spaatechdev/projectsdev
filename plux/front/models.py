@@ -213,7 +213,7 @@ class ItemAttributes(models.Model):
     attribute_value = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.field
+        return self.attribute_name + "=>" + self.attribute_value
 
     class Meta:
         managed = True

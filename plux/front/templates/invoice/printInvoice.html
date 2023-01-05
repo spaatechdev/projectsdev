@@ -43,7 +43,7 @@
   </header>
 
   <main>
-    <div style="content: ""; display: table; clear: both;">
+    <div style='content: ""; display: table; clear: both;'>
       <div style="padding-left: 6px; border-left: 6px solid #0087C3;
         float: left;">
         <div style="color: #777777;">INVOICE TO:</div>
@@ -92,7 +92,13 @@
         {% for invoicedetail in invoiceOrder.invoicedetails_set.all %}
         <tr>
           <td>{{forloop.counter}}</td>
-          <td>{{invoicedetail.item.description}}</td>
+          <td>
+            {{invoicedetail.item.description}} |
+            {% for attribute in invoicedetail.item.attributes %}
+            {{attribute.attribute_name}}=>{{attribute.attribute_value}}
+            {% if forloop.counter != invoicedetail.item.attributes|length %}, {% endif %}
+            {% endfor %}
+          </td>
           <td>{{invoicedetail.item.ply_dimension.description}}</td>
           <td>{{invoicedetail.item.ply_dimension.square_ft|floatformat:"0"}}</td>
           <td style="background-color: #DDDDDD;">{{invoicedetail.quantity|floatformat:"0"}}</td>
@@ -196,9 +202,9 @@
 </body>
 
 <script>
-  $(document).ready(function () {
-    window.print();
-  });
+  // $(document).ready(function () {
+  //   window.print();
+  // });
 </script>
 
 </html>
