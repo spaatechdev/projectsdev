@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>Delivery Challan</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item">Delivery Challan</li>
+        </ol>
+    </nav>
+</div>
+<section class="section">
+    {% if messages %}
+    {% for message in messages %}
+    {% if forloop.counter == 1 %}
+    <div class="{{ message.tags }}" style="height: 30px;">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="card-title">Delivery Challan</h4>
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <div class="float-end">
+                                <a href="{% url 'deliveryChallanAdd' %}" class="btn btn-primary btn-sm">Add</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table class="table table-striped datatable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            SL. No
+                                        </th>
+                                        <th>
+                                            Delivery Challan Number
+                                        </th>
+                                        <th>
+                                            Delivery Date
+                                        </th>
+                                        <th>
+                                            Notes
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for deliveryChallan in deliveryChallans %}
+                                    <tr>
+                                        <td>
+                                            {{forloop.counter}}
+                                        </td>
+                                        <td>
+                                            {{deliveryChallan.delivery_challan_number}}
+                                        </td>
+                                        <td>
+                                            {{deliveryChallan.delivery_date|date:"M d, Y"}}
+                                        </td>
+                                        <td>
+                                            {{deliveryChallan.notes}}
+                                        </td>
+                                        <td>
+                                            ABC
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- {% if deliveryChallans.has_other_pages %}
+                    <div class="float-end">
+                        <ul class="pagination">
+                            {% if deliveryChallans.has_previous %}
+                            <li class="mx-2"><a href="?page={{ deliveryChallans.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in deliveryChallans.paginator.page_range %}
+                            {% if deliveryChallans.number == i %}
+                            <li class="active mx-2"><span>{{ i }} <span class="sr-only"></span></span></li>
+                            {% else %}
+                            <li class="mx-2"><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            {% if deliveryChallans.has_next %}
+                            <li class="mx-2"><a href="?page={{ deliveryChallans.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                            <li class="disabled mx-2"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %} -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('.datatable').DataTable();
+    });
+</script>
+{% endblock %}

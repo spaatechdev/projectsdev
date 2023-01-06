@@ -174,5 +174,9 @@ urlpatterns = [
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),
 
+    path('deliveryChallanList', views.deliveryChallanList, name='deliveryChallanList'),
+    path('deliveryChallanAdd', views.deliveryChallanAdd, name='deliveryChallanAdd'),
+    
     path('storeItemReports', views.storeItemReports, name='storeItemReports'),
+    
 ]

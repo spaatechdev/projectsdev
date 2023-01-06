@@ -2440,3 +2440,20 @@ def storeItemReports(request):
     # storeItems = paginator.page(page)
     context = {'storeItems': storeItems}
     return render(request, 'reports/storeItems.html', context)
+
+@login_required
+def deliveryChallanList(request):
+    page = request.GET.get('page', 1)
+    deliveryChallans = models.DeliveryChallanHeader.objects.filter(deleted=0)
+    # paginator = Paginator(deliveryChallans, env("PER_PAGE_DATA"))
+    # deliveryChallans = paginator.page(page)
+    context = {'deliveryChallans': deliveryChallans}
+    return render(request, 'deliveryChallan/list.html', context)
+
+@login_required
+def deliveryChallanAdd(request):
+    context = {}
+    customers = models.Customer.objects.filter(deleted=0)
+    items = models.Customer.objects.filter(deleted=0)
+    context.update({'customers': customers})
+    return render(request, 'deliveryChallan/add.html', context)

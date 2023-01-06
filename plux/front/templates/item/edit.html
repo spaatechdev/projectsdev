@@ -41,7 +41,7 @@
                             <div class="form-group">
                                 <label for="description">Description</label>
                                 <textarea name="description" class="form-control" id="description" rows="5"
-                                    placeholder="Description" required>{{item.description}}</textarea>
+                                    placeholder="" required>{{item.description}}</textarea>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
@@ -88,7 +88,7 @@
                                     <div class="form-group">
                                         <label for="unit_price">Unit Price</label>
                                         <input type="text" name="unit_price" class="form-control" id="unit_price"
-                                            required placeholder="Unit Price" value="{{item.unit_price}}"
+                                            required placeholder="" value="{{item.unit_price}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -98,7 +98,7 @@
                                     <div class="form-group">
                                         <label for="hsn_code">HSN Code</label>
                                         <input type="text" name="hsn_code" class="form-control" id="hsn_code" required
-                                            placeholder="HSN Code" value="{{item.hsn_code}}"
+                                            placeholder="" value="{{item.hsn_code}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@
                                     <div class="form-group">
                                         <label for="gst_percentage">GST Percentage</label>
                                         <input type="text" name="gst_percentage" class="form-control"
-                                            id="gst_percentage" required placeholder="GST Percentage"
+                                            id="gst_percentage" required placeholder=""
                                             value="{{item.gst_percentage}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
@@ -125,14 +125,14 @@
                                     <div class="form-group">
                                         <label>Attribute Name</label>
                                         <input type="text" class="form-control attribute_name" name="attribute_name[]"
-                                            placeholder="Color" value="{{itemAttribute.attribute_name}}" required>
+                                            placeholder="" value="{{itemAttribute.attribute_name}}" required>
                                     </div>
                                 </div>
                                 <div class="col-md-7">
                                     <div class="form-group">
                                         <label>Attribute Value</label>
                                         <textarea name="attribute_value[]" class="form-control attribute_value" rows="5"
-                                            placeholder="Red" required>{{itemAttribute.attribute_value}}</textarea>
+                                            placeholder="" required>{{itemAttribute.attribute_value}}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -165,13 +165,13 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Attribute Name</label>
-                                        <input type="text" class="form-control attribute_name" name="attribute_name[]" placeholder="Color" required>
+                                        <input type="text" class="form-control attribute_name" name="attribute_name[]" placeholder="" required>
                                     </div>
                                 </div>
                                 <div class="col-md-7">
                                     <div class="form-group">
                                         <label>Attribute Value</label>
-                                        <textarea name="attribute_value[]" class="form-control attribute_value" rows="5" placeholder="Red" required></textarea>
+                                        <textarea name="attribute_value[]" class="form-control attribute_value" rows="5" placeholder="" required></textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
