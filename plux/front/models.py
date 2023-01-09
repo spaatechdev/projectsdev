@@ -46,6 +46,7 @@ class User(AbstractUser):
 class Countries(models.Model):
     sortname = models.CharField(max_length=3)
     name = models.CharField(max_length=150)
+    phonecode = models.CharField(max_length=5, blank=True, null=True)
 
     def __str__(self):
         return self.name
