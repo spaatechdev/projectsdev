@@ -76,7 +76,7 @@
                                     <div class="form-group">
                                         <label for="contact_no">Contact No</label>
                                         <input type="text" class="form-control" id="contact_no" name="contact_no"
-                                            placeholder="" value="{{salesperson.contact_no}}">
+                                            placeholder="" value="{{salesperson.contact_no}}" pattern="^\d{8,11}(;\d{8,11})*$">
                                         <span class="text-warning" style="font-size: small;">If you want to add multiple
                                             contact number, please use ";" separator</span>
                                     </div>
