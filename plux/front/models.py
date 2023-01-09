@@ -98,9 +98,9 @@ class Customer(models.Model):
     pin = models.CharField(max_length=6, validators=[
                            RegexValidator('^[0-9]{6}$', _('Invalid Pin Number'))])
     gst_no = models.CharField(max_length=16, blank=True, null=True)
-    contact_no = models.CharField(max_length=40, blank=True, null=True)
+    contact_no = models.CharField(max_length=250, blank=True, null=True)
     contact_name = models.CharField(max_length=40, blank=True, null=True)
-    contact_email = models.CharField(max_length=100, blank=True, null=True)
+    contact_email = models.CharField(max_length=250, blank=True, null=True)
     existing_invoice_balance = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
     deleted = models.BooleanField(default=0)
@@ -126,9 +126,9 @@ class SalesPerson(models.Model):
         Cities, related_name='CitySalesperson', on_delete=models.CASCADE, blank=True, null=True)
     pin = models.CharField(max_length=6, validators=[
                            RegexValidator('^[0-9]{6}$', _('Invalid Pin Number'))])
-    contact_no = models.CharField(max_length=40, blank=True, null=True)
+    contact_no = models.CharField(max_length=250, blank=True, null=True)
     contact_name = models.CharField(max_length=40, blank=True, null=True)
-    contact_email = models.CharField(max_length=100, blank=True, null=True)
+    contact_email = models.CharField(max_length=250, blank=True, null=True)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
@@ -235,9 +235,9 @@ class VendorMaster(models.Model):
     pin = models.CharField(max_length=6, validators=[
                            RegexValidator('^[0-9]{6}$', _('Invalid Pin Number'))])
     gst_no = models.CharField(max_length=16, blank=True, null=True)
-    contact_no = models.CharField(max_length=40, blank=True, null=True)
+    contact_no = models.CharField(max_length=250, blank=True, null=True)
     contact_name = models.CharField(max_length=40, blank=True, null=True)
-    contact_email = models.CharField(max_length=100, blank=True, null=True)
+    contact_email = models.CharField(max_length=250, blank=True, null=True)
     deleted = models.BooleanField(default=0)
 
     def __str__(self):
@@ -262,9 +262,9 @@ class StoreMaster(models.Model):
     pin = models.CharField(max_length=6, validators=[
                            RegexValidator('^[0-9]{6}$', _('Invalid Pin Number'))])
     gst_no = models.CharField(max_length=16, blank=True, null=True)
-    contact_no = models.CharField(max_length=40, blank=True, null=True)
+    contact_no = models.CharField(max_length=250, blank=True, null=True)
     contact_name = models.CharField(max_length=40, blank=True, null=True)
-    contact_email = models.CharField(max_length=100, blank=True, null=True)
+    contact_email = models.CharField(max_length=250, blank=True, null=True)
     manager_name = models.CharField(max_length=40, blank=True, null=True)
     deleted = models.BooleanField(default=0)
 
@@ -439,7 +439,8 @@ class OnTransitHeader(models.Model):
         StoreMaster, related_name='TransitFromStore', on_delete=models.CASCADE, blank=True, null=True)
     store_to = models.ForeignKey(
         StoreMaster, related_name='TransitToStore', on_delete=models.CASCADE, blank=True, null=True)
-    transfer_number = models.CharField(default="TR-00000001", max_length=15, blank=True, null=True)
+    transfer_number = models.CharField(
+        default="TR-00000001", max_length=15, blank=True, null=True)
     transfer_date = models.DateField(blank=True, null=True)
     status = models.SmallIntegerField(default=1)
     deleted = models.BooleanField(default=0)
@@ -581,10 +582,11 @@ class InvoiceTerms(models.Model):
 
 
 class TransportHeader(models.Model):
-    transporter_name = models.CharField(max_length=100, blank=False, null=False)
+    transporter_name = models.CharField(
+        max_length=100, blank=False, null=False)
     vehicle_number = models.CharField(max_length=10, blank=False, null=False)
     vehicle_description = models.TextField(blank=True, null=True)
-    
+
 
 class DeliveryChallanHeader(models.Model):
     delivery_challan_number = models.CharField(
@@ -593,7 +595,8 @@ class DeliveryChallanHeader(models.Model):
         SalesOrderHeader, on_delete=models.CASCADE, default=1)
     invoice_header = models.ForeignKey(
         InvoiceHeader, on_delete=models.CASCADE, default=1)
-    transport_header = models.ForeignKey(TransportHeader, on_delete=models.CASCADE, default=1)
+    transport_header = models.ForeignKey(
+        TransportHeader, on_delete=models.CASCADE, default=1)
     delivery_date = models.DateField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     status = models.IntegerField(default=1)

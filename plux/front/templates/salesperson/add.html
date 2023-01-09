@@ -74,9 +74,9 @@
                                     <div class="form-group">
                                         <label for="contact_no">Contact No</label>
                                         <input type="text" class="form-control" id="contact_no" name="contact_no"
-                                            placeholder=""
-                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                            maxlength="10">
+                                            placeholder="">
+                                        <span class="text-warning" style="font-size: small;">If you want to add multiple
+                                            contact number, please use "/" separator</span>
                                     </div>
                                 </div>
                             </div>
@@ -84,8 +84,10 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="contact_email">Contact Email</label>
-                                        <input type="email" class="form-control" id="contact_email" name="contact_email"
+                                        <input type="text" class="form-control" id="contact_email" name="contact_email"
                                             placeholder="">
+                                        <span class="text-warning" style="font-size: small;">If you want to add multiple
+                                            Email, please use "/" separator</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
