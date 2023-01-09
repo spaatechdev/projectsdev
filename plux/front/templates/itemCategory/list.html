@@ -107,16 +107,7 @@
 {% block js %}
 <script>
     $(document).ready(function () {
-        $('#dataTable').dataTable({
-            "paginate": true,
-            "sort": true,
-            "language": {
-                "emptyTable": "No Data Is Available."
-            },
-            "order": [
-                [0, "desc"]
-            ],
-        });
+        $('.datatable').DataTable();
     });
 </script>
 {% endblock %}

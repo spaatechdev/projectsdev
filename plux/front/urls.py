@@ -110,6 +110,8 @@ urlpatterns = [
          views.salesOrderDelete, name='salesOrderDelete'),
     path('salesOrderDetailsList/<int:header_id>',
          views.salesOrderDetailsList, name='salesOrderDetailsList'),
+    path('printSalesOrder/<int:header_id>',
+         views.printSalesOrder, name='printSalesOrder'),
 
     path('standardTermList', views.standardTermList, name='standardTermList'),
     path('standardTermAdd', views.standardTermAdd, name='standardTermAdd'),
@@ -145,7 +147,7 @@ urlpatterns = [
     path('pendingInvoicePayment/<int:invoice_id>',
          views.pendingInvoicePayment, name='pendingInvoicePayment'),
 
-    path('top5Selling', csrf_exempt(views.top5Selling), name='top5Selling'),
+    path('top5', csrf_exempt(views.top5), name='top5'),
     path('getVendorPurchaseOrders', csrf_exempt(
         views.getVendorPurchaseOrders), name='getVendorPurchaseOrders'),
     path('getPurchaseOrderDetails', csrf_exempt(
@@ -171,4 +173,10 @@ urlpatterns = [
 
     path('getStatesByCountry', views.getStatesByCountry, name='getStatesByCountry'),
     path('getCitiesByState', views.getCitiesByState, name='getCitiesByState'),
+
+    path('deliveryChallanList', views.deliveryChallanList, name='deliveryChallanList'),
+    path('deliveryChallanAdd', views.deliveryChallanAdd, name='deliveryChallanAdd'),
+    
+    path('storeItemReports', views.storeItemReports, name='storeItemReports'),
+    
 ]

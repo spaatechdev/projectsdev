@@ -43,7 +43,7 @@
                                     <div class="form-group">
                                         <label for="salesperson_name">Salesperson Name</label>
                                         <input type="text" class="form-control" name="salesperson_name"
-                                            id="salesperson_name" placeholder="Salesperson Name"
+                                            id="salesperson_name" placeholder=""
                                             value="{{salesperson.salesperson_name}}" required>
                                     </div>
                                 </div>
@@ -53,14 +53,14 @@
                                     <div class="form-group">
                                         <label for="address_1">Address 1</label>
                                         <textarea name="address_1" class="form-control" id="address_1" rows="5"
-                                            placeholder="Address 1" required>{{salesperson.address_1}}</textarea>
+                                            placeholder="" required>{{salesperson.address_1}}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="address_2">Address 2</label>
                                         <textarea name="address_2" class="form-control" id="address_2" rows="5"
-                                            placeholder="Address 2">{{salesperson.address_2}}</textarea>
+                                            placeholder="">{{salesperson.address_2}}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -69,14 +69,14 @@
                                     <div class="form-group">
                                         <label for="contact_name">Contact Name</label>
                                         <input type="text" class="form-control" id="contact_name" name="contact_name"
-                                            placeholder="John Doe" value="{{salesperson.contact_name}}">
+                                            placeholder="" value="{{salesperson.contact_name}}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="contact_no">Contact No</label>
                                         <input type="text" class="form-control" id="contact_no" name="contact_no"
-                                            placeholder="99******49"
+                                            placeholder=""
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                             maxlength="10" value="{{salesperson.contact_no}}">
                                     </div>
@@ -87,7 +87,7 @@
                                     <div class="form-group">
                                         <label for="contact_email">Contact Email</label>
                                         <input type="email" class="form-control" id="contact_email" name="contact_email"
-                                            placeholder="john@example.com" value="{{salesperson.contact_email}}">
+                                            placeholder="" value="{{salesperson.contact_email}}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -95,7 +95,7 @@
                                         <label for="pin">PIN</label>
                                         <input type="text" class="form-control" maxlength="6" id="pin" name="pin"
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                            placeholder="700001" value="{{salesperson.pin}}">
+                                            placeholder="" value="{{salesperson.pin}}">
                                     </div>
                                 </div>
                             </div>
@@ -116,7 +116,10 @@
                                     <div class="form-group">
                                         <label for="state">State</label>
                                         <select class="form-control" id="state" name="state">
-                                            <option value="{{salesperson.state_id}}">{{salesperson.state.name}}</option>
+                                            {% for state in states %}
+                                            <option value="{{state.id}}" {% if state.id == salesperson.state_id %}
+                                                selected {% endif %}>{{state.name}}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                 </div>
@@ -124,7 +127,11 @@
                                     <div class="form-group">
                                         <label for="city">City</label>
                                         <select class="form-control" id="city" name="city">
-                                            <option value="{{salesperson.city_id}}">{{salesperson.city.name}}</option>
+                                            <option value="">Select City</option>
+                                            {% for city in cities %}
+                                            <option value="{{city.id}}" {% if city.id == salesperson.city_id %}
+                                                selected {% endif %}>{{city.name}}</option>
+                                            {% endfor %}
                                         </select>
                                     </div>
                                 </div>

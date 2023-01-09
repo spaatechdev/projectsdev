@@ -62,18 +62,6 @@
                                         <td>
                                             {{user.date_joined|date:"M d, Y"}}
                                         </td>
-                                        <td>
-                                            {{customer.address_1}}
-                                        </td>
-                                        <td>
-                                            {{customer.address_2}}
-                                        </td>
-                                        <td>
-                                            {{customer.pin}}
-                                        </td>
-                                        <td>
-                                            {{customer.contact_number}}
-                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -111,4 +99,9 @@
 {% endblock %}
 
 {% block js %}
+<script>
+    $(document).ready(function () {
+        $('.datatable').DataTable();
+    });
+</script>
 {% endblock %}

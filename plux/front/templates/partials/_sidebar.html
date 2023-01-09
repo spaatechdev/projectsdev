@@ -9,7 +9,6 @@
       </a>
     </li>
     <!-- End Dashboard Nav -->
-
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#master-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-menu-button-wide"></i><span>Master Data</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -28,18 +27,13 @@
           </a>
         </li>
         <li>
-          <a href="{% url 'salespersonList' %}">
-            <i class="bi bi-circle"></i><span>Sales Persons</span>
-          </a>
-        </li>
-        <li>
           <a href="{% url 'vendorList' %}">
             <i class="bi bi-circle"></i><span>Vendors</span>
           </a>
         </li>
         <li>
-          <a href="{% url 'storeList' %}">
-            <i class="bi bi-circle"></i><span>Stores</span>
+          <a href="{% url 'salespersonList' %}">
+            <i class="bi bi-circle"></i><span>Sales Persons</span>
           </a>
         </li>
         <li>
@@ -63,6 +57,11 @@
           </a>
         </li>
         <li>
+          <a href="{% url 'storeList' %}">
+            <i class="bi bi-circle"></i><span>Stores</span>
+          </a>
+        </li>
+        <li>
           <a href="{% url 'storeItemList' %}">
             <i class="bi bi-circle"></i><span>Store Items</span>
           </a>
@@ -75,7 +74,6 @@
       </ul>
     </li>
     <!-- End Components Nav -->
-
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#storeTransaction-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-journal-text"></i><span>Store Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -99,13 +97,11 @@
       </ul>
     </li>
     <!-- End Store Transaction Nav -->
-
-
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#salesTransaction-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-file-earmark"></i><span>Sales Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-card-list"></i><span>Sales Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
-      <ul id="salesTransaction-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav"> 
+      <ul id="salesTransaction-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
           <a href="{% url 'salesOrderList' %}">
             <i class="bi bi-circle"></i><span>Sales Orders</span>
@@ -124,5 +120,31 @@
       </ul>
     </li>
     <!-- End Sales Transaction Nav -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#reports-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-file-earmark"></i><span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="reports-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'storeItemReports' %}">
+            <i class="bi bi-circle"></i><span>Store Item Reports</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!-- End Reports Nav -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#delivery-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-truck"></i><span>Delivery</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="delivery-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'deliveryChallanList' %}">
+            <i class="bi bi-circle"></i><span>Delivery Challan</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!-- End Delivery Challan Nav -->
   </ul>
 </aside>

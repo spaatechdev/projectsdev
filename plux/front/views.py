@@ -8,8 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from front.backends import AuthBackend
 from . import models
-from django.db.models import Count
-from datetime import datetime
+from django.db.models import Count, Sum
+from datetime import datetime, timedelta
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -30,6 +30,11 @@ environ.Env.read_env()
 
 # Create your views here.
 
+def get_previous_month():
+    """Returns the previous month as a datetime object."""
+    return datetime.now().replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
+    ) - timedelta(days=1) 
 
 def changePassword(request):
     if request.method == "POST":
@@ -348,9 +353,7 @@ def forgot(request):
             message = otp
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [request.POST['email']]
-            print(request.session['OTP'])
-            print(request.session['FORGOT_EMAIL'])
-            # send_mail(subject, message, email_from, recipient_list)
+            send_mail(subject, message, email_from, recipient_list)
             return redirect('enter_otp')
         else:
             messages.error(request, 'User not found by this email.')
@@ -441,21 +444,70 @@ def signout(request):
     return redirect('signin')
 
 
-def top5Selling(request):
-    top_5_selling_items = models.InvoiceDetails.objects.values(
-        'item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
+def top5(request):
+    top_sales_persons = models.SalesOrderHeader.objects.values('sales_person_id', 'sales_person__salesperson_name', 'sales_person__contact_email').annotate(sales_person_amount=Sum('total_amount')).order_by('-sales_person_amount')[:5]
+    top_5_sales_person = []
+    for item in top_sales_persons:
+        sales_persons = {}
+        sales_persons['name'] = item['sales_person__salesperson_name']
+        sales_persons['id'] = item['sales_person_id']
+        sales_persons['data'] = []
+        top_5_sales_person.append(sales_persons)
+
+    now = datetime.now()
+    result = [now.strftime("%b %Y")]
+    for _ in range(0, 11):
+        now = now.replace(day=1) - timedelta(days=1)
+        result.insert(0, now.strftime("%b %Y"))
+    
+    for elem in top_5_sales_person:
+        for month in result:
+            amount_value = models.SalesOrderHeader.objects.filter(sales_person_id=elem['id'], sales_order_date__year=datetime.strptime(month, '%b %Y').strftime("%Y"), sales_order_date__month=datetime.strptime(month, '%b %Y').strftime("%m")).values('sales_person_id').annotate(sales_person_amount=Sum('total_amount'))
+            if len(amount_value) > 0:
+                elem['data'].append(float(amount_value[0]['sales_person_amount']))
+            else:
+                elem['data'].append(0)
+    top_5_salesman = {}
+    top_5_salesman['categories'] = result
+    top_5_salesman['series'] = top_5_sales_person
+
+    top_customers = models.InvoiceHeader.objects.values('customer_id', 'customer__customer_name', 'customer__contact_email').annotate(customer_amount=Sum('total_amount')).order_by('-customer_amount')[:5]
+    top_5_customers = []
+    for elem in top_customers:
+        single_customer_row = {}
+        single_customer_row['name'] = elem['customer__customer_name']
+        single_customer_row['y'] = float(elem['customer_amount'])
+        top_5_customers.append(single_customer_row)
+
+    sales_report = []
+    for month in result:
+        sales_value = models.SalesOrderHeader.objects.filter(sales_order_date__year=datetime.strptime(month, '%b %Y').strftime("%Y"), sales_order_date__month=datetime.strptime(month, '%b %Y').strftime("%m")).aggregate(Sum('total_amount'))
+        sales_report.append(float(sales_value['total_amount__sum']) if sales_value['total_amount__sum'] is not None else 0)
+    sales_by_month = {}
+    sales_by_month['categories'] = result
+    sales_by_month['series'] = sales_report
+
+    top_items = models.InvoiceDetails.objects.values('item_id', 'item__description', 'item__unit_price').annotate(item_count=Count('item_id')).order_by('-item_count')[:5]
     top_5_items = []
-    for elem in top_5_selling_items:
-        single_row = {}
-        single_row['name'] = elem['item__description']
-        single_row['y'] = elem['item_count']
-        top_5_items.append(single_row)
-    return JsonResponse({'top_5_items': top_5_items})
+    for elem in top_items:
+        single_item_row = {}
+        single_item_row['name'] = elem['item__description']
+        single_item_row['y'] = elem['item_count']
+        top_5_items.append(single_item_row)
+    return JsonResponse({'top_5_items': top_5_items, 'top_5_customers': top_5_customers, 'top_5_salesman': top_5_salesman, 'sales_by_month': sales_by_month})
 
 
 @login_required
 def dashboard(request):
     context = {}
+    sales_last_month = models.SalesOrderHeader.objects.filter(sales_order_date__year=get_previous_month().strftime("%Y"), sales_order_date__month=get_previous_month().strftime("%m")).aggregate(Sum('total_amount'))
+    sales_current_month = models.SalesOrderHeader.objects.filter(sales_order_date__year=datetime.now().strftime("%Y"), sales_order_date__month=datetime.now().strftime("%m")).aggregate(Sum('total_amount'))
+    sales_total = models.SalesOrderHeader.objects.aggregate(Sum('total_amount'))
+    context.update({
+        'sales_last_month': sales_last_month['total_amount__sum'] if sales_last_month['total_amount__sum'] is not None else 0,
+        'sales_current_month': sales_current_month['total_amount__sum'] if sales_current_month['total_amount__sum'] is not None else 0,
+        'sales_total': sales_total['total_amount__sum'] if sales_total['total_amount__sum'] is not None else 0
+    })
     return render(request, 'dashboard.html', context)
 
 
@@ -502,9 +554,11 @@ def customerAdd(request):
 @login_required
 def customerEdit(request, id):
     context = {}
-    countries = models.Countries.objects.filter(id=101)
     customer = models.Customer.objects.get(pk=id)
-    context.update({'countries': countries, 'customer': customer})
+    countries = models.Countries.objects.filter(id=customer.country_id)
+    states = models.States.objects.filter(country_id=customer.country_id)
+    cities = models.Cities.objects.filter(state_id=customer.state_id)
+    context.update({'customer': customer, 'countries': countries, 'states': states, 'cities': cities})
     if request.method == "POST":
         customer = models.Customer.objects.get(pk=request.POST['id'])
         customer.customer_name = request.POST['customer_name']
@@ -622,9 +676,11 @@ def salespersonAdd(request):
 @login_required
 def salespersonEdit(request, id):
     context = {}
-    countries = models.Countries.objects.filter(id=101)
     salesperson = models.SalesPerson.objects.get(pk=id)
-    context.update({'countries': countries, 'salesperson': salesperson})
+    countries = models.Countries.objects.filter(id=salesperson.country_id)
+    states = models.States.objects.filter(country_id=salesperson.country_id)
+    cities = models.Cities.objects.filter(state_id=salesperson.state_id)
+    context.update({'salesperson': salesperson, 'countries': countries, 'states': states, 'cities': cities})
     if request.method == "POST":
         salesperson = models.SalesPerson.objects.get(pk=request.POST['id'])
         salesperson.salesperson_name = request.POST['salesperson_name']
@@ -752,9 +808,11 @@ def vendorAdd(request):
 @login_required
 def vendorEdit(request, id):
     context = {}
-    countries = models.Countries.objects.filter(id=101)
     vendor = models.VendorMaster.objects.get(pk=id)
-    context.update({'countries': countries, 'vendor': vendor})
+    countries = models.Countries.objects.filter(id=vendor.country.id)
+    states = models.States.objects.filter(country_id=vendor.country_id)
+    cities = models.Cities.objects.filter(state_id=vendor.state_id)
+    context.update({'vendor': vendor, 'countries': countries, 'states': states, 'cities': cities})
     if request.method == "POST":
         vendor = models.VendorMaster.objects.get(pk=request.POST['id'])
         vendor.name = request.POST['name']
@@ -1686,6 +1744,15 @@ def salesOrderDetailsList(request, header_id):
     context = {'salesHeader': salesHeader}
     return render(request, 'salesOrder/orderDetailsList.html', context)
 
+@login_required
+def printSalesOrder(request, header_id):
+    page = request.GET.get('page', 1)
+    salesOrder = models.SalesOrderHeader.objects.prefetch_related('salesorderdetails_set').get(pk=header_id)
+    for salesDetail in salesOrder.salesorderdetails_set.all():
+        salesDetail.item.attributes = models.ItemAttributes.objects.filter(item_id=salesDetail.item.id)
+    context = {'salesOrder': salesOrder}
+    return render(request, 'salesOrder/printSalesOrder.html', context)
+
 
 @login_required
 def storeTransactionList(request):
@@ -1701,7 +1768,7 @@ def storeTransactionList(request):
 def storeTransactionAdd(request):
     context = {}
     transactionTypes = models.TransactionType.objects.filter(
-        deleted=0).exclude(id__in=[2, 3])
+        deleted=0).exclude(id__in=[2, 3, 7])
     context.update({'transactionTypes': transactionTypes})
     if request.method == "POST":
         if int(request.POST['transaction_type_id']) == 1:
@@ -2163,13 +2230,11 @@ def invoiceList(request):
 def invoiceAdd(request, invoice_type=None):
     context = {}
     if invoice_type == 'gst':
-        customers = models.Customer.objects.filter(deleted=0).exclude(
-            gst_no__isnull=True).exclude(gst_no__exact='')
+        customers = models.Customer.objects.filter(deleted=0).exclude(gst_no__isnull=True).exclude(gst_no__exact='')
     else:
         customers = models.Customer.objects.filter(deleted=0)
     stores = models.StoreMaster.objects.filter(deleted=0)
-    context.update({'customers': customers, 'stores': stores,
-                   'invoice_type': invoice_type})
+    context.update({'customers': customers, 'stores': stores, 'invoice_type': invoice_type})
     if request.method == "POST":
         total_item_price = 0
         total_gst_price = 0
@@ -2196,6 +2261,7 @@ def invoiceAdd(request, invoice_type=None):
         invoiceHeader.store_id = request.POST['store']
         invoiceHeader.due_amount = request.POST['due_amount']
         invoiceHeader.total_amount = request.POST['total_amount']
+        invoiceHeader.invoice_type = 1 if request.POST['invoice_type'] == "gst" else 2
         invoiceHeader.save()
         order_details = []
         for index, item in enumerate(request.POST.getlist('item_id[]')):
@@ -2305,6 +2371,8 @@ def printInvoice(request, header_id):
     page = request.GET.get('page', 1)
     invoiceOrder = models.InvoiceHeader.objects.prefetch_related(
         'invoicedetails_set', 'invoiceterms_set').get(pk=header_id)
+    for invoiceDetail in invoiceOrder.invoicedetails_set.all():
+        invoiceDetail.item.attributes = models.ItemAttributes.objects.filter(item_id=invoiceDetail.item.id)
     invoicePayments = models.InvoicePayments.objects.filter(
         customer_id=invoiceOrder.customer_id).exclude(status=3)
     due_payment = 0
@@ -2358,7 +2426,34 @@ def pendingInvoicePayment(request, invoice_id):
         invoiceHeader = models.InvoiceHeader.objects.get(
             pk=request.POST['invoice_header_id'])
         invoiceHeader.paid_amount = request.POST['paid_amount']
+        invoiceHeader.status = 2
         invoiceHeader.save()
         messages.success(request, 'Payment Receipt Created Successfully.')
         return redirect('pendingInvoiceList')
     return render(request, 'pendingInvoice/payment.html', context)
+
+@login_required
+def storeItemReports(request):
+    page = request.GET.get('page', 1)
+    storeItems = models.StoreItemMaster.objects.filter(deleted=0)
+    # paginator = Paginator(storeItems, env("PER_PAGE_DATA"))
+    # storeItems = paginator.page(page)
+    context = {'storeItems': storeItems}
+    return render(request, 'reports/storeItems.html', context)
+
+@login_required
+def deliveryChallanList(request):
+    page = request.GET.get('page', 1)
+    deliveryChallans = models.DeliveryChallanHeader.objects.filter(deleted=0)
+    # paginator = Paginator(deliveryChallans, env("PER_PAGE_DATA"))
+    # deliveryChallans = paginator.page(page)
+    context = {'deliveryChallans': deliveryChallans}
+    return render(request, 'deliveryChallan/list.html', context)
+
+@login_required
+def deliveryChallanAdd(request):
+    context = {}
+    customers = models.Customer.objects.filter(deleted=0)
+    items = models.Customer.objects.filter(deleted=0)
+    context.update({'customers': customers})
+    return render(request, 'deliveryChallan/add.html', context)

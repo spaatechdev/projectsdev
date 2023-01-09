@@ -61,7 +61,6 @@
       <div style="float: right; text-align: right; padding-right: 6px;">
         <div>INVOICE NO: {{invoiceOrder.invoice_number}}</div>
         <div class="date">INVOICE DATE: {{invoiceOrder.invoice_date}}</div>
-        <div>STORE: {{invoiceOrder.store.name}}</div>
       </div>
     </div>
     <table border="1" cellspacing="0" cellpadding="0" style="width: 100%; border-collapse: collapse;
@@ -75,6 +74,7 @@
           <th>Qty</th>
           <th>Price/Unite</th>
           <th>TOTAL</th>
+          {% if invoiceOrder.invoice_type == 1 %}
           {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
           {% if invoiceOrder.customer.state_id != 41 %}
           <th>IGST</th>
@@ -86,6 +86,7 @@
           <th>SGST Price</th>
           {% endif %}
           {% endif %}
+          {% endif %}
         </tr>
       </thead>
 
@@ -93,12 +94,19 @@
         {% for invoicedetail in invoiceOrder.invoicedetails_set.all %}
         <tr>
           <td>{{forloop.counter}}</td>
-          <td>{{invoicedetail.item.description}}</td>
+          <td>
+            {{invoicedetail.item.description}} |
+            {% for attribute in invoicedetail.item.attributes %}
+            {{attribute.attribute_name}}=>{{attribute.attribute_value}}
+            {% if forloop.counter != invoicedetail.item.attributes|length %}, {% endif %}
+            {% endfor %}
+          </td>
           <td>{{invoicedetail.item.ply_dimension.description}}</td>
           <td>{{invoicedetail.item.ply_dimension.square_ft|floatformat:"0"}}</td>
           <td style="background-color: #DDDDDD;">{{invoicedetail.quantity|floatformat:"0"}}</td>
           <td>{{invoicedetail.item.unit_price}}</td>
           <td>{{invoicedetail.invoice_item_value}}</td>
+          {% if invoiceOrder.invoice_type == 1 %}
           {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
           {% if invoiceOrder.customer.state_id != 41 %}
           <td>{{invoicedetail.item.gst_percentage}}%</td>
@@ -108,6 +116,7 @@
           <td>{{invoicedetail.invoice_item_gst_value|div:2}}</td>
           <td>{{invoicedetail.item.gst_percentage|div:2}}%</td>
           <td>{{invoicedetail.invoice_item_gst_value|div:2}}</td>
+          {% endif %}
           {% endif %}
           {% endif %}
         </tr>
@@ -164,6 +173,7 @@
     <div style="float: right;">
       <span>SUBTOTAL:</span> {{invoiceOrder.invoice_total}}
       <br />
+      {% if invoiceOrder.invoice_type == 1 %}
       {% if invoiceOrder.customer.gst_no is not None and invoiceOrder.customer.gst_no != "" %}
       {% if invoiceOrder.customer.state_id != 41 %}
       <span>IGST:</span> {{invoiceOrder.invoice_gst_total}}
@@ -173,6 +183,7 @@
       <br />
       <span>SGST:</span> {{invoiceOrder.invoice_gst_total|div:2}}
       <br />
+      {% endif %}
       {% endif %}
       {% endif %}
       <span>PREVIOUS DUE:</span> {{due_payment}}

@@ -59,7 +59,7 @@
                                         <label for="transaction_date">Transaction Date</label>
                                         <input type="date" name="transaction_date" class="form-control"
                                             value="{{storeTransaction.transaction_date|date:'Y-m-d'}}"
-                                            id="transaction_date" required placeholder="Transaction Date">
+                                            id="transaction_date" required placeholder="">
                                     </div>
                                 </div>
                             </div>
@@ -143,7 +143,7 @@
                                         <div class="form-group">
                                             <label>Quantity</label>
                                             <input type="text" class="form-control item_quantity" name="quantity[]"
-                                                placeholder="100" required value="{{storeTransactionDetail.quantity}}"
+                                                placeholder="" required value="{{storeTransactionDetail.quantity}}"
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -151,7 +151,7 @@
                                         <div class="form-group">
                                             <label>Unit Price</label>
                                             <input type="text" class="form-control item_unit_price" name="unit_price[]"
-                                                placeholder="10" required value="{{storeTransactionDetail.unit_price}}"
+                                                placeholder="" required value="{{storeTransactionDetail.unit_price}}"
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -159,7 +159,7 @@
                                         <div class="form-group">
                                             <label>Amount</label>
                                             <input type="text" class="form-control item_total_amount" name="amount[]"
-                                                placeholder="100,000" required value="{{storeTransactionDetail.amount}}"
+                                                placeholder="" required value="{{storeTransactionDetail.amount}}"
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -188,7 +188,7 @@
                                     <div class="form-group">
                                         <label for="total_amount">Total Amount</label>
                                         <input type="text" name="total_amount" class="form-control" id="total_amount"
-                                            required placeholder="Total Amount" readonly
+                                            required placeholder="" readonly
                                             value="{{storeTransaction.total_amount}}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
@@ -225,21 +225,21 @@
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Quantity</label>
-                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="100" required
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="" required
                                         onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Unit Price</label>
-                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" placeholder="10" required
+                                        <input type="text" class="form-control item_unit_price" name="unit_price[]" placeholder="" required
                                         onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Amount</label>
-                                        <input type="text" class="form-control item_total_amount" name="amount[]" placeholder="100,000" required
+                                        <input type="text" class="form-control item_total_amount" name="amount[]" placeholder="" required
                                         onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -315,7 +315,7 @@
                                         <div class="form-group">
                                             <label>Quantity</label>
                                             <input type="text" class="form-control item_quantity" name="quantity[]"
-                                                placeholder="100" required
+                                                placeholder="" required
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -323,7 +323,7 @@
                                         <div class="form-group">
                                             <label>Unit Price</label>
                                             <input type="text" class="form-control item_unit_price" name="unit_price[]"
-                                                placeholder="10" required
+                                                placeholder="" required
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -331,7 +331,7 @@
                                         <div class="form-group">
                                             <label>Amount</label>
                                             <input type="text" class="form-control item_total_amount" name="amount[]"
-                                                placeholder="100,000" required
+                                                placeholder="" required
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -382,7 +382,7 @@
                                         <div class="form-group">
                                             <label>Quantity</label>
                                             <input type="text" class="form-control item_quantity" name="quantity[]"
-                                                placeholder="100" required
+                                                placeholder="" required
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -390,7 +390,7 @@
                                         <div class="form-group">
                                             <label>Unit Price</label>
                                             <input type="text" class="form-control item_unit_price" name="unit_price[]"
-                                                placeholder="10" required
+                                                placeholder="" required
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -398,7 +398,7 @@
                                         <div class="form-group">
                                             <label>Amount</label>
                                             <input type="text" class="form-control item_total_amount" name="amount[]"
-                                                placeholder="100,000" required
+                                                placeholder="" required
                                                 onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
@@ -451,7 +451,7 @@
                                     <div class="form-group">
                                         <label>Quantity</label>
                                         <input type="text" class="form-control item_quantity" name="quantity[]" min="1" max="${response.data[index].quantity - response.data[index].delivered_quantity}"
-                                            placeholder="100" required value="${response.data[index].quantity - response.data[index].delivered_quantity}"
+                                            placeholder="" required value="${response.data[index].quantity - response.data[index].delivered_quantity}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
                                             onkeyup="checkMaxMin(this)">
                                     </div>
@@ -460,7 +460,7 @@
                                     <div class="form-group">
                                         <label>Unit Price</label>
                                         <input type="text" class="form-control item_unit_price" name="unit_price[]" readonly
-                                            placeholder="10" required value="${response.data[index].unit_price}"
+                                            placeholder="" required value="${response.data[index].unit_price}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
@@ -468,7 +468,7 @@
                                     <div class="form-group">
                                         <label>Amount</label>
                                         <input type="text" class="form-control item_total_amount" name="amount[]" readonly
-                                            placeholder="100,000" required value="${response.data[index].amount}"
+                                            placeholder="" required value="${response.data[index].amount}"
                                             onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
                                     </div>
                                 </div>
