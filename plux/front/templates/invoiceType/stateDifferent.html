@@ -27,9 +27,9 @@
 <div class="row">
     <div class="col-md-6">
         <div class="form-group">
-            <label for="vehicle_number">Vehicle Number</label>
-            <input type="text" name="vehicle_number" id="vehicle_number" required style="text-transform: uppercase"
-                class="form-control" maxlength="10">
+            <label for="carrying_cost">Carrying Cost</label>
+            <input type="text" name="carrying_cost" id="carrying_cost" class="form-control" required
+                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
         </div>
     </div>
     <div class="col-md-6">
@@ -41,15 +41,6 @@
                 <option value="{{term.id}}">{{term.description}}</option>
                 {% endfor %}
             </select>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        <div class="form-group">
-            <label for="carrying_cost">Carrying Cost</label>
-            <input type="text" name="carrying_cost" id="carrying_cost" class="form-control" required
-                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
         </div>
     </div>
 </div>

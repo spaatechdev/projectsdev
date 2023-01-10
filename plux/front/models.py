@@ -507,10 +507,17 @@ class SalesOrderDetails(models.Model):
 
 
 class TransportHeader(models.Model):
-    transporter_name = models.CharField(
-        max_length=100, blank=False, null=False)
+    transporter_name = models.CharField(max_length=100, blank=False, null=False)
     vehicle_number = models.CharField(max_length=10, blank=False, null=False)
     vehicle_description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.transporter_name
+
+    class Meta:
+        managed = True
+        db_table = 'transport_header'
+        verbose_name_plural = 'transport_header'
 
 
 class DeliveryChallanHeader(models.Model):
@@ -556,7 +563,6 @@ class InvoiceHeader(models.Model):
     customer = models.ForeignKey(
         Customer, related_name='InvoiceCustomer', on_delete=models.CASCADE, blank=True, null=True)
     invoice_number = models.CharField(max_length=15, blank=True, null=True)
-    vehicle_number = models.CharField(max_length=10, blank=True, null=True)
     invoice_date = models.DateField(blank=True, null=True)
     invoice_total = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
