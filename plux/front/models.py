@@ -314,8 +314,7 @@ class StandardTermMaster(models.Model):
 
 class PurchaseOrderHeader(models.Model):
     ammend_no = models.CharField(max_length=50, blank=True, null=True)
-    purchase_order_no = models.CharField(
-        default="PO-00000001", max_length=15, blank=False, null=False)
+    purchase_order_no = models.CharField(max_length=15, blank=False, null=False)
     purchase_order_date = models.DateField(blank=True, null=True)
     vendor = models.ForeignKey(
         VendorMaster, on_delete=models.CASCADE, blank=True, null=True)
@@ -372,53 +371,6 @@ class PurchaseOrderTerms(models.Model):
         verbose_name_plural = 'purchase_order_terms'
 
 
-class SalesOrderHeader(models.Model):
-    ammend_no = models.CharField(max_length=50, blank=True, null=True)
-    sales_order_no = models.CharField(
-        default="SO-00000001", max_length=15, blank=False, null=False)
-    sales_order_date = models.DateField(blank=True, null=True)
-    sales_person = models.ForeignKey(
-        SalesPerson, on_delete=models.CASCADE, blank=True, null=True)
-    customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-    total_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
-    status = models.IntegerField(default=1)
-    deleted = models.BooleanField(default=0)
-
-    def __str__(self):
-        return self.sales_order_no
-
-    class Meta:
-        managed = True
-        db_table = 'sales_order_header'
-        verbose_name_plural = 'sales_order_header'
-
-
-class SalesOrderDetails(models.Model):
-    ammend_no = models.CharField(max_length=50, blank=True, null=True)
-    sales_order_header = models.ForeignKey(
-        SalesOrderHeader, on_delete=models.CASCADE, default=1)
-    item = models.ForeignKey(
-        ItemMaster, related_name='SalesItem', on_delete=models.CASCADE, blank=True, null=True)
-    quantity = models.DecimalField(max_digits=10, decimal_places=2)
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    delivery_date = models.DateField(blank=True, null=True)
-    delivered_quantity = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
-    deleted = models.BooleanField(default=0)
-
-    def __str__(self):
-        return self.sales_order_header.sales_order_no
-
-    class Meta:
-        managed = True
-        db_table = 'sales_order_details'
-        verbose_name_plural = 'sales_order_details'
-
-
 class TransactionType(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     deleted = models.BooleanField(default=0)
@@ -437,8 +389,7 @@ class OnTransitHeader(models.Model):
         StoreMaster, related_name='TransitFromStore', on_delete=models.CASCADE, blank=True, null=True)
     store_to = models.ForeignKey(
         StoreMaster, related_name='TransitToStore', on_delete=models.CASCADE, blank=True, null=True)
-    transfer_number = models.CharField(
-        default="TR-00000001", max_length=15, blank=True, null=True)
+    transfer_number = models.CharField(max_length=15, blank=True, null=True)
     transfer_date = models.DateField(blank=True, null=True)
     status = models.SmallIntegerField(default=1)
     deleted = models.BooleanField(default=0)
@@ -509,6 +460,96 @@ class PhysicalStockDetails(models.Model):
         verbose_name_plural = 'physical_stock_details'
 
 
+class SalesOrderHeader(models.Model):
+    ammend_no = models.CharField(max_length=50, blank=True, null=True)
+    sales_order_no = models.CharField(max_length=15, blank=False, null=False)
+    sales_order_date = models.DateField(blank=True, null=True)
+    sales_person = models.ForeignKey(
+        SalesPerson, on_delete=models.CASCADE, blank=True, null=True)
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    total_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    status = models.IntegerField(default=1)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.sales_order_no
+
+    class Meta:
+        managed = True
+        db_table = 'sales_order_header'
+        verbose_name_plural = 'sales_order_header'
+
+
+class SalesOrderDetails(models.Model):
+    ammend_no = models.CharField(max_length=50, blank=True, null=True)
+    sales_order_header = models.ForeignKey(
+        SalesOrderHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(
+        ItemMaster, related_name='SalesItem', on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    delivery_date = models.DateField(blank=True, null=True)
+    delivered_quantity = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.sales_order_header.sales_order_no
+
+    class Meta:
+        managed = True
+        db_table = 'sales_order_details'
+        verbose_name_plural = 'sales_order_details'
+
+
+class TransportHeader(models.Model):
+    transporter_name = models.CharField(
+        max_length=100, blank=False, null=False)
+    vehicle_number = models.CharField(max_length=10, blank=False, null=False)
+    vehicle_description = models.TextField(blank=True, null=True)
+
+
+class DeliveryChallanHeader(models.Model):
+    delivery_challan_number = models.CharField(max_length=15, blank=False, null=False)
+    sales_order_header = models.ForeignKey(
+        SalesOrderHeader, on_delete=models.CASCADE, blank=True, null=True)
+    transport_header = models.ForeignKey(
+        TransportHeader, on_delete=models.CASCADE, default=1)
+    delivery_date = models.DateField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    status = models.IntegerField(default=1)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.delivery_challan_number
+
+    class Meta:
+        managed = True
+        db_table = 'delivery_challan_header'
+        verbose_name_plural = 'delivery_challan_header'
+
+
+class DeliveryChallanDetails(models.Model):
+    delivery_challan_header = models.ForeignKey(
+        DeliveryChallanHeader, on_delete=models.CASCADE, default=1)
+    item = models.ForeignKey(ItemMaster, related_name='DeliveryItem',
+                             on_delete=models.CASCADE, blank=True, null=True)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    deleted = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.delivery_challan_header.delivery_challan_number
+
+    class Meta:
+        managed = True
+        db_table = 'delivery_challan_details'
+        verbose_name_plural = 'delivery_challan_details'
+
+
 class InvoiceHeader(models.Model):
     store = models.ForeignKey(StoreMaster, related_name='InvoiceStore',
                               on_delete=models.CASCADE, blank=True, null=True)
@@ -577,53 +618,6 @@ class InvoiceTerms(models.Model):
         managed = True
         db_table = 'invoice_terms'
         verbose_name_plural = 'invoice_terms'
-
-
-class TransportHeader(models.Model):
-    transporter_name = models.CharField(
-        max_length=100, blank=False, null=False)
-    vehicle_number = models.CharField(max_length=10, blank=False, null=False)
-    vehicle_description = models.TextField(blank=True, null=True)
-
-
-class DeliveryChallanHeader(models.Model):
-    delivery_challan_number = models.CharField(
-        default="DC-00000001", max_length=15, blank=False, null=False)
-    sales_order_header = models.ForeignKey(
-        SalesOrderHeader, on_delete=models.CASCADE, default=1)
-    invoice_header = models.ForeignKey(
-        InvoiceHeader, on_delete=models.CASCADE, default=1)
-    transport_header = models.ForeignKey(
-        TransportHeader, on_delete=models.CASCADE, default=1)
-    delivery_date = models.DateField(blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-    status = models.IntegerField(default=1)
-    deleted = models.BooleanField(default=0)
-
-    def __str__(self):
-        return self.delivery_challan_number
-
-    class Meta:
-        managed = True
-        db_table = 'delivery_challan_header'
-        verbose_name_plural = 'delivery_challan_header'
-
-
-class DeliveryChallanDetails(models.Model):
-    delivery_challan_header = models.ForeignKey(
-        DeliveryChallanHeader, on_delete=models.CASCADE, default=1)
-    item = models.ForeignKey(ItemMaster, related_name='DeliveryItem',
-                             on_delete=models.CASCADE, blank=True, null=True)
-    quantity = models.DecimalField(max_digits=10, decimal_places=2)
-    deleted = models.BooleanField(default=0)
-
-    def __str__(self):
-        return self.delivery_challan_header.delivery_challan_number
-
-    class Meta:
-        managed = True
-        db_table = 'delivery_challan_details'
-        verbose_name_plural = 'delivery_challan_details'
 
 
 class PaymentMethods(models.Model):
