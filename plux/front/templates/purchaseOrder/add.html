@@ -52,8 +52,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="purchase_order_date">Purchase Order Date</label>
-                                        <input type="date" name="purchase_order_date" class="form-control" max="{% now 'Y-m-d' %}"
-                                            id="purchase_order_date" required placeholder="">
+                                        <input type="date" name="purchase_order_date" class="form-control"
+                                            max="{% now 'Y-m-d' %}" id="purchase_order_date" required placeholder="">
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                        <select name="item_id[]" id="item_id" class="item_id form-control" required>
                                             <option value="">Select Item</option>
                                             {% for item in items %}
                                             <option value="{{item.id}}">{{item.description}}</option>
@@ -144,12 +144,28 @@
 
 {% block js %}
 <script>
+    $(document).on('change', '.item_id', function () {
+        elem = $(this);
+        var item_id = elem.val();
+        $.ajax({
+            url: "{% url 'getItemDetails' %}",
+            type: 'post',
+            data: ({ item_id: item_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    elem.parents('.content_parent').find('.item_unit_price').val(response.itemDetails['unit_price'])
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    })
     $(document).on('click', '.add_item', function () {
         $('.add_more_content').append(`<div class="row content_parent">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control" required>
+                                        <select name="item_id[]" id="item_id" class="item_id form-control" required>
                                             <option value="">Select Item</option>
                                             {% for item in items %}
                                             <option value="{{item.id}}">{{item.description}}</option>
