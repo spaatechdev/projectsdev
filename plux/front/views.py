@@ -1679,7 +1679,6 @@ def salesOrderAdd(request):
         salesOrder.sales_order_date = request.POST['sales_order_date']
         salesOrder.notes = request.POST['notes']
         salesOrder.total_amount = request.POST['total_amount']
-        salesOrder.commission = request.POST['commission']
         salesOrder.sales_person_id = request.POST['salesperson_id']
         salesOrder.customer_id = request.POST['customer_id']
         salesOrder.save()
@@ -1711,7 +1710,6 @@ def salesOrderEdit(request, id):
         salesOrder.notes = request.POST['notes']
         salesOrder.total_amount = request.POST['total_amount']
         salesOrder.sales_person_id = request.POST['salesperson_id']
-        salesOrder.commission = request.POST['commission']
         salesOrder.customer_id = request.POST['customer_id']
         salesOrder.save()
         models.SalesOrderDetails.objects.filter(
