@@ -2250,7 +2250,6 @@ def invoiceAdd(request, invoice_type=None):
         invoice_number = "IN-" + str(invoice_count + 1).zfill(8)
         invoiceHeader = models.InvoiceHeader()
         invoiceHeader.invoice_number = invoice_number
-        invoiceHeader.vehicle_number = request.POST['vehicle_number'].upper()
         invoiceHeader.invoice_date = datetime.now()
         invoiceHeader.invoice_total = total_item_price
         invoiceHeader.invoice_gst_total = total_gst_price
@@ -2452,6 +2451,43 @@ def deliveryChallanList(request):
 def deliveryChallanAdd(request):
     context = {}
     customers = models.Customer.objects.filter(deleted=0)
-    items = models.Customer.objects.filter(deleted=0)
-    context.update({'customers': customers})
+    stores = models.StoreMaster.objects.filter(deleted=0)
+    items = models.ItemMaster.objects.filter(deleted=0)
+    transports = models.TransportHeader.objects.all()
+    context.update({'customers': customers, 'items': items, 'stores': stores, 'transports': transports})
+    if request.method == "POST":
+        delivery_count = models.DeliveryChallanHeader.objects.filter(deleted=0).count()
+        delivery_number = "DE-" + str(delivery_count + 1).zfill(8)
+        deliveryChallan = models.DeliveryChallanHeader()
+        deliveryChallan.delivery_challan_number = delivery_number
+        deliveryChallan.delivery_date = request.POST['delivery_date']
+        deliveryChallan.notes = request.POST['notes']
+        deliveryChallan.sales_order_header_id = request.POST['sales_order_header_id']
+        deliveryChallan.transport_header_id = request.POST['transport_header_id']
+        deliveryChallan.save()
+        order_details = []
+        for index, item in enumerate(request.POST.getlist('sales_details_id[]')):
+            order_details.append(models.DeliveryChallanDetails(quantity=request.POST.getlist('quantity[]')[index], item_id=request.POST.getlist('item_id[]')[index], delivery_challan_header_id=deliveryChallan.id))
+        models.StoreTransactionDetails.objects.bulk_create(order_details)
+        if request.POST['sales_order_header_id'] != "":
+            for index, item in enumerate(request.POST.getlist('sales_details_id[]')):
+                salesItem = models.SalesOrderDetails.objects.get(pk=request.POST.getlist('sales_details_id[]')[index])
+                salesItem.delivered_quantity += Decimal(request.POST.getlist('quantity[]')[index])
+                salesItem.save()
+            salesHeader = models.SalesOrderHeader.objects.prefetch_related('salesorderdetails_set').get(pk=request.POST['sales_order_header_id'])
+            flag = True
+            for salesDetail in salesHeader.salesorderdetails_set.all():
+                if Decimal(salesDetail.quantity) > Decimal(salesDetail.delivered_quantity):
+                    flag = False
+                    break
+            if flag == True:
+                salesHeader.status = 3
+            else:
+                salesHeader.status = 2
+            salesHeader.save()
     return render(request, 'deliveryChallan/add.html', context)
+
+
+def addTransporter(request):
+    print(request.POST)
+    exit()

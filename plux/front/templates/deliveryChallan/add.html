@@ -52,14 +52,25 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="delivery_date"></label>
-                                        <input type="date" max="{% now 'Y-m-d' %}" name="delivery_date"
-                                            class="form-control" required>
+                                        <label for="store">Store</label>
+                                        <select name="store" id="store" class="form-control" required>
+                                            <option value="">Select Store</option>
+                                            {% for store in stores %}
+                                            <option value="{{store.id}}">{{store.name}}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="delivery_date">Delivery Date</label>
+                                        <input type="date" max="{% now 'Y-m-d' %}" name="delivery_date"
+                                            class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="notes">Notes</label>
                                         <textarea name="notes" id="notes" rows="5" class="form-control" required
@@ -67,46 +78,54 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row content_parent">
-                                <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="item_id">Item</label>
-                                        <select name="item_id[]" id="item_id" class="form-control item_id" required>
-                                            <option value="">Select Item</option>
-                                            {% for item in items %}
-                                            <option value="{{item.id}}">{{item.description}}</option>
-                                            {% endfor %}
+                                        <label for="with_sales_order">With/Without Sales Order</label>
+                                        <select name="with_sales_order" id="with_sales_order" required
+                                            class="form-control">
+                                            <option value="1" selected>With Sales Order</option>
+                                            <option value="0">Without Sales Order</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>Quantity</label>
-                                        <input type="text" class="form-control item_quantity" name="quantity[]"
-                                            placeholder="" required
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                <div class="col-md-6">
+                                    <div class="form-group sales_order_type_content">
+                                        <label for="sales_order_header_id">Sales Order Reference</label>
+                                        <select name="sales_order_header_id" id="sales_order_header_id" required
+                                            class="form-control">
+                                            <option value="">Select Sales Order</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label>Unit Price</label>
-                                        <input type="text" class="form-control item_unit_price" name="unit_price[]"
-                                            placeholder="" required readonly
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                            </div>
+                            <div class="sales_order_details">
+                                <div class="row content_parent">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label for="item_id">Item</label>
+                                            <select name="item_id[]" id="item_id" class="form-control item_id" required>
+                                                <option value="">Select Item</option>
+                                                {% for item in items %}
+                                                <option value="{{item.id}}">{{item.description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>Amount</label>
-                                        <input type="text" class="form-control item_total_amount" name="amount[]"
-                                            placeholder="" required readonly
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]"
+                                                placeholder="" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-sm btn-info mt-4 add_item">Add More
-                                            Item</button>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_delivery_item">Add
+                                                More
+                                                Item</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -114,19 +133,20 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="total_amount">Total Amount</label>
-                                        <input type="text" name="total_amount" class="form-control" id="total_amount"
-                                            required placeholder="" readonly
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
-                                    </div>
+                                    <label for="transport">Transport</label>
+                                    <select name="transport" id="transport" class="form-control transport" required>
+                                        <option value="">Select Transport</option>
+                                        {% for transport in transports %}
+                                        <option value="{{transport.id}}">{{item.transporter_name}}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="commission">commission</label>
-                                        <input type="text" name="commission" class="form-control" id="commission"
-                                            required placeholder=""
-                                            onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        <button type="button" class="btn btn-sm btn-primary mt-4" data-bs-toggle="modal"
+                                            data-bs-target="#addTransportModal">
+                                            Add Transport
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +161,274 @@
         </div>
     </div>
 </section>
+
+<!-- The Modal -->
+<div class="modal" id="addTransportModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add Transport</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="{% url 'addTransporter' %}" method="post" id="add_transport_form">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="transporter_name">Transporter Name</label>
+                            <input type="text" name="transporter_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vehicle_number">Vehicle Number</label>
+                            <input type="text" name="vehicle_number" class="form-control" required style="text-transform: uppercase">
+                        </div>
+                        <div class="form-group">
+                            <label for="vehicle_description">Description</label>
+                            <textarea name="vehicle_description" id="vehicle_description" rows="5" class="form-control" required
+                                placeholder=""></textarea>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-success me-2">Submit</button>
+                            <button type="reset" class="btn btn-light">Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block js %}
+<script>
+    $(document).on('click', '.add_delivery_item', function () {
+        $('.add_more_content').append(`<div class="row content_parent">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="item_id">Item</label>
+                                        <select name="item_id[]" id="item_id" class="form-control item_id" required>
+                                            <option value="">Select Item</option>
+                                            {% for item in items %}
+                                            <option value="{{item.id}}">{{item.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label>Quantity</label>
+                                        <input type="text" class="form-control item_quantity" name="quantity[]" placeholder="" required
+                                        onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-sm btn-danger mt-4 remove_delivery_item">Remove</button>
+                                    </div>
+                                </div>
+                            </div>`);
+    });
+
+    $(document).on('click', '.remove_delivery_item', function () {
+        $(this).parents().closest('.content_parent').remove();
+    });
+
+    $(document).on('change', '#with_sales_order', function () {
+        sales_order_type = $(this).val();
+        if (parseInt(sales_order_type) == 1) {
+            $('.sales_order_type_content').show();
+            $('#sales_order_header_id').attr('required', 'required');
+        } else {
+            $('.sales_order_type_content').hide();
+            $('#sales_order_header_id').removeAttr('required');
+            sales_details = `<div class="row content_parent">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control" required>
+                                                <option value="">Select Item</option>
+                                                {% for item in items %}
+                                                <option value="{{item.id}}">{{item.description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_delivery_item">Add More
+                                                Item</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+            $(".sales_order_details").html(sales_details);
+        }
+    });
+
+    $(document).on('change', '#customer_id', function () {
+        customer_id = $(this).val();
+        $.ajax({
+            url: "{% url 'getCustomerSalesOrders' %}",
+            type: 'post',
+            data: ({ customer_id: customer_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    if (response.data.length > 0) {
+                        var options_text = `<option value="">Select Sales Order</option>`;
+                        for (let index = 0; index < response.data.length; index++) {
+                            options_text += `<option value="${response.data[index].id}">${response.data[index].sales_order_no}</option>`;
+                        }
+                        $("#sales_order_header_id").html(options_text);
+                    } else {
+                        var options_text = `<option value="">Select Sales Order</option>`;
+                        $("#sales_order_header_id").html(options_text);
+                        $('.sales_order_type_content').hide();
+                        $('#sales_order_header_id').removeAttr('required');
+                        sales_details = `<div class="row content_parent">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control" required>
+                                                <option value="">Select Item</option>
+                                                {% for item in items %}
+                                                <option value="{{item.id}}">{{item.description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]" required
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-info mt-4 add_delivery_item">Add More
+                                                Item</button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        $(".sales_order_details").html(sales_details);
+                        $("#with_sales_order").val(0);
+                    }
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    })
+
+    $(document).on('change', '#sales_order_header_id', function () {
+        if ($(this).val() != "" && $(this).val() != undefined) {
+            renderSalesOrderDetails();
+        }
+    });
+
+    $(document).on('change', '#store', function () {
+        if ($("#sales_order_header_id").val() != "" && $("#sales_order_header_id").val() != undefined) {
+            renderSalesOrderDetails();
+        }
+    });
+
+    function renderSalesOrderDetails() {
+        store_id = $("#store").val();
+        if (store_id == undefined || store_id == "") {
+            alert("Please Choose Store First");
+            $(this).val("");
+            return true;
+        }
+        sales_order_header_id = $("#sales_order_header_id").val();
+        if (sales_order_header_id != "") {
+            $("#with_sales_order").val(1);
+        }
+        $.ajax({
+            url: "{% url 'getSalesOrderDetails' %}",
+            type: 'post',
+            data: ({ sales_order_header_id: sales_order_header_id, store_id: store_id }),
+            success: function (response) {
+                if (response.code == 200) {
+                    var sales_details = ``;
+                    for (let index = 0; index < response.data.length; index++) {
+                        if ((response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity) > 0) {
+                            if (response.data[index].store_quantity < (response.data[index].quantity - response.data[index].delivered_quantity)) {
+                                sales_details += `<span class="text-danger">This Sales Order requires ${parseFloat(response.data[index].quantity - response.data[index].delivered_quantity)} quantity but this store has only ${parseFloat(response.data[index].store_quantity)} quantity</span>`
+                            }
+                            sales_details += `<div class="row content_parent">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Item</label>
+                                            <select name="item_id[]" class="form-control invoice_store_item" required disabled>
+                                                <option value="">Select Item</option>
+                                                ${response.items.map((item) => `<option ${item.id == response.data[index].item_id ? "selected" : ""} value="${item.id}">${item.description}</option>`)}
+                                            </select>
+                                        </div>
+                                        <input type="hidden" name="item_id[]" value="${response.data[index].item_id}">
+                                        <input type="hidden" name="sales_details_id[]" value="${response.data[index].id}">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label>Quantity</label>
+                                            <input type="text" class="form-control item_quantity" name="quantity[]" max="${response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity}"
+                                                required value="${response.data[index].store_quantity > (response.data[index].quantity - response.data[index].delivered_quantity) ? (response.data[index].quantity - response.data[index].delivered_quantity) : response.data[index].store_quantity}" min="1" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 &&  event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)">
+                                        </div>
+                                    </div>
+                                    ${index == 0 ? `<div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_delivery_item">Remove</button>
+                                        </div>
+                                    </div>`: `<div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-sm btn-danger mt-4 remove_delivery_item">Remove</button>
+                                        </div>
+                                    </div>`}
+                                </div>`;
+                        }
+                    }
+                    $(".sales_order_details").html(sales_details);
+                    $(".add_more_content").html(``);
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    }
+
+    $(document).on('submit','#add_transport_form', function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $.ajax({
+            url: "{% url 'addTransporter' %}",
+            type: 'post',
+            data: formData,
+            evalScripts: true,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.code == 200) {
+                    console.log(response);
+                } else {
+                    alert(response.message);
+                }
+            },
+        });
+    });
+</script>
 {% endblock %}

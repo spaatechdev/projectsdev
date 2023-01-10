@@ -98,15 +98,30 @@
     </li>
     <!-- End Store Transaction Nav -->
     <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#salesTransaction-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-card-list"></i><span>Sales Transactions</span><i class="bi bi-chevron-down ms-auto"></i>
+      <a class="nav-link " href="{% url 'salesOrderList' %}">
+        <i class="bi bi-layout-text-window-reverse"></i>
+        <span>Sales Orders</span>
       </a>
-      <ul id="salesTransaction-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+    </li>
+    <!-- End Sales Order Nav -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#delivery-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-truck"></i><span>Delivery</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="delivery-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
-          <a href="{% url 'salesOrderList' %}">
-            <i class="bi bi-circle"></i><span>Sales Orders</span>
+          <a href="{% url 'deliveryChallanList' %}">
+            <i class="bi bi-circle"></i><span>Delivery Challan</span>
           </a>
         </li>
+      </ul>
+    </li>
+    <!-- End Delivery Challan Nav -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#invoice-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-card-list"></i><span>Invoice</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="invoice-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
         <li>
           <a href="{% url 'invoiceList' %}">
             <i class="bi bi-circle"></i><span>Invoice List</span>
@@ -133,18 +148,5 @@
       </ul>
     </li>
     <!-- End Reports Nav -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#delivery-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-truck"></i><span>Delivery</span><i class="bi bi-chevron-down ms-auto"></i>
-      </a>
-      <ul id="delivery-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-        <li>
-          <a href="{% url 'deliveryChallanList' %}">
-            <i class="bi bi-circle"></i><span>Delivery Challan</span>
-          </a>
-        </li>
-      </ul>
-    </li>
-    <!-- End Delivery Challan Nav -->
   </ul>
 </aside>

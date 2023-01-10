@@ -177,6 +177,7 @@ urlpatterns = [
     path('deliveryChallanList', views.deliveryChallanList,
          name='deliveryChallanList'),
     path('deliveryChallanAdd', views.deliveryChallanAdd, name='deliveryChallanAdd'),
+    path('addTransporter', csrf_exempt(views.addTransporter), name='addTransporter'),
 
     path('storeItemReports', views.storeItemReports, name='storeItemReports'),
 
